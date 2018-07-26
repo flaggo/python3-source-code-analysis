@@ -1,0 +1,67 @@
+{
+  "title": "Python 3 源码分析",
+  "description": "致力于分析Python 3.7.0 的源码实现",
+  "author": "Prodesire",
+  "output.name": "site",
+  "language": "zh-hans",
+  "gitbook": "3.2.3",
+  "root": ".",
+  "structure": {
+    "readme": "README.md"
+  },
+  "links": {
+    "sidebar": {
+      "主页": "https://github.com/flaggo/python3-source-code-analysis"
+    }
+  },
+  "plugins": [
+    "-search",
+    "search-plus@^0.0.11",
+    "-sharing",
+    "sharing-plus",
+    "github@^2.0.0",
+    "github-buttons@2.1.0",
+    "edit-link@^2.0.2",
+    "splitter",
+    "tbfed-pagefooter"
+  ],
+
+  "pluginsConfig": {
+    "theme-default": {
+      "showLevel": true
+    },
+    "github": {
+      "url": "https://github.com/flaggo/python3-source-code-analysis"
+    },
+    "github-buttons": {
+      "repo": "flaggo/python3-source-code-analysis",
+      "types": ["star"],
+      "size": "small"
+    },
+    "sharing": {
+      "weibo": true,
+      "douban": true,
+      "linkedin": true,
+      "facebook": true,
+      "google": true,
+      "twitter": true,
+      "all": ["weibo", "douban", "linkedin", "facebook", "google", "twitter"]
+    },
+    "tbfed-pagefooter": {
+      "copyright": "Copyright © Prodesire 2018",
+      "modify_label": "该文件修订时间：",
+      "modify_format": "YYYY-MM-DD HH:mm:ss"
+    },
+    "edit-link": {
+      "base":
+        "https://github.com/flaggo/python3-source-code-analysis/edit/master",
+      "label": "编辑此页面"
+    },
+    "anchor-navigation-ex": {
+      "isRewritePageTitle": false,
+      "tocLevel1Icon": "fa fa-hand-o-right",
+      "tocLevel2Icon": "fa fa-hand-o-right",
+      "tocLevel3Icon": "fa fa-hand-o-right"
+    }
+  }
+}
