@@ -36,3 +36,10 @@ deploy:
   local_dir: _book
   on:
     branch: master
+
+# 通知
+notifications:
+  email:
+    recipients:
+      - wangbinxin001@126.com
+    on_failure: always
