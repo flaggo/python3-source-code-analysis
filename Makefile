@@ -7,7 +7,7 @@ help:
 	@echo "    构建GitBook静态页面"
 
 init:
-	npm i -g gitbook-cli
+	sudo npm i -g gitbook-cli
 	gitbook install
 
 run: 
