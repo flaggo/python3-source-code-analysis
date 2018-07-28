@@ -4,6 +4,7 @@
 
 - [前言](README.md)
 - [Python 源代码的组织](preface/code-organization.md)
+- [Windows 环境下编译 Python](preface/windows-build.md)
 
 ## 第 2 部分：Python 内建对象
 
