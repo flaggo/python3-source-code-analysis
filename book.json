@@ -23,7 +23,10 @@
     "github-buttons@2.1.0",
     "edit-link@^2.0.2",
     "splitter",
-    "tbfed-pagefooter"
+    "tbfed-pagefooter",
+    "prism",
+    "page-toc-button",
+    "back-to-top-button"
   ],
 
   "pluginsConfig": {
@@ -62,6 +65,15 @@
       "tocLevel1Icon": "fa fa-hand-o-right",
       "tocLevel2Icon": "fa fa-hand-o-right",
       "tocLevel3Icon": "fa fa-hand-o-right"
+    },
+    "prism": {
+      "lang": {
+        "console": "bash",
+        "shell": "bash"
+      },
+      "css": [
+        "prismjs/themes/prism-okaidia.css"
+      ]
     }
   }
 }

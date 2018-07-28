@@ -2,7 +2,7 @@
 
 ## 源代码下载
 
-Python 源代码可以在 GitHub 上方便的获取，执行：
+Python 源代码可以在 GitHub 上方便的获取，执行：
 
 ```console
 git clone https://github.com/python/cpython.git
@@ -13,7 +13,7 @@ git checkout v3.7.0
 
 ## 目录结构
 
-进入源码目录，我们可以看到该目录下主要  包含以下文件（夹）：
+进入源码目录，我们可以看到该目录下主要 包含以下文件（夹）：
 
 ```console
 .

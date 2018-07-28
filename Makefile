@@ -10,8 +10,8 @@ init:
 	sudo npm i -g gitbook-cli
 	gitbook install
 
-run: 
+run:
 	gitbook serve
 
-build: 
+build:
 	gitbook build
