@@ -6,7 +6,7 @@
 
 # 使用
 
-您可以直接访问 [在线版](https://github.com/flaggo/python3-source-code-analysis)，或者根据一下步骤访问本地版。
+您可以直接访问 [在线版](https://flaggo.github.io/python3-source-code-analysis/)，或者根据以下步骤访问本地版。
 
 ## 前置条件
 
