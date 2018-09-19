@@ -4,6 +4,8 @@
 
 ## 环境准备
 
+### 在常规操作系统中
+
 编译 Python 前通常需要在系统上安装以下库：
 
 - `gcc` // 编译工具
@@ -23,6 +25,30 @@ sudo apt install -y zlib1g zlib1g-dev libffi-dev openssl libssl-dev
 
 ```console
 yum install -y zlib zlib-devel libffi-devel openssl openssl-devel
+```
+
+## 运行于 Docker 的操作系统中
+
+Docker 版的 Linux 发行版可能会有较多的库未安装，除了安装上一小节提及的库外，其他缺失库可根据情况自行安装：
+
+- `bzip2` // 压缩库
+- `readline` // GNU Readline 是一个软件库，它为使用命令行界面（如 Bash）的交互式程序提供了行编辑和历史功能
+- `sqlite` // 由 C 编写的小型数据库
+- `libuuid` // 跨平台的开源的 uuid 操作库
+- `gdbm` // 小型的数据库系统
+- `xz` // 压缩解压工具
+- `tk-devel` // 图形用户界面开发工具
+
+对于 `Debian/Ubuntu`，执行：
+
+```console
+sudo apt-get install bzip2 libbz2-dev sqlite3 libsqlite3-dev libreadline6 libreadline6-dev libgdbm-dev uuid-dev tk-dev
+```
+
+对于 `RedHat/CentOS/Fedora` 系统，执行：
+
+```console
+yum install bzip2 bzip2-devel readline-devel sqlite-devel libuuid-devel gdbm-devel xz-devel tk-devel
 ```
 
 ## 编译、安装
@@ -62,28 +88,3 @@ make clean
 ```
 
 再执行本节开头处的命令即可。
-
-## 关于Docker中的Linux发行版 说明
-
-Docker中的Linux发行版可能会有较多的库未安装
-具体缺失哪些库大家可以根据情况自行安装
-
-- `bzip2` // 压缩库
-- `readline` // GNU Readline是一个软件库，它为使用命令行界面（如Bash）的交互式程序提供了行编辑和历史功能
-- `sqlite` // 由C编写的小型数据库
-- `libuuid` // 跨平台的开源的uuid操作库
-- `gdbm` // 小型的数据库系统
-- `xz` // 压缩解压工具
-- `tk-devel` // 图形用户界面开发工具
-
-对于 `Debian/Ubuntu`，执行：
-
-```console
-sudo apt-get install bzip2 libbz2-dev sqlite3 libsqlite3-dev libreadline6 libreadline6-dev libgdbm-dev uuid-dev tk-dev
-```
-
-对于 `RedHat/CentOS/Fedora` 系统，执行：
-
-```console
-yum install bzip2 bzip2-devel readline-devel sqlite-devel libuuid-devel gdbm-devel xz-devel tk-devel
-```
