@@ -31,9 +31,10 @@ long_to_decimal_string(PyObject *aa)
 }
 ```
 
-其中，函数实现中的前 3 行为我们加入的代码。`PyUnicode_FromString` 用于把 C 中的原生字符数组
-转换为出 Python 中的字符串（Unicode）对象；而 `PyObject_Print` 则将转换好的字符串对象打印至
-我们指定的标准输出（`stdout`）。
+函数实现中的前 3 行为我们加入的代码，其中：
+
+- `PyUnicode_FromString` 用于把 C 中的原生字符数组转换为出 Python 中的字符串（Unicode）对象
+- `PyObject_Print` 则将转换好的字符串对象打印至我们指定的标准输出（`stdout`）
 
 对 Python 重新进行编译，在 Unix 上可执行：
 
