@@ -27,6 +27,12 @@ sudo apt install -y zlib1g zlib1g-dev libffi-dev openssl libssl-dev
 yum install -y zlib zlib-devel libffi-devel openssl openssl-devel
 ```
 
+对于 `macOS` 系统，执行：
+
+```console
+xcode-select --install
+```
+
 ## 运行于 Docker 的操作系统中
 
 Docker 版的 Linux 发行版可能会有较多的库未安装，除了安装上一小节提及的库外，其他缺失库可根据情况自行安装：
