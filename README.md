@@ -45,6 +45,29 @@ gitbook serve
 
 直接访问 http://localhost:4000 即可查看本书内容。
 
-# 计划
+# Roadmap
 
 大体按照《Python 源码剖析》中的目录结构进行编写。依次介绍 Python 源码基本信息、内建对象和虚拟机。
+
+- [ ] 章节
+    - [x] 序章
+    - [x] 前言
+    - [x] Python 源代码的组织
+    - [ ] Windows 环境下编译 Python
+    - [x] UNIX/Linux 环境下编译 Python
+    - [x] 修改 Python 源码
+- [ ] Python 内建对象
+    - [ ] Python 整数对象
+    - [ ] Python List 对象
+    - [ ] Python Dict 对象
+    - [ ] 实现简版 Python
+- [ ] Python 虚拟机
+    - [ ] Python 编译结果
+    - [ ] Python 虚拟机框架
+    - [ ] 虚拟机一般表达式
+    - [ ] Python 虚拟机控制流
+    - [ ] Python 虚拟机函数机制
+    - [ ] Python 运行环境初始化
+    - [ ] Python 模块加载机制
+    - [ ] Python 多线程机制
+    - [ ] Python 内存管理机制
