@@ -72,6 +72,6 @@ wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz
 
 **Python 目录**：包含了 Python 解释器中的 Compiler 和执行引擎部分，是 Python 运行的核心所在。
 
-**PCBuild 目录**：包含了 Visual Studio 2003 的工程文件，研究 Python 源代码就从这里开始（本书将采用 Visual Studio 2017 对 Python 进行编译）。
+**PCbuild 目录**：包含了 Visual Studio 2003 的工程文件，研究 Python 源代码就从这里开始（本书将采用 Visual Studio 2017 对 Python 进行编译）。
 
 **Programs 目录**：包含了 Python 二进制可执行文件的源码。
