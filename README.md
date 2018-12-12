@@ -53,7 +53,7 @@ gitbook serve
     - [x] 序章
     - [x] 前言
     - [x] Python 源代码的组织
-    - [ ] Windows 环境下编译 Python
+    - [x] Windows 环境下编译 Python
     - [x] UNIX/Linux 环境下编译 Python
     - [x] 修改 Python 源码
 - [ ] Python 内建对象
