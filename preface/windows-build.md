@@ -18,20 +18,24 @@
 
 进入 Python 源码根目录，打开 `PCbuild\pcbiuld.sln` 解决方案，而后进行一些设置：
 
-在左侧的解决方案目录的顶端，右键选择“属性”，以打开属性界面（如下图所示）
-![](vs2017-properties.png)
+在左侧的解决方案目录的顶端，右键选择“属性”，以打开属性界面（如下图所示）。
+
+<img src="vs2017-properties.png" width = "350" height = "500"/>
 
 由于我们只是研究 Python 的核心部分，可以选择不编译标准库和外部依赖，在“配置属性”->“配置”中仅勾选
 python 和 pythoncore，然后点击“确定”（如下图所示）。
 
 此外，默认情况下的编译设置是 Debug、32 位，您也可以根据自己的需求调整成 Release 或 64 位。
-![](vs2017-configure.png)
+
+<img src="vs2017-configure.png" width = "750" height = "500"/>
 
 在左侧的解决方案目录中选择 python，右键选择“生成”，以进行编译：
-![](vs2017-build.png)
+
+<img src="vs2017-build.png" width = "450" height = "600"/>
 
 编译结束后，生成的文件存放在`PCbuild\win32`目录下（如下图所示），打开`python_d`即可打开新生成的 Python 3.7 解释器。
-![](build-files.png)
+
+<img src="build-files.png" width = "300" height = "250"/>
 
 
 ## 更多内容
