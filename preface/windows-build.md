@@ -32,3 +32,7 @@ python 和 pythoncore，然后点击“确定”（如下图所示）。
 
 编译结束后，生成的文件存放在`PCbuild\win32`目录下（如下图所示），打开`python_d`即可打开新生成的 Python 3.7 解释器。
 ![](build-files.png)
+
+
+## 更多内容
+更多关于在 Windows 上进行编译和开发 Python 的内容见[官方指南](https://devguide.python.org/setup/#windows-compiling)
