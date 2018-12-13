@@ -57,7 +57,9 @@ gitbook serve
     - [x] UNIX/Linux 环境下编译 Python
     - [x] 修改 Python 源码
 - [ ] Python 内建对象
+    - [ ] Python 对象初探
     - [ ] Python 整数对象
+    - [ ] Python 字符串 对象
     - [ ] Python List 对象
     - [ ] Python Dict 对象
     - [ ] 实现简版 Python
