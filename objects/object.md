@@ -186,8 +186,39 @@ typedef struct {
 ```
 
 在`PyNumberMethods`定义了一个数值对象该支持的操作。一个数值对象如 整数对象，那么它的类型对象 `PyLong_Type`中,`tp_as_number.nb_add`
-就制定了它进行加法操作时的具体行为。`PyMappingMethods`与`PySequenceMethods`与此相同。
+就指定了它进行加法操作时的具体行为。`PyMappingMethods`与`PySequenceMethods`与此相同。
 
+在以下代码中可以看出`PyLong_Type`中的`tp_as_number`项指向的是`long_as_number`
+
+```c
+// Objects/longobject.c
+static PyNumberMethods long_as_number = {
+    (binaryfunc)long_add,       /*nb_add*/
+    (binaryfunc)long_sub,       /*nb_subtract*/
+    (binaryfunc)long_mul,       /*nb_multiply*/
+
+    ......
+};
+
+PyTypeObject PyLong_Type = {
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
+    "int",                                      /* tp_name */
+    offsetof(PyLongObject, ob_digit),           /* tp_basicsize */
+    sizeof(digit),                              /* tp_itemsize */
+    long_dealloc,                               /* tp_dealloc */
+    0,                                          /* tp_print */
+    0,                                          /* tp_getattr */
+    0,                                          /* tp_setattr */
+    0,                                          /* tp_reserved */
+    long_to_decimal_string,                     /* tp_repr */
+    &long_as_number,                            /* tp_as_number */
+    0,                                          /* tp_as_sequence */
+    0,                                          /* tp_as_mapping */
+
+    ......
+};
+
+```
 
 ### 类型的类型
 
