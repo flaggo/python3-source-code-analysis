@@ -25,6 +25,8 @@ Python的类型系统和对象系统非常庞大复杂，我们将分成多篇�
 
 它包含 一个用于垃圾回收的双向链表，一个引用计数变量 `ob_refcnt` 和 一个类型对象指针`ob_type`
 
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
+
 ```c
 // Include/object.h
 #define _PyObject_HEAD_EXTRA            \
@@ -53,6 +55,8 @@ typedef struct _object {
 
 ### 定长对象和变长对象
 
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
+
 ```c
 // Include/object.h
 typedef struct _object {
@@ -76,16 +80,21 @@ Python中的整数对象，除了`PyObject_VAR_HEAD`外还有一个额外的东�
 这个整数对象的值就保存在`ob_digit`中。Python中的字符串对象、list对象、
 dict对象等除了`PyObject`以外都有一些属于自己的特殊信息。
 
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L98)
 
 ```c
 // Include/object.h
 #define PyObject_VAR_HEAD      PyVarObject ob_base;
 ```
 
+`源文件：`[Objects/longobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/longobject.h#L10)
+
 ```c
 // Include/longobject.h
 typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
 ```
+
+`源文件：`[Include/longintrepr.h](https://github.com/python/cpython/blob/v3.7.0/Include/longintrepr.h#L85)
 
 ```c
 // Include/longintrepr.h
@@ -108,6 +117,8 @@ Python中的对象开始的一些字节中的内容我们是可以明确知道�
 - 创建该类型对象时分配的空间大小信息，即 `tp_basicsize` 和 `tp_itemsize`
 - 与该类型对象相关的操作信息(如 `tp_print` 这样的函数指针)
 - 一些对象属性
+
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L346)
 
 ```c
 // Include/object.h
@@ -174,7 +185,10 @@ PyObject *longObj = PyLong_FromLong(10);
 在之前的`PyTypeObject`代码中，我们可以看到非常重要的三组操作族
 `PyNumberMethods *tp_as_number`、`PySequenceMethods *tp_as_sequence`、`PyMappingMethods *tp_as_mapping`，
 
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L240)
+
 ```c
+// Include/object.h
 typedef PyObject * (*binaryfunc)(PyObject *, PyObject *);
 
 typedef struct {
@@ -189,6 +203,8 @@ typedef struct {
 就指定了它进行加法操作时的具体行为。`PyMappingMethods`与`PySequenceMethods`与此相同。
 
 在以下代码中可以看出`PyLong_Type`中的`tp_as_number`项指向的是`long_as_number`
+
+`源文件：`[Objects/longobject.h](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5342)
 
 ```c
 // Objects/longobject.c
@@ -226,6 +242,8 @@ PyTypeObject PyLong_Type = {
 对于其他对象，可以通过与其关联的对象确定其类型，那么通过什么来确定一个对象是类型对象呢？
 答案就是 `PyType_Type`
 
+`源文件：`[Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L3540)
+
 ```c
 // Objects/typeobject.c
 PyTypeObject PyType_Type = {
@@ -246,6 +264,8 @@ PyTypeObject PyType_Type = {
 前面提到，在Python中，每一个对象都将自己的引用计数、类型信息保存在开始的部分中。
 为了方便对这部分内存初始化，Python中提供了几个有用的宏:
 
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L69)
+
 ```c
 // Include/object.h
 #ifdef Py_TRACE_REFS
@@ -263,8 +283,10 @@ PyTypeObject PyType_Type = {
 实际上，这些宏在各种内建类型对象的初始化中被大量使用。
 以`PyLong_Type`为例，可以更清晰的看到一般的类型对象和`PyType_type`之间的关系
 
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5379)
+
 ```c
-// Include/longobject.c
+// Objects/longobject.c
 
 PyTypeObject PyLong_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
@@ -311,6 +333,8 @@ void Print(PyObject* object)
 在Python中，主要通过 `Py_INCREF(op)`与`Py_DECREF(op)` 这两个宏
 来增加和减少对一个对象的引用计数。当一个对象的引用计数减少到0之后，
 `Py_DECREF`将调用该对象的`tp_dealloc`来释放对象所占用的内存和系统资源
+
+`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L777)
 
 ```c
 // Include/object.h
