@@ -345,7 +345,6 @@ PyTypeObject PyUnicode_Type = {
 
 ## 引用计数
 
-
 Python 通过引用计数来管理维护对象在内存中的存在与否
 
 Python 中的每个东西都是一个对象， 都有`ob_refcnt` 变量，这个变量维护对象的引用计数，从而最终决定该对象的创建与销毁
