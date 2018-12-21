@@ -307,7 +307,7 @@ PyTypeObject PyLong_Type = {
 Python创建一个对象比如 PyLongObject 时，会分配内存进行初始化，然后
 Python内部会用 `PyObject*` 变量来维护这个对象，其他对象也与此类似，
 所以在 Python 内部各个函数之间传递的都是一种范型指针 `PyObject*`
-我们不知道这个指针所指的对象时什么类型，只能通过所指对象的 ob_type 域
+我们不知道这个指针所指的对象是什么类型，只能通过所指对象的 ob_type 域
 动态进行判断，而Python正是通过 `ob_type` 实现了多态机制
 
 考虑以下的 Print 函数
@@ -319,7 +319,7 @@ void Print(PyObject* object)
 }
 ```
 
-如果传递给 Print 函数的指针时一个 `PyLongObject*`，那么它会调用 PyLongOjbect 对象对应的类型对象中定义的 输出操作
+如果传递给 Print 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongOjbect 对象对应的类型对象中定义的 输出操作
 
 如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的输出操作
 
