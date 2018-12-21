@@ -14,7 +14,6 @@
 
 ![object category](object_category.jpg)
 
-
 ## 对象机制的基石 PyObject
 
 对于初学者来说这么多类型的对象怎么学？别着急，我们后续章节会解答。
