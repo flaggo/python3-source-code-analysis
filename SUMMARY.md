@@ -10,11 +10,12 @@
 
 ## 第 2 部分：Python 内建对象
 
-- [Python 对象初探](objects/pyobject.md)
+- [Python 对象初探](objects/object.md)
 - [Python 整数对象](objects/long-object.md)
 - [Python 字符串 对象](objects/string-object.md)
 - [Python List 对象](objects/list-object.md)
 - [Python Dict 对象](objects/dict-object.md)
+- [Python Set 对象](objects/set-object.md)
 - [实现简版 Python](objects/simple-implementation.md)
 
 ## 第 3 部分：Python 虚拟机
