@@ -323,7 +323,6 @@ PyTypeObject PyLong_Type = {
 };
 ```
 
-
 如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的输出操作，查看源码可以看到 实际绑定的是 `unicode_hash`函数
 
 `源文件：`[Objects/unicodeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/unicodeobject.c#L15066)
