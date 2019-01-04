@@ -22,8 +22,6 @@
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
 
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
-
 ```c
 // Include/object.h
 #define _PyObject_HEAD_EXTRA            \
@@ -53,8 +51,6 @@ Python对象除了前面提到的那种分类方法外，还可以分为定长�
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
 
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
-
 ```c
 // Include/object.h
 typedef struct _object {
@@ -72,38 +68,6 @@ typedef struct {
 
 ![PyVarObject](PyVarObject.jpg)
 
-<<<<<<< HEAD
-
-Python中的整数对象，除了`PyObject_VAR_HEAD`外还有一个额外的东西`ob_digit`,
-这个整数对象的值就保存在`ob_digit`中。Python中的字符串对象、list对象、
-dict对象等除了`PyObject`以外都有一些属于自己的特殊信息。
-
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L98)
-
-```c
-// Include/object.h
-#define PyObject_VAR_HEAD      PyVarObject ob_base;
-```
-
-`源文件：`[Objects/longobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/longobject.h#L10)
-
-```c
-// Include/longobject.h
-typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
-```
-
-`源文件：`[Include/longintrepr.h](https://github.com/python/cpython/blob/v3.7.0/Include/longintrepr.h#L85)
-
-```c
-// Include/longintrepr.h
-struct _longobject {
-    PyObject_VAR_HEAD
-    digit ob_digit[1];
-};
-```
-
-=======
->>>>>>> 677d7e8... 修改 对象初探 内容
 ## 类型对象
 
 前面我们提到了**PyObject** 的 对象类型指针`struct _typeobject *ob_type`，它指向的类型对象就决定了一个对象是什么类型的。
@@ -270,8 +234,6 @@ PyObject *longObj = PyLong_FromLong(10);
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L240)
 
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L240)
-
 ```c
 // Include/object.h
 typedef PyObject * (*binaryfunc)(PyObject *, PyObject *);
@@ -322,18 +284,6 @@ PyTypeObject PyLong_Type = {
 
 `PySequenceMethods *tp_as_sequence` 和 `PyMappingMethods *tp_as_mapping`的分析与`PyNumberMethods *tp_as_number` 相同，大家可以自行查阅源码
 
-<<<<<<< HEAD
-`源文件：`[Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L3540)
-
-```c
-// Objects/typeobject.c
-PyTypeObject PyType_Type = {
-    PyVarObject_HEAD_INIT(&PyType_Type, 0)
-    "type",                                     /* tp_name */
-    sizeof(PyHeapTypeObject),                   /* tp_basicsize */
-    sizeof(PyMemberDef),                        /* tp_itemsize */
-=======
->>>>>>> 677d7e8... 修改 对象初探 内容
 
 ## 对象的多态性
 
@@ -345,8 +295,6 @@ Python内部会用 `PyObject*` 变量来维护这个对象，其他对象也与�
 动态进行判断，而Python正是通过 `ob_type` 实现了多态机制
 
 考虑以下的 py_hash 函数
-
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L69)
 
 ```c
 Py_hash_t
@@ -361,12 +309,6 @@ calc_hash(PyObject* object)
 而具体赋值绑定我们可以在 `PyLong_Type` 初始化代码中看到绑定的是`long_hash`函数
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5379)
-<<<<<<< HEAD
-
-```c
-// Objects/longobject.c
-=======
->>>>>>> 677d7e8... 修改 对象初探 内容
 
 ```c
 // Objects/longobject.c
@@ -386,19 +328,11 @@ PyTypeObject PyLong_Type = {
 
 `源文件：`[Objects/unicodeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/unicodeobject.c#L15066)
 
-<<<<<<< HEAD
-Python创建一个对象比如 PyLongObject 时，会分配内存进行初始化，然后
-Python内部会用 `PyObject*` 变量来维护这个对象，其他对象也与此类似，
-所以在 Python 内部各个函数之间传递的都是一种范型指针 `PyObject*`
-我们不知道这个指针所指的对象是什么类型，只能通过所指对象的 ob_type 域
-动态进行判断，而Python正是通过 `ob_type` 实现了多态机制
-=======
 ```c
 // Objects/unicodeobject.c
 PyTypeObject PyUnicode_Type = {
     PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "str",              /* tp_name */
->>>>>>> 677d7e8... 修改 对象初探 内容
 
     ...
 
@@ -408,10 +342,6 @@ PyTypeObject PyUnicode_Type = {
 };
 ```
 
-<<<<<<< HEAD
-如果传递给 Print 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongOjbect 对象对应的类型对象中定义的 输出操作
-=======
->>>>>>> 677d7e8... 修改 对象初探 内容
 
 ## 引用计数
 
@@ -425,8 +355,6 @@ Python 中的每个东西都是一个对象， 都有`ob_refcnt` 变量，这个
 `Py_DECREF`将调用该对象的`tp_dealloc`来释放对象所占用的内存和系统资源；
 
 但这并不意味着最终一定会调用 `free` 释放内存空间。因为频繁的申请、释放内存会大大降低Python的执行效率。因此Python中大量采用了内存对象池的技术，使得对象释放的空间归还给内存池而不是直接`free`，后续使用可先从对象池中获取
-
-`源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L777)
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L777)
 
