@@ -341,7 +341,6 @@ PyTypeObject PyUnicode_Type = {
 };
 ```
 
-
 ## 引用计数
 
 Python 通过引用计数来管理维护对象在内存中的存在与否
