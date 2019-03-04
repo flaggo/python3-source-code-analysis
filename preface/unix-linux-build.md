@@ -73,7 +73,7 @@ make install
 Python 将会被编译，并安装在默认目录中。若您希望将 Python 安装在特定目录，则需要在一开始修改 `configure` 命令为：
 
 ```console
-./configure –-prefix=<Python要安装到的目录（绝对路径）>
+./configure --prefix=<Python要安装到的目录（绝对路径）>
 ```
 
 在指定目录中:

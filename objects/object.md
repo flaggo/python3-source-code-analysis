@@ -294,7 +294,7 @@ Python内部会用 `PyObject*` 变量来维护这个对象，其他对象也与�
 我们不知道这个指针所指的对象是什么类型，只能通过所指对象的 `ob_type` 域
 动态进行判断，而Python正是通过 `ob_type` 实现了多态机制
 
-考虑以下的 py_hash 函数
+考虑以下的 calc_hash 函数
 
 ```c
 Py_hash_t
@@ -305,7 +305,7 @@ calc_hash(PyObject* object)
 }
 ```
 
-如果传递给 calc_hash 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongObject 对象对应的类型对象中定义的 hash操作`tp_hash`，`tp_hash`可以在**PyTypeObject中找到，
+如果传递给 calc_hash 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongObject 对象对应的类型对象中定义的 hash操作`tp_hash`，`tp_hash`可以在**PyTypeObject**中找到，
 而具体赋值绑定我们可以在 `PyLong_Type` 初始化代码中看到绑定的是`long_hash`函数
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5379)
@@ -323,7 +323,7 @@ PyTypeObject PyLong_Type = {
 };
 ```
 
-如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的输出操作，查看源码可以看到 实际绑定的是 `unicode_hash`函数
+如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的hash操作，查看源码可以看到 实际绑定的是 `unicode_hash`函数
 
 `源文件：`[Objects/unicodeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/unicodeobject.c#L15066)
 
