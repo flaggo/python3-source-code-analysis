@@ -205,7 +205,7 @@ Python创建对象有两种方式
 ### 范型API 或称为 AOL (Abstract Object Layer)
 
 这类API通常形如`PyObject_XXX`这样的形式。可以应用在任何Python对象上，
-如`PyObject_Print`。创建一个整数对象的方式
+如`PyObject_New`。创建一个整数对象的方式
 
 ```c
 PyObject* longobj = PyObject_New(Pyobject, &PyLong_Type);
@@ -230,7 +230,7 @@ PyObject *longObj = PyLong_FromLong(10);
 - `PyMappingMethods *tp_as_mapping`
 
 
-**PySequenceMethods** 的代码如下
+**PyNumberMethods** 的代码如下
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L240)
 

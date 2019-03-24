@@ -23,6 +23,28 @@ typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
 
 ```c
 // longintrepr.h
+/* Long integer representation.
+   The absolute value of a number is equal to
+   一个数的绝对值等价于下面的表达式
+        SUM(for i=0 through abs(ob_size)-1) ob_digit[i] * 2**(SHIFT*i)
+
+   Negative numbers are represented with ob_size < 0;
+   负数表示为 ob_size < 0
+
+   zero is represented by ob_size == 0.
+   整数0 用 ob_size == 0表示
+
+   In a normalized number, ob_digit[abs(ob_size)-1] (the most significant
+   digit) is never zero.  Also, in all cases, for all valid i,
+
+        0 <= ob_digit[i] <= MASK.
+
+   The allocation function takes care of allocating extra memory
+   so that ob_digit[0] ... ob_digit[abs(ob_size)-1] are actually available.
+
+   CAUTION:  Generic code manipulating subtypes of PyVarObject has to
+   aware that ints abuse  ob_size's sign bit.
+*/
 
 struct _longobject {
     PyObject_VAR_HEAD
@@ -132,6 +154,8 @@ get_small_int(sdigit ival)
     } while(0)
 ```
 
+宏**CHECK_SMALL_INT**会检查传入的数是否在小整数范围内，如果是直接返回
+
 
 ### 小整数初始化
 
@@ -188,3 +212,58 @@ _PyLong_Init(void)
     return 1;
 }
 ```
+
+
+## 整数的存储结构
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L1581)
+
+在 **long_to_decimal_string_internal**中添加如下代码并重新编译安装
+```c
+// Objects/longobject.c
+static int
+long_to_decimal_string_internal(PyObject *aa,
+                                PyObject **p_output,
+                                _PyUnicodeWriter *writer,
+                                _PyBytesWriter *bytes_writer,
+                                char **bytes_str)
+{
+    PyLongObject *scratch, *a;
+    PyObject *str = NULL;
+    Py_ssize_t size, strlen, size_a, i, j;
+    digit *pout, *pin, rem, tenpow;
+    int negative;
+    int d;
+    enum PyUnicode_Kind kind;
+
+    a = (PyLongObject *)aa;
+
+    // 添加打印代码
+    printf("ob_size     = %d\n", Py_SIZE(a));
+    for (int index = 0; index < Py_SIZE(a); ++index) {
+        printf("ob_digit[%d] = %d\n", index, a->ob_digit[index]);
+    }
+
+    ...
+}
+```
+
+编译安装后进入python解释器输入如下代码
+
+```python
+num = 9223372043297226753
+print(num)
+
+# output
+>>> ob_size     = 3
+>>> ob_digit[0] = 1
+>>> ob_digit[1] = 6
+>>> ob_digit[2] = 8
+>>> 9223372043297226753
+```
+
+如下图所示
+
+![longobject storage](longobject_storage.png)
+
+
