@@ -37,13 +37,18 @@ typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
    In a normalized number, ob_digit[abs(ob_size)-1] (the most significant
    digit) is never zero.  Also, in all cases, for all valid i,
 
+    在一个规范的数字ob_digit[abs(ob_size)-1]（）永不为0。而且，所有有效的 i 都满足以下要求
         0 <= ob_digit[i] <= MASK.
 
    The allocation function takes care of allocating extra memory
    so that ob_digit[0] ... ob_digit[abs(ob_size)-1] are actually available.
 
+    内存分配函数要小心额外的内存，
+
    CAUTION:  Generic code manipulating subtypes of PyVarObject has to
-   aware that ints abuse  ob_size's sign bit.
+   aware that ints abuse ob_size's sign bit.
+
+   警告: 通用代码操作 PyVarObject 的子类型必须注意 ob_size的符号滥用问题。
 */
 
 struct _longobject {
@@ -154,8 +159,29 @@ get_small_int(sdigit ival)
     } while(0)
 ```
 
-宏**CHECK_SMALL_INT**会检查传入的数是否在小整数范围内，如果是直接返回
+宏 **CHECK_SMALL_INT** 会检查传入的数是否在小整数范围内，如果是直接返回。
+可以在创建或复制整数对象等函数中找到 **CHECK_SMALL_INT** 的身影，以下只列出了
+**PyLong_FromLong**，就不一一列举了
 
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L239)
+
+```c
+// Object/longobject.c
+
+PyObject *
+PyLong_FromLong(long ival)
+{
+    PyLongObject *v;
+    unsigned long abs_ival;
+    unsigned long t;  /* unsigned so >> doesn't propagate sign bit */
+    int ndigits = 0;
+    int sign;
+
+    CHECK_SMALL_INT(ival);
+
+    ...
+}
+```
 
 ### 小整数初始化
 
@@ -266,4 +292,4 @@ print(num)
 
 ![longobject storage](longobject_storage.png)
 
-
+注：这里的 30 是由 **PyLong_SHIFT** 决定的，64位系统中，**PyLong_SHIFT** 为30，否则 **PyLong_SHIFT** 为15
