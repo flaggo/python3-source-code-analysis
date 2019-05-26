@@ -43,8 +43,6 @@ typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
    The allocation function takes care of allocating extra memory
    so that ob_digit[0] ... ob_digit[abs(ob_size)-1] are actually available.
 
-    内存分配函数要小心额外的内存，
-
    CAUTION:  Generic code manipulating subtypes of PyVarObject has to
    aware that ints abuse ob_size's sign bit.
 
@@ -239,7 +237,6 @@ _PyLong_Init(void)
 }
 ```
 
-
 ## 整数的存储结构
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L1581)
@@ -293,3 +290,231 @@ print(num)
 ![longobject storage](longobject_storage.png)
 
 注：这里的 30 是由 **PyLong_SHIFT** 决定的，64位系统中，**PyLong_SHIFT** 为30，否则 **PyLong_SHIFT** 为15
+
+## 整数对象的数值操作
+
+可以看到整数对象的数值操作较多，由于篇幅限制无法一一分析，这里只分析整数的部分方法
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5341)
+
+```c
+// Objects/longobject.c
+
+static PyNumberMethods long_as_number = {
+    (binaryfunc)long_add,       /*nb_add   加法 */
+    (binaryfunc)long_sub,       /*nb_subtract  减法 */
+    (binaryfunc)long_mul,       /*nb_multiply    乘法 */
+    long_mod,                   /*nb_remainder 取余 */
+    long_divmod,                /*nb_divmod */
+    long_pow,                   /*nb_power 求幂 */
+    (unaryfunc)long_neg,        /*nb_negative */
+    (unaryfunc)long_long,       /*tp_positive */
+    (unaryfunc)long_abs,        /*tp_absolute 绝对值 */
+    (inquiry)long_bool,         /*tp_bool 求bool值 */
+    (unaryfunc)long_invert,     /*nb_invert 反转 */
+    long_lshift,                /*nb_lshift 逻辑左移 */
+    (binaryfunc)long_rshift,    /*nb_rshift 逻辑右移 */
+    long_and,                   /*nb_and 与操作 */
+    long_xor,                   /*nb_xor 异或 */
+    long_or,                    /*nb_or 或操作 */
+    long_long,                  /*nb_int*/
+    0,                          /*nb_reserved*/
+    long_float,                 /*nb_float*/
+    0,                          /* nb_inplace_add */
+    0,                          /* nb_inplace_subtract */
+    0,                          /* nb_inplace_multiply */
+    0,                          /* nb_inplace_remainder */
+    0,                          /* nb_inplace_power */
+    0,                          /* nb_inplace_lshift */
+    0,                          /* nb_inplace_rshift */
+    0,                          /* nb_inplace_and */
+    0,                          /* nb_inplace_xor */
+    0,                          /* nb_inplace_or */
+    long_div,                   /* nb_floor_divide */
+    long_true_divide,           /* nb_true_divide */
+    0,                          /* nb_inplace_floor_divide */
+    0,                          /* nb_inplace_true_divide */
+    long_long,                  /* nb_index */
+};
+```
+
+### 整数相加
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L2990)
+
+```c
+// Objects/longobject.c
+
+/* Add the absolute values of two integers. */
+
+static PyLongObject *
+x_add(PyLongObject *a, PyLongObject *b)
+{
+    Py_ssize_t size_a = Py_ABS(Py_SIZE(a)), size_b = Py_ABS(Py_SIZE(b));
+    PyLongObject *z;
+    Py_ssize_t i;
+    digit carry = 0;
+
+    /* Ensure a is the larger of the two: */
+    // 确保 a 大于 b
+    if (size_a < size_b) {
+        { PyLongObject *temp = a; a = b; b = temp; }
+        { Py_ssize_t size_temp = size_a;
+            size_a = size_b;
+            size_b = size_temp; }
+    }
+    z = _PyLong_New(size_a+1);
+    if (z == NULL)
+        return NULL;
+    for (i = 0; i < size_b; ++i) {
+        carry += a->ob_digit[i] + b->ob_digit[i];
+        z->ob_digit[i] = carry & PyLong_MASK;
+        carry >>= PyLong_SHIFT;
+    }
+    for (; i < size_a; ++i) {
+        carry += a->ob_digit[i];
+        z->ob_digit[i] = carry & PyLong_MASK;
+        carry >>= PyLong_SHIFT;
+    }
+    z->ob_digit[i] = carry;
+    return long_normalize(z);
+}
+
+/* Subtract the absolute values of two integers. */
+
+static PyLongObject *
+x_sub(PyLongObject *a, PyLongObject *b)
+{
+    Py_ssize_t size_a = Py_ABS(Py_SIZE(a)), size_b = Py_ABS(Py_SIZE(b));
+    PyLongObject *z;
+    Py_ssize_t i;
+    int sign = 1;
+    digit borrow = 0;
+
+    /* Ensure a is the larger of the two: */
+    // 确保 a 大于 b
+    if (size_a < size_b) {
+        sign = -1;
+        { PyLongObject *temp = a; a = b; b = temp; }
+        { Py_ssize_t size_temp = size_a;
+            size_a = size_b;
+            size_b = size_temp; }
+    }
+    else if (size_a == size_b) {
+        /* Find highest digit where a and b differ: */
+        // 找到最高位 a 与 b的差异
+        i = size_a;
+        while (--i >= 0 && a->ob_digit[i] == b->ob_digit[i])
+            ;
+        if (i < 0)
+            return (PyLongObject *)PyLong_FromLong(0);
+        if (a->ob_digit[i] < b->ob_digit[i]) {
+            sign = -1;
+            { PyLongObject *temp = a; a = b; b = temp; }
+        }
+        size_a = size_b = i+1;
+    }
+    z = _PyLong_New(size_a);
+    if (z == NULL)
+        return NULL;
+    for (i = 0; i < size_b; ++i) {
+        /* The following assumes unsigned arithmetic
+           works module 2**N for some N>PyLong_SHIFT. */
+        borrow = a->ob_digit[i] - b->ob_digit[i] - borrow;
+        z->ob_digit[i] = borrow & PyLong_MASK;
+        borrow >>= PyLong_SHIFT;
+        borrow &= 1; /* Keep only one sign bit 只保留一位符号位 */
+    }
+    for (; i < size_a; ++i) {
+        borrow = a->ob_digit[i] - borrow;
+        z->ob_digit[i] = borrow & PyLong_MASK;
+        borrow >>= PyLong_SHIFT;
+        borrow &= 1; /* Keep only one sign bit */
+    }
+    assert(borrow == 0);
+    if (sign < 0) {
+        Py_SIZE(z) = -Py_SIZE(z);
+    }
+    return long_normalize(z);
+}
+
+static PyObject *
+long_add(PyLongObject *a, PyLongObject *b)
+{
+    PyLongObject *z;
+
+    CHECK_BINOP(a, b);
+
+    if (Py_ABS(Py_SIZE(a)) <= 1 && Py_ABS(Py_SIZE(b)) <= 1) {
+        return PyLong_FromLong(MEDIUM_VALUE(a) + MEDIUM_VALUE(b));
+    }
+    if (Py_SIZE(a) < 0) {
+        if (Py_SIZE(b) < 0) {
+            z = x_add(a, b);
+            if (z != NULL) {
+                /* x_add received at least one multiple-digit int,
+                   and thus z must be a multiple-digit int.
+                   That also means z is not an element of
+                   small_ints, so negating it in-place is safe. */
+                assert(Py_REFCNT(z) == 1);
+                Py_SIZE(z) = -(Py_SIZE(z));
+            }
+        }
+        else
+            z = x_sub(b, a);
+    }
+    else {
+        if (Py_SIZE(b) < 0)
+            z = x_sub(a, b);
+        else
+            z = x_add(a, b);
+    }
+    return (PyObject *)z;
+}
+```
+
+可以看到整数的加法运算函数long_add根据 a、b的ob_size 又细分为两个函数做处理 x_add 和 x_sub
+
+加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry做进位处理，
+然后做处理a对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保ob_digit[abs(ob_size)-1]不为零，其过程大致如下图
+
+![longobject x_add](longobject_x_add.png)
+
+减法运算函数 x_sub 的过程大致如下图
+
+![longobject x_sub](longobject_x_sub.png)
+
+### 整数相乘
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3547)
+
+```c
+// Objects/longobject.c
+static PyObject *
+long_mul(PyLongObject *a, PyLongObject *b)
+{
+    PyLongObject *z;
+
+    CHECK_BINOP(a, b);
+
+    /* fast path for single-digit multiplication */
+    if (Py_ABS(Py_SIZE(a)) <= 1 && Py_ABS(Py_SIZE(b)) <= 1) {
+        stwodigits v = (stwodigits)(MEDIUM_VALUE(a)) * MEDIUM_VALUE(b);
+        return PyLong_FromLongLong((long long)v);
+    }
+
+    z = k_mul(a, b);
+    /* Negate if exactly one of the inputs is negative. */
+    if (((Py_SIZE(a) ^ Py_SIZE(b)) < 0) && z) {
+        _PyLong_Negate(&z);
+        if (z == NULL)
+            return NULL;
+    }
+    return (PyObject *)z;
+}
+```
+
+k_mul函数 [源文件](
+https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3268)
+
+`k_mul`函数是一种快速乘法[Karatsuba算法](https://www.wikiwand.com/zh-hans/Karatsuba算法)的实现
