@@ -61,8 +61,8 @@ gitbook serve
     - [ ] Python 整数对象
     - [ ] Python 字符串 对象
     - [ ] Python List 对象
-    - [ ] Python Dict 对象
-    - [ ] Python Set 对象
+    - [x] Python Dict 对象
+    - [x] Python Set 对象
     - [ ] 实现简版 Python
 - [ ] Python 虚拟机
     - [ ] Python 编译结果
