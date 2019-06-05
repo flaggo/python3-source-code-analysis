@@ -1,13 +1,14 @@
-#### python集合
+# python集合
 
 set是无序且不重复的集合，是可变的，通常用来从列表中删除重复项以及计算数学运算，如交集、并集、差分和对称差分等集合操作。set 支持 x in set, len(set),和 for x in set。作为一个无序的集合，set不记录元素位置或者插入点。因此，sets不支持 indexing, 或其它类序列的操作。
 
-#### python集合概述
+## python集合概述
 
 在set中，对应的set的值的存储是通过结构setentry来保存数据值的；
 
-```
+源文件：[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L26)
 
+```
 typedef struct {
     PyObject *key;
     Py_hash_t hash;             /* Cached hash code of the key */
@@ -15,6 +16,8 @@ typedef struct {
 ```
 
 key就是保存的数据，hash就是保存的数据的hash，便于查找，set也是基于hash表来实现。对应的setentry所对应的set的数据结构如下；
+
+源文件：[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L42)
 
 ```
 
@@ -48,7 +51,7 @@ typedef struct {
 
 ![内存图片](./python_set.png)
 
-#### python集合(set)示例
+## python集合(set)示例
 
 示例脚本如下：
 
@@ -115,9 +118,11 @@ python -m dis set_test.py
 
 通过该字节码指令可知，创建set调用了BUILD_SET指令，初始化完成之后，就调用set的add方法添加元素，调用remove删除元素,调用update来更新集合，通过union来合并集合。接下来就详细分析一下相关的操作流程。
 
-##### set的创建与初始化
+## set的创建与初始化
 
 查找BUILD_SET的虚拟机执行函数如下；
+
+源文件：[Python/ceval.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Python/ceval.c#L2318)
 
 ```
 // Python/ceval.c
@@ -146,6 +151,8 @@ python -m dis set_test.py
 ```
 
 此时继续查看PySet_New函数的执行流程；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2286)
 
 
 ```
@@ -188,9 +195,11 @@ make_new_set(PyTypeObject *type, PyObject *iterable)
 
 从PySet_New的执行流程可知，字典的初始化过程就是初始化相关数据结构。
 
-##### set的插入
+## set的插入
 
 在本例的初始化过程中，由于传入了初始值1,2，所以会在执行字节码指令的时候，执行PySet_Add，该函数的本质与set_a.add(3)本质都调用了更底层set_add_key函数；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2338)
 
 ```
 
@@ -207,6 +216,8 @@ PySet_Add(PyObject *anyset, PyObject *key)
 ```
 
 继续查看set_add_key函数的执行过程；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L419)
 
 ```
 static int
@@ -225,6 +236,8 @@ set_add_key(PySetObject *so, PyObject *key)
 ```
 
 该函数主要就是检查传入的key是否能够被hash，如果能够被hash则直接返回，如果能被hash则继续调用set_add_entry函数将值加入到set中；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L136)
 
 ```
 
@@ -375,9 +388,11 @@ s.add(7)  // index = 9 & 7 = 1
 
 大致的set的插入过程执行完毕。
 
-##### set的删除
+## set的删除
 
 set的删除操作主要集中在set_remove()函数上，如下示例；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L1921)
 
 ```
 
@@ -411,6 +426,8 @@ set_remove(PySetObject *so, PyObject *key)
 
 此时就会调用set_discard_key方法来讲对应的entry设置为dummy；set_discard_key方法如下；
 
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L447)
+
 ```
 
 static int
@@ -429,6 +446,8 @@ set_discard_key(PySetObject *so, PyObject *key)
 ```
 
 该函数主要就是做了检查key是否可用hash的检查，此时如果可用hash则调用set_discard_entry方法；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L400)
 
 ```
 
@@ -454,10 +473,11 @@ set_discard_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 
 此时就是查找该值，如果找到该值并将该值设置为dummy，并且将used值减１，此处没有减去fill的数量，从此处可知，fill包括所有曾经申请过的数量。
 
-
-##### set的resize
+## set的resize
 
 set的resize主要依靠set_table_reseize函数来实现；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L302)
 
 ```
 static int
@@ -542,6 +562,8 @@ set_table_resize(PySetObject *so, Py_ssize_t minused)
 ```
 
 主要是检查是否table相同并且需要重新resize的值，然后判断是否fill与used相同，如果相同则全部插入，如果不同，则遍历旧table讲不为空并且不为dummy的值插入到新表中；
+
+源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L267)
 
 ```
 static void
