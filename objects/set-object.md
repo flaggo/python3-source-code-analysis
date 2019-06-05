@@ -6,7 +6,7 @@ set是无序且不重复的集合，是可变的，通常用来从列表中删�
 
 在set中，对应的set的值的存储是通过结构setentry来保存数据值的；
 
-源文件：[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L26)
+`源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L26)
 
 ```
 typedef struct {
@@ -17,7 +17,7 @@ typedef struct {
 
 key就是保存的数据，hash就是保存的数据的hash，便于查找，set也是基于hash表来实现。对应的setentry所对应的set的数据结构如下；
 
-源文件：[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L42)
+`源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L42)
 
 ```
 
@@ -122,7 +122,7 @@ python -m dis set_test.py
 
 查找BUILD_SET的虚拟机执行函数如下；
 
-源文件：[Python/ceval.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Python/ceval.c#L2318)
+`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Python/ceval.c#L2318)
 
 ```
 // Python/ceval.c
@@ -152,7 +152,7 @@ python -m dis set_test.py
 
 此时继续查看PySet_New函数的执行流程；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2286)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2286)
 
 
 ```
@@ -199,7 +199,7 @@ make_new_set(PyTypeObject *type, PyObject *iterable)
 
 在本例的初始化过程中，由于传入了初始值1,2，所以会在执行字节码指令的时候，执行PySet_Add，该函数的本质与set_a.add(3)本质都调用了更底层set_add_key函数；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2338)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2338)
 
 ```
 
@@ -217,7 +217,7 @@ PySet_Add(PyObject *anyset, PyObject *key)
 
 继续查看set_add_key函数的执行过程；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L419)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L419)
 
 ```
 static int
@@ -237,7 +237,7 @@ set_add_key(PySetObject *so, PyObject *key)
 
 该函数主要就是检查传入的key是否能够被hash，如果能够被hash则直接返回，如果能被hash则继续调用set_add_entry函数将值加入到set中；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L136)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L136)
 
 ```
 
@@ -392,7 +392,7 @@ s.add(7)  // index = 9 & 7 = 1
 
 set的删除操作主要集中在set_remove()函数上，如下示例；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L1921)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L1921)
 
 ```
 
@@ -426,7 +426,7 @@ set_remove(PySetObject *so, PyObject *key)
 
 此时就会调用set_discard_key方法来讲对应的entry设置为dummy；set_discard_key方法如下；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L447)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L447)
 
 ```
 
@@ -447,7 +447,7 @@ set_discard_key(PySetObject *so, PyObject *key)
 
 该函数主要就是做了检查key是否可用hash的检查，此时如果可用hash则调用set_discard_entry方法；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L400)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L400)
 
 ```
 
@@ -477,7 +477,7 @@ set_discard_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 
 set的resize主要依靠set_table_reseize函数来实现；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L302)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L302)
 
 ```
 static int
@@ -563,7 +563,7 @@ set_table_resize(PySetObject *so, Py_ssize_t minused)
 
 主要是检查是否table相同并且需要重新resize的值，然后判断是否fill与used相同，如果相同则全部插入，如果不同，则遍历旧table讲不为空并且不为dummy的值插入到新表中；
 
-源文件：[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L267)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L267)
 
 ```
 static void
