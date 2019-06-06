@@ -109,6 +109,107 @@ PyTypeObject PyLong_Type = {
 };
 ```
 
+## 创建整数对象
+
+从 PyLong_Type 可以看出，创建一个整数对象的入口函数为 long_new
+
+`源文件：`[Objects/clinic/longobject.c.h](https://github.com/python/cpython/blob/v3.7.0/Objects/clinic/longobject.c.h#L0)
+
+```c
+// Objects/clinic/longobject.c.h
+/*[clinic input]
+preserve
+[clinic start generated code]*/
+
+static PyObject *
+long_new_impl(PyTypeObject *type, PyObject *x, PyObject *obase);
+
+static PyObject *
+long_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
+{
+    PyObject *return_value = NULL;
+    static const char * const _keywords[] = {"", "base", NULL};
+    static _PyArg_Parser _parser = {"|OO:int", _keywords, 0};
+    PyObject *x = NULL;
+    PyObject *obase = NULL;
+
+    if (!_PyArg_ParseTupleAndKeywordsFast(args, kwargs, &_parser,
+        &x, &obase)) {
+        goto exit;
+    }
+    return_value = long_new_impl(type, x, obase);
+
+exit:
+    return return_value;
+}
+```
+
+具体实现在 long_new_impl `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L4785)
+
+```c
+// Objects/longobject.c
+
+/*[clinic input]
+@classmethod
+int.__new__ as long_new
+    x: object(c_default="NULL") = 0
+    /
+    base as obase: object(c_default="NULL") = 10
+[clinic start generated code]*/
+
+static PyObject *
+long_new_impl(PyTypeObject *type, PyObject *x, PyObject *obase)
+/*[clinic end generated code: output=e47cfe777ab0f24c input=81c98f418af9eb6f]*/
+{
+    Py_ssize_t base;
+
+    if (type != &PyLong_Type)
+        return long_subtype_new(type, x, obase); /* Wimp out */
+    if (x == NULL) {
+        if (obase != NULL) {
+            PyErr_SetString(PyExc_TypeError,
+                            "int() missing string argument");
+            return NULL;
+        }
+        return PyLong_FromLong(0L);
+    }
+    if (obase == NULL)
+        return PyNumber_Long(x);
+
+    base = PyNumber_AsSsize_t(obase, NULL);
+    if (base == -1 && PyErr_Occurred())
+        return NULL;
+    if ((base != 0 && base < 2) || base > 36) {
+        PyErr_SetString(PyExc_ValueError,
+                        "int() base must be >= 2 and <= 36, or 0");
+        return NULL;
+    }
+
+    if (PyUnicode_Check(x))
+        return PyLong_FromUnicodeObject(x, (int)base);
+    else if (PyByteArray_Check(x) || PyBytes_Check(x)) {
+        char *string;
+        if (PyByteArray_Check(x))
+            string = PyByteArray_AS_STRING(x);
+        else
+            string = PyBytes_AS_STRING(x);
+        return _PyLong_FromBytes(string, Py_SIZE(x), (int)base);
+    }
+    else {
+        PyErr_SetString(PyExc_TypeError,
+                        "int() can't convert non-string with explicit base");
+        return NULL;
+    }
+}
+```
+
+从 long_new_impl 函数可以看出有如下几种情况
+
+-  x == NULL 且 obase != NULL 调用 PyLong_FromLong
+- obase 为NULL 调用 PyNumber_Long
+- x 和 obase 都不为 NULL
+    - PyUnicode 调用PyLong_FromUnicodeObject，最终调用PyLong_FromString
+    - PyByteArray/PyBytes 调用_PyLong_FromBytes，最终调用PyLong_FromString
 
 ## 小整数对象
 
@@ -293,7 +394,7 @@ print(num)
 
 ## 整数对象的数值操作
 
-可以看到整数对象的数值操作较多，由于篇幅限制无法一一分析，这里只分析整数的部分方法
+可以看到整数对象的数值操作较多，由于篇幅限制无法一一分析，这里只分析整数的部分操作
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5341)
 
@@ -340,13 +441,54 @@ static PyNumberMethods long_as_number = {
 
 ### 整数相加
 
-`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L2990)
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3081)
+
+```c
+// Objects/longobject.c
+
+static PyObject *
+long_add(PyLongObject *a, PyLongObject *b)
+{
+    PyLongObject *z;
+
+    CHECK_BINOP(a, b);
+
+    if (Py_ABS(Py_SIZE(a)) <= 1 && Py_ABS(Py_SIZE(b)) <= 1) {
+        return PyLong_FromLong(MEDIUM_VALUE(a) + MEDIUM_VALUE(b));
+    }
+    if (Py_SIZE(a) < 0) {
+        if (Py_SIZE(b) < 0) {
+            z = x_add(a, b);
+            if (z != NULL) {
+                /* x_add received at least one multiple-digit int,
+                   and thus z must be a multiple-digit int.
+                   That also means z is not an element of
+                   small_ints, so negating it in-place is safe. */
+                assert(Py_REFCNT(z) == 1);
+                Py_SIZE(z) = -(Py_SIZE(z));
+            }
+        }
+        else
+            z = x_sub(b, a);
+    }
+    else {
+        if (Py_SIZE(b) < 0)
+            z = x_sub(a, b);
+        else
+            z = x_add(a, b);
+    }
+    return (PyObject *)z;
+}
+```
+
+可以看到整数的加法运算函数long_add根据 a、b的ob_size 又细分为两个函数 (x_add 和 x_sub) 做处理
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L2991)
 
 ```c
 // Objects/longobject.c
 
 /* Add the absolute values of two integers. */
-
 static PyLongObject *
 x_add(PyLongObject *a, PyLongObject *b)
 {
@@ -379,6 +521,17 @@ x_add(PyLongObject *a, PyLongObject *b)
     z->ob_digit[i] = carry;
     return long_normalize(z);
 }
+```
+
+加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry做进位处理，然后处理a对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保ob_digit[abs(ob_size)-1]不为零，这与普通四则运算的加法运算相同，只不过进位单元不同而已
+
+![longobject x_add](longobject_x_add.png)
+
+
+`源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3025)
+
+```c
+// Objects/longobject.c
 
 /* Subtract the absolute values of two integers. */
 
@@ -423,7 +576,7 @@ x_sub(PyLongObject *a, PyLongObject *b)
         borrow = a->ob_digit[i] - b->ob_digit[i] - borrow;
         z->ob_digit[i] = borrow & PyLong_MASK;
         borrow >>= PyLong_SHIFT;
-        borrow &= 1; /* Keep only one sign bit 只保留一位符号位 */
+        borrow &= 1; /* Keep only one sign bit */
     }
     for (; i < size_a; ++i) {
         borrow = a->ob_digit[i] - borrow;
@@ -437,50 +590,10 @@ x_sub(PyLongObject *a, PyLongObject *b)
     }
     return long_normalize(z);
 }
-
-static PyObject *
-long_add(PyLongObject *a, PyLongObject *b)
-{
-    PyLongObject *z;
-
-    CHECK_BINOP(a, b);
-
-    if (Py_ABS(Py_SIZE(a)) <= 1 && Py_ABS(Py_SIZE(b)) <= 1) {
-        return PyLong_FromLong(MEDIUM_VALUE(a) + MEDIUM_VALUE(b));
-    }
-    if (Py_SIZE(a) < 0) {
-        if (Py_SIZE(b) < 0) {
-            z = x_add(a, b);
-            if (z != NULL) {
-                /* x_add received at least one multiple-digit int,
-                   and thus z must be a multiple-digit int.
-                   That also means z is not an element of
-                   small_ints, so negating it in-place is safe. */
-                assert(Py_REFCNT(z) == 1);
-                Py_SIZE(z) = -(Py_SIZE(z));
-            }
-        }
-        else
-            z = x_sub(b, a);
-    }
-    else {
-        if (Py_SIZE(b) < 0)
-            z = x_sub(a, b);
-        else
-            z = x_add(a, b);
-    }
-    return (PyObject *)z;
-}
 ```
 
-可以看到整数的加法运算函数long_add根据 a、b的ob_size 又细分为两个函数做处理 x_add 和 x_sub
-
-加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry做进位处理，
-然后做处理a对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保ob_digit[abs(ob_size)-1]不为零，其过程大致如下图
-
-![longobject x_add](longobject_x_add.png)
-
-减法运算函数 x_sub 的过程大致如下图
+与普通四则运算减法相同，数不够大则向高一位借位，
+减法运算函数 x_sub 的示例图如下，注：PyLong_SHIFT为30
 
 ![longobject x_sub](longobject_x_sub.png)
 
@@ -514,7 +627,11 @@ long_mul(PyLongObject *a, PyLongObject *b)
 }
 ```
 
-k_mul函数 [源文件](
+k_mul函数是一种快速乘法 [源文件](
 https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3268)
 
-`k_mul`函数是一种快速乘法[Karatsuba算法](https://www.wikiwand.com/zh-hans/Karatsuba算法)的实现
+>  Karatsuba的算法主要是用于两个大数的乘法，极大提高了运算效率，相较于普通乘法降低了复杂度，并在其中运用了递归的思想。
+> 基本的原理和做法是将位数很多的两个大数x和y分成位数较少的数，每个数都是原来x和y位数的一半。
+> 这样处理之后，简化为做三次乘法，并附带少量的加法操作和移位操作。
+
+具体可以看wiki [Karatsuba算法](https://www.wikiwand.com/zh-hans/Karatsuba算法)的实现
