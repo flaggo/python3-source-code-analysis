@@ -58,9 +58,9 @@ gitbook serve
     - [x] 修改 Python 源码
 - [ ] Python 内建对象
     - [x] Python 对象初探
-    - [ ] Python 整数对象
+    - [x] Python 整数对象
     - [ ] Python 字符串 对象
-    - [ ] Python List 对象
+    - [x] Python List 对象
     - [x] Python Dict 对象
     - [x] Python Set 对象
     - [ ] 实现简版 Python

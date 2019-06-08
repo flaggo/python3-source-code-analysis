@@ -8,7 +8,7 @@ set是无序且不重复的集合，是可变的，通常用来从列表中删�
 
 `源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L26)
 
-```
+```c
 typedef struct {
     PyObject *key;
     Py_hash_t hash;             /* Cached hash code of the key */
@@ -19,8 +19,7 @@ key就是保存的数据，hash就是保存的数据的hash，便于查找，set
 
 `源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L42)
 
-```
-
+```c
 typedef struct {
     PyObject_HEAD
 
@@ -39,7 +38,7 @@ typedef struct {
      * runtime null-tests.
      */
     setentry *table;                                                    // 保存数据的数组数组指针
-    Py_hash_t hash;             /* Only used by frozenset objects */    
+    Py_hash_t hash;             /* Only used by frozenset objects */
     Py_ssize_t finger;          /* Search finger for pop() */
 
     setentry smalltable[PySet_MINSIZE];                                 // 保存数据的数组　默认初始化为8个元素，通过table指向
@@ -55,14 +54,13 @@ typedef struct {
 
 示例脚本如下：
 
-```
+```python
 set_a = {1,2}　
 set_a.add(3)
 set_a.add(4)
 set_a.remove(1)
 set_a.update({3,})
 set_a.union({1,5})
-
 ```
 
 通过python反汇编获取该脚本的字节码；
@@ -73,7 +71,7 @@ python -m dis set_test.py
 
 输出的字节码如下所示；
 
-```
+```shell
   1           0 LOAD_CONST               0 (1)
               3 LOAD_CONST               1 (2)
               6 BUILD_SET                2
@@ -83,26 +81,26 @@ python -m dis set_test.py
              15 LOAD_ATTR                1 (add)
              18 LOAD_CONST               2 (3)
              21 CALL_FUNCTION            1
-             24 POP_TOP             
+             24 POP_TOP
 
   3          25 LOAD_NAME                0 (set_a)
              28 LOAD_ATTR                1 (add)
              31 LOAD_CONST               3 (4)
              34 CALL_FUNCTION            1
-             37 POP_TOP             
+             37 POP_TOP
 
   4          38 LOAD_NAME                0 (set_a)
              41 LOAD_ATTR                2 (remove)
              44 LOAD_CONST               0 (1)
              47 CALL_FUNCTION            1
-             50 POP_TOP             
+             50 POP_TOP
 
   5          51 LOAD_NAME                0 (set_a)
              54 LOAD_ATTR                3 (update)
              57 LOAD_CONST               2 (3)
              60 BUILD_SET                1
              63 CALL_FUNCTION            1
-             66 POP_TOP             
+             66 POP_TOP
 
   6          67 LOAD_NAME                0 (set_a)
              70 LOAD_ATTR                4 (union)
@@ -110,7 +108,7 @@ python -m dis set_test.py
              76 LOAD_CONST               4 (5)
              79 BUILD_SET                2
              82 CALL_FUNCTION            1
-             85 POP_TOP             
+             85 POP_TOP
              86 LOAD_CONST               5 (None)
              89 RETURN_VALUE
 ```
@@ -124,29 +122,29 @@ python -m dis set_test.py
 
 `源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Python/ceval.c#L2318)
 
-```
+```c
 // Python/ceval.c
 
-        TARGET(BUILD_SET) {
-            PyObject *set = PySet_New(NULL);             // 新建并初始化一个set
-            int err = 0;
-            int i;
-            if (set == NULL)
-                goto error;
-            for (i = oparg; i > 0; i--) {                // 将传入初始化的参数传入
-                PyObject *item = PEEK(i);
-                if (err == 0)
-                    err = PySet_Add(set, item);          // 并依次对set进行添加操作
-                Py_DECREF(item);
-            }
-            STACKADJ(-oparg);　　　　　　　　　　　　　　　   // 移动弹栈
-            if (err != 0) {
-                Py_DECREF(set);
-                goto error;
-            }
-            PUSH(set);　　　　　　　　　　　　　　　　　　　　　// 讲set压栈
-            DISPATCH();　　　　　　　　　　　　　　　　　　　　// 执行下一条指令
+    TARGET(BUILD_SET) {
+        PyObject *set = PySet_New(NULL);             // 新建并初始化一个set
+        int err = 0;
+        int i;
+        if (set == NULL)
+            goto error;
+        for (i = oparg; i > 0; i--) {                // 将传入初始化的参数传入
+            PyObject *item = PEEK(i);
+            if (err == 0)
+                err = PySet_Add(set, item);          // 并依次对set进行添加操作
+            Py_DECREF(item);
         }
+        STACKADJ(-oparg);　　　　　　　　　　　　　　　   // 移动弹栈
+        if (err != 0) {
+            Py_DECREF(set);
+            goto error;
+        }
+        PUSH(set);　　　　　　　　　　　　　　　　　　　　　// 讲set压栈
+        DISPATCH();　　　　　　　　　　　　　　　　　　　　// 执行下一条指令
+    }
 
 ```
 
@@ -155,7 +153,7 @@ python -m dis set_test.py
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2286)
 
 
-```
+```c
 PyObject *
 PySet_New(PyObject *iterable)
 {
@@ -201,7 +199,7 @@ make_new_set(PyTypeObject *type, PyObject *iterable)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2338)
 
-```
+```c
 
 int
 PySet_Add(PyObject *anyset, PyObject *key)
@@ -219,7 +217,7 @@ PySet_Add(PyObject *anyset, PyObject *key)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L419)
 
-```
+```c
 static int
 set_add_key(PySetObject *so, PyObject *key)
 {
@@ -239,7 +237,7 @@ set_add_key(PySetObject *so, PyObject *key)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L136)
 
-```
+```c
 
 static int
 set_add_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
@@ -301,7 +299,7 @@ set_add_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
         if (i + LINEAR_PROBES <= mask) {　　　　　　　　　　　　　　                   // 检查当前索引值加上 ９小于当前mask
             for (j = 0 ; j < LINEAR_PROBES ; j++) {                               // 循环９次
                 entry++;                                                    　　　 // 向下一个位置
-                if (entry->hash == 0 && entry->key == NULL)　　　　　　　　　　　　　　// 如果找到当前hash为空或者key为空的则跳转到found_unused_or_dummy处执行 
+                if (entry->hash == 0 && entry->key == NULL)　　　　　　　　　　　　　　// 如果找到当前hash为空或者key为空的则跳转到found_unused_or_dummy处执行
                     goto found_unused_or_dummy;
                 if (entry->hash == hash) {　　                                     // 如果找到的hash值相同
                     PyObject *startkey = entry->key;                              // 获取该值
@@ -368,19 +366,19 @@ set_add_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 
 插入的概述如下,默认s初始化为空；
 
-```
+```python
 s.add(1)   // index = 1 & 7 = 1
 ```
 
 ![插入１](./set_insert_one.png)
 
-```
+```python
 s.add(2) // index = 2 & 7 = 2
 ```
 
 ![插入２](./set_insert_two.png)
 
-```
+```python
 s.add(7)  // index = 9 & 7 = 1
 ```
 
@@ -394,7 +392,7 @@ set的删除操作主要集中在set_remove()函数上，如下示例；
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L1921)
 
-```
+```c
 
 static PyObject *
 set_remove(PySetObject *so, PyObject *key)
@@ -428,7 +426,7 @@ set_remove(PySetObject *so, PyObject *key)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L447)
 
-```
+```c
 
 static int
 set_discard_key(PySetObject *so, PyObject *key)
@@ -449,7 +447,7 @@ set_discard_key(PySetObject *so, PyObject *key)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L400)
 
-```
+```c
 
 static int
 set_discard_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
@@ -479,7 +477,7 @@ set的resize主要依靠set_table_reseize函数来实现；
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L302)
 
-```
+```c
 static int
 set_table_resize(PySetObject *so, Py_ssize_t minused)
 {
@@ -501,7 +499,7 @@ set_table_resize(PySetObject *so, Py_ssize_t minused)
     /* Get space for a new table. */
     oldtable = so->table;　　　　　　　　　　　　　　　　　　          // 先获取旧的table
     assert(oldtable != NULL);
-    is_oldtable_malloced = oldtable != so->smalltable;          
+    is_oldtable_malloced = oldtable != so->smalltable;
 
     if (newsize == PySet_MINSIZE) {　　　　　　　　　　　　　　　　　　// 如果获取的新大小与PySet_MINSIZE的大小相同
         /* A large table is shrinking, or we can't get any smaller. */
@@ -565,7 +563,7 @@ set_table_resize(PySetObject *so, Py_ssize_t minused)
 
 `源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L267)
 
-```
+```c
 static void
 set_insert_clean(setentry *table, size_t mask, PyObject *key, Py_hash_t hash)
 {
@@ -577,7 +575,7 @@ set_insert_clean(setentry *table, size_t mask, PyObject *key, Py_hash_t hash)
     while (1) {
         entry = &table[i];                              // 获取当前entry
         if (entry->key == NULL)                         // 如果为空则跳转值found_null设置key与hash
-            goto found_null; 
+            goto found_null;
         if (i + LINEAR_PROBES <= mask) {                // 如果没有找到空值则通过该索引偏移9位去查找空余位置
             for (j = 0; j < LINEAR_PROBES; j++) {
                 entry++;
