@@ -1,0 +1,20 @@
+{
+  "scripts": {
+    "serve": "gitbook serve",
+    "build": "gitbook build"
+  },
+  "dependencies": {
+    "gitbook": "^2.6.9",
+    "gitbook-cli": "^2.3.2",
+    "gitbook-plugin-back-to-top-button": "^0.1.4",
+    "gitbook-plugin-edit-link": "^2.0.2",
+    "gitbook-plugin-github": "^2.0.0",
+    "gitbook-plugin-github-buttons": "^2.1.0",
+    "gitbook-plugin-page-toc-button": "^0.1.1",
+    "gitbook-plugin-prism": "^2.4.0",
+    "gitbook-plugin-search-plus": "0.0.11",
+    "gitbook-plugin-sharing-plus": "0.0.2",
+    "gitbook-plugin-splitter": "0.0.8",
+    "gitbook-plugin-tbfed-pagefooter": "0.0.1"
+  }
+}
