@@ -18,7 +18,6 @@ CPython3 只保留了 `PyLongObject`
 typedef struct _longobject PyLongObject; /* Revealed in longintrepr.h */
 ```
 
-
 `源文件：`[Include/longintrepr.h](https://github.com/python/cpython/blob/v3.7.0/Include/longintrepr.h#L85)
 
 ```c
@@ -56,7 +55,6 @@ struct _longobject {
 ```
 
 从源码可以看出 PyLongObject 是变长对象
-
 
 ## 类型对象 PyLong_Type
 
@@ -205,11 +203,11 @@ long_new_impl(PyTypeObject *type, PyObject *x, PyObject *obase)
 
 从 long_new_impl 函数可以看出有如下几种情况
 
--  x == NULL 且 obase != NULL 调用 PyLong_FromLong
-- obase 为NULL 调用 PyNumber_Long
+- x == NULL 且 obase != NULL 调用 PyLong_FromLong
+- obase 为 NULL 调用 PyNumber_Long
 - x 和 obase 都不为 NULL
-    - PyUnicode 调用PyLong_FromUnicodeObject，最终调用PyLong_FromString
-    - PyByteArray/PyBytes 调用_PyLong_FromBytes，最终调用PyLong_FromString
+  - PyUnicode 调用 PyLong_FromUnicodeObject，最终调用 PyLong_FromString
+  - PyByteArray/PyBytes 调用\_PyLong_FromBytes，最终调用 PyLong_FromString
 
 ## 小整数对象
 
@@ -343,6 +341,7 @@ _PyLong_Init(void)
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L1581)
 
 在 **long_to_decimal_string_internal**中添加如下代码并重新编译安装
+
 ```c
 // Objects/longobject.c
 static int
@@ -372,7 +371,7 @@ long_to_decimal_string_internal(PyObject *aa,
 }
 ```
 
-编译安装后进入python解释器输入如下代码
+编译安装后进入 python 解释器输入如下代码
 
 ```python
 num = 9223372043297226753
@@ -388,9 +387,9 @@ print(num)
 
 如下图所示
 
-![longobject storage](longobject_storage.png)
+![longobject storage](longo-storage.png)
 
-注：这里的 30 是由 **PyLong_SHIFT** 决定的，64位系统中，**PyLong_SHIFT** 为30，否则 **PyLong_SHIFT** 为15
+注：这里的 30 是由 **PyLong_SHIFT** 决定的，64 位系统中，**PyLong_SHIFT** 为 30，否则 **PyLong_SHIFT** 为 15
 
 ## 整数对象的数值操作
 
@@ -481,7 +480,7 @@ long_add(PyLongObject *a, PyLongObject *b)
 }
 ```
 
-可以看到整数的加法运算函数long_add根据 a、b的ob_size 又细分为两个函数 (x_add 和 x_sub) 做处理
+可以看到整数的加法运算函数 long_add 根据 a、b 的 ob_size 又细分为两个函数 (x_add 和 x_sub) 做处理
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L2991)
 
@@ -523,10 +522,9 @@ x_add(PyLongObject *a, PyLongObject *b)
 }
 ```
 
-加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry做进位处理，然后处理a对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保ob_digit[abs(ob_size)-1]不为零，这与普通四则运算的加法运算相同，只不过进位单元不同而已
+加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry 做进位处理，然后处理 a 对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保 ob_digit[abs(ob_size)-1]不为零，这与普通四则运算的加法运算相同，只不过进位单元不同而已
 
-![longobject x_add](longobject_x_add.png)
-
+![longobject x_add](long-x-add.png)
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3025)
 
@@ -593,9 +591,9 @@ x_sub(PyLongObject *a, PyLongObject *b)
 ```
 
 与普通四则运算减法相同，数不够大则向高一位借位，
-减法运算函数 x_sub 的示例图如下，注：PyLong_SHIFT为30
+减法运算函数 x_sub 的示例图如下，注：PyLong_SHIFT 为 30
 
-![longobject x_sub](longobject_x_sub.png)
+![longobject x_sub](long-x-sub.png)
 
 ### 整数相乘
 
@@ -627,11 +625,10 @@ long_mul(PyLongObject *a, PyLongObject *b)
 }
 ```
 
-k_mul函数是一种快速乘法 [源文件](
-https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3268)
+k_mul 函数是一种快速乘法 [源文件](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3268)
 
->  Karatsuba的算法主要是用于两个大数的乘法，极大提高了运算效率，相较于普通乘法降低了复杂度，并在其中运用了递归的思想。
-> 基本的原理和做法是将位数很多的两个大数x和y分成位数较少的数，每个数都是原来x和y位数的一半。
+> Karatsuba 的算法主要是用于两个大数的乘法，极大提高了运算效率，相较于普通乘法降低了复杂度，并在其中运用了递归的思想。
+> 基本的原理和做法是将位数很多的两个大数 x 和 y 分成位数较少的数，每个数都是原来 x 和 y 位数的一半。
 > 这样处理之后，简化为做三次乘法，并附带少量的加法操作和移位操作。
 
-具体可以看wiki [Karatsuba算法](https://www.wikiwand.com/zh-hans/Karatsuba算法)的实现
+具体可以看 wiki [Karatsuba 算法](https://www.wikiwand.com/zh-hans/Karatsuba算法)的实现

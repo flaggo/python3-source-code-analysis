@@ -1,9 +1,10 @@
-# Python字典
+# Python 字典
 
-Dictionary object implementation using a hash table ，通过描述可知，python的字典就是实现了一个hash表。
+Dictionary object implementation using a hash table ，通过描述可知，python 的字典就是实现了一个 hash 表。
 
-## Python字典概述
-在python的字典中，一个键值对的对应保存就是PyDictEntry类型来保存；
+## Python 字典概述
+
+在 python 的字典中，一个键值对的对应保存就是 PyDictEntry 类型来保存；
 
 `源文件：`[Include/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L1)
 
@@ -17,31 +18,29 @@ typedef struct {
 } PyDictKeyEntry;　
 ```
 
-其中，me_hash就是哈希生成的值，me_key就是对应的key值，me_value就是对应的值。
-在python中，在一个PyDictObject对象的变化过程中，entry的状态会在不同的状态间转换。基本上在如下四种状态中转换：Unused、Active、Dummy和Pending。
+其中，me_hash 就是哈希生成的值，me_key 就是对应的 key 值，me_value 就是对应的值。
+在 python 中，在一个 PyDictObject 对象的变化过程中，entry 的状态会在不同的状态间转换。基本上在如下四种状态中转换：Unused、Active、Dummy 和 Pending。
 
-1. Unused:没有插入任何一个获取的key与value，并且在次之前也没有存储任何的key,value，每一个entry在初始化的时候都会处于这种状态，并且Unused会被里面切换到Active态，当有key插入，这是就是entry初始化的状态。
-2. Active:当index>=0时，me_key不为空并且me_value不为空，保存了一个键值对，Active可以转变为Dummy或者Pending状态，当一个健被删除的时候，这只会在me_value不为空的时候出现。
-3. Dummy:先前保存了一个Active的键值对，但是这个键值对被删除了并且一个活跃的键值对还没有填入该位置，Dummy可以转变为Active当删除的时候，Dummy的位置不能被重新使用，一旦发生碰撞，探针序列就无法知道这对键值对曾是活跃的键值对。
+1. Unused:没有插入任何一个获取的 key 与 value，并且在次之前也没有存储任何的 key,value，每一个 entry 在初始化的时候都会处于这种状态，并且 Unused 会被里面切换到 Active 态，当有 key 插入，这是就是 entry 初始化的状态。
+2. Active:当 index>=0 时，me_key 不为空并且 me_value 不为空，保存了一个键值对，Active 可以转变为 Dummy 或者 Pending 状态，当一个健被删除的时候，这只会在 me_value 不为空的时候出现。
+3. Dummy:先前保存了一个 Active 的键值对，但是这个键值对被删除了并且一个活跃的键值对还没有填入该位置，Dummy 可以转变为 Active 当删除的时候，Dummy 的位置不能被重新使用，一旦发生碰撞，探针序列就无法知道这对键值对曾是活跃的键值对。
 4. Pending:索引>=0，键！=空，值=空（仅拆分），尚未插入到拆分表中。
-
 
 ## 字典的两种类型
 
-python的字典类型中包含了两种联合字典（split-table dictionaries)与分离字典(combined-table dictonaries)。详细的信息可查看有关dict的描述[pep-0412](<https://www.python.org/dev/peps/pep-0412/>)。
+python 的字典类型中包含了两种联合字典（split-table dictionaries)与分离字典(combined-table dictonaries)。详细的信息可查看有关 dict 的描述[pep-0412](https://www.python.org/dev/peps/pep-0412/)。
 
 ### split-table dictionaries
 
-当被创建的字典是用来保存object的\_\_dict\_\_属性时，该字典才会创建为一个split-table，它们的健表都被缓存在类型属性中，并且允许所有该类型的实例都可以共享该keys。当出现一个事件讲字典的属性值进行改变的时候，个别字典讲慢慢的转化成组合表的形式。这就保证了在大部分的应用场景下很高的内存利用效率，并保证了在各个场景下的正确性。当split-dict重新改变大小，它会立马改变为一个combined-table，如果重置大小作为保存实例属性的结果，并且只有一个该object的实例，字典会立马再变为一个split-table。如果从split-table中删除一个key, value，它不会删除keys tables中对应的该值，而只是将values数值中移除了该value。
+当被创建的字典是用来保存 object 的\_\_dict\_\_属性时，该字典才会创建为一个 split-table，它们的健表都被缓存在类型属性中，并且允许所有该类型的实例都可以共享该 keys。当出现一个事件讲字典的属性值进行改变的时候，个别字典讲慢慢的转化成组合表的形式。这就保证了在大部分的应用场景下很高的内存利用效率，并保证了在各个场景下的正确性。当 split-dict 重新改变大小，它会立马改变为一个 combined-table，如果重置大小作为保存实例属性的结果，并且只有一个该 object 的实例，字典会立马再变为一个 split-table。如果从 split-table 中删除一个 key, value，它不会删除 keys tables 中对应的该值，而只是将 values 数值中移除了该 value。
 
 ### combined-table dictionaries
 
-直接通过dict內建函数与{}生成的字典，模块和大部分其他字典都会创建为combined-table字典，一个combined-table不会改变为一个split-table字典，该字典的行为方式与最初的字典的行为方式大致相同。
-
+直接通过 dict 內建函数与{}生成的字典，模块和大部分其他字典都会创建为 combined-table 字典，一个 combined-table 不会改变为一个 split-table 字典，该字典的行为方式与最初的字典的行为方式大致相同。
 
 ## 容器的相关数据结构
 
-字典对象是通过PyDictObject来实现数据的，详情如下；
+字典对象是通过 PyDictObject 来实现数据的，详情如下；
 
 `源文件：`[Include/dictobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/dictobject.h#L17)
 
@@ -73,7 +72,7 @@ typedef struct {
 } PyDictObject;
 ```
 
-其中，PyDictKeysObject的定义如下；
+其中，PyDictKeysObject 的定义如下；
 
 `源文件：`[Include/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L20)
 
@@ -128,9 +127,9 @@ struct _dictkeysobject {
 ```
 
 相关数据结构的内存布局为；
-![python_dict_mem](./python_dict_mem.png)
+![python_dict_mem](dict-mem.png)
 
-## Python字典示例
+## Python 字典示例
 
 本次示例脚本如下：
 
@@ -142,7 +141,7 @@ d.pop('1')
 
 ```
 
-通过Python的反汇编工具获取字节码；
+通过 Python 的反汇编工具获取字节码；
 
 ```shell
 python -m dis dict_test.py
@@ -173,11 +172,11 @@ python -m dis dict_test.py
              32 RETURN_VALUE
 ```
 
-通过字节码指令可知，首先调用了BUILD_MAP来创建一个新的字典，接着就对新建的字典d进行了赋值操作与更新操作，最后调用了pop方法删除一个key。接下来就详细分析一下相关流程。
+通过字节码指令可知，首先调用了 BUILD_MAP 来创建一个新的字典，接着就对新建的字典 d 进行了赋值操作与更新操作，最后调用了 pop 方法删除一个 key。接下来就详细分析一下相关流程。
 
 ## 字典的初始化流程
 
-通过查找BUILD_MAP的虚拟机执行函数；
+通过查找 BUILD_MAP 的虚拟机执行函数；
 
 `源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L2357)
 
@@ -212,7 +211,7 @@ switch (opcode) {
 }
 ```
 
-从该函数的执行可知，初始化的函数是从_PyDict_NewPresized开始，该函数就是生成并初始化一个字典；
+从该函数的执行可知，初始化的函数是从\_PyDict_NewPresized 开始，该函数就是生成并初始化一个字典；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1240)
 
@@ -224,7 +223,7 @@ _PyDict_NewPresized(Py_ssize_t minused)
 {
     const Py_ssize_t max_presize = 128 * 1024;　         // 字典最大的容量
     Py_ssize_t newsize;
-    PyDictKeysObject *new_keys;                         
+    PyDictKeysObject *new_keys;
 
     /* There are no strict guarantee that returned dict can contain minused
      * items without resize.  So we create medium size dict instead of very
@@ -249,7 +248,7 @@ _PyDict_NewPresized(Py_ssize_t minused)
 }
 ```
 
-首先，先计算出需要生成的字典的大小，然后再初始化一个PyDictKeysObject，最后就生成一个PyDictObject返回。继续查看new_keys_object的执行流程；
+首先，先计算出需要生成的字典的大小，然后再初始化一个 PyDictKeysObject，最后就生成一个 PyDictObject 返回。继续查看 new_keys_object 的执行流程；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L503)
 
@@ -298,12 +297,12 @@ static PyDictKeysObject *new_keys_object(Py_ssize_t size)
     dk->dk_lookup = lookdict_unicode_nodummy;                       // 设置查找函数
     dk->dk_nentries = 0;
     memset(&dk->dk_indices[0], 0xff, es * size);                    // 将申请的内存置空
-    memset(DK_ENTRIES(dk), 0, sizeof(PyDictKeyEntry) * usable);     
+    memset(DK_ENTRIES(dk), 0, sizeof(PyDictKeyEntry) * usable);
     return dk;
 }
 ```
 
-主要就是通过传入的size，检查是否超过设置的大小，检查是否有缓存的字典数据可用，如果没有则申请内存重新生成一个dk，最后进行申请到的内存讲内容清空。接着就会进行new_dict初始化数据；
+主要就是通过传入的 size，检查是否超过设置的大小，检查是否有缓存的字典数据可用，如果没有则申请内存重新生成一个 dk，最后进行申请到的内存讲内容清空。接着就会进行 new_dict 初始化数据；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L568)
 
@@ -339,11 +338,11 @@ new_dict(PyDictKeysObject *keys, PyObject **values)
 }
 ```
 
-new_dict就是根据keys，values设置到从缓冲池或者新生成一个dict对象，最后返回。至此，dict的创建工作已经完成。
+new_dict 就是根据 keys，values 设置到从缓冲池或者新生成一个 dict 对象，最后返回。至此，dict 的创建工作已经完成。
 
 ## 字典的插入与查找
 
-通过字节码的指令STORE_SUBSCR可知，该命令就是讲'1'作为key, '2'作为value插入到d中，此时查看该执行函数；
+通过字节码的指令 STORE_SUBSCR 可知，该命令就是讲'1'作为 key, '2'作为 value 插入到 d 中，此时查看该执行函数；
 
 `源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L1561)
 
@@ -354,7 +353,7 @@ switch (opcode) {
 
     TARGET(STORE_SUBSCR) {
         PyObject *sub = TOP();                 // 第一个值为key
-        PyObject *container = SECOND();        // 该为字典对象 
+        PyObject *container = SECOND();        // 该为字典对象
         PyObject *v = THIRD();                 // 该为value
         int err;
         STACKADJ(-3);
@@ -370,7 +369,7 @@ switch (opcode) {
 }
 ```
 
-此时，从栈中取出相关参数，并将这些值传入PyObject_SetItem函数进行处理设置值；
+此时，从栈中取出相关参数，并将这些值传入 PyObject_SetItem 函数进行处理设置值；
 
 `源文件：`[Objects/abstract.c](https://github.com/python/cpython/blob/v3.7.0/Objects/abstract.c#L186)
 
@@ -385,7 +384,7 @@ PyObject_SetItem(PyObject *o, PyObject *key, PyObject *value)
         null_error();
         return -1;
     }
-    m = o->ob_type->tp_as_mapping;　　　　　　　　　　　　　　　　　　　　　　// 获取类型的tp_as_mapping方法集　　　　　            
+    m = o->ob_type->tp_as_mapping;　　　　　　　　　　　　　　　　　　　　　　// 获取类型的tp_as_mapping方法集　　　　　
     if (m && m->mp_ass_subscript)　　　　　　　　　　　　　　　　　　　　　　　// 如果有设置该类型
         return m->mp_ass_subscript(o, key, value);                    // 调用该mp_ass_subscript方法
 
@@ -409,7 +408,7 @@ PyObject_SetItem(PyObject *o, PyObject *key, PyObject *value)
 }
 ```
 
-其中就调用了字典的tp_as_mapping的方法集，并调用了该方法集的mp_ass_subscript方法；此时我们分析一下，dict的tp_as_mapping的方法集。此时就调用了tp_as_mapping的mp_ass_subscript方法，此时就是调用dict的dict_ass_sub方法；
+其中就调用了字典的 tp_as_mapping 的方法集，并调用了该方法集的 mp_ass_subscript 方法；此时我们分析一下，dict 的 tp_as_mapping 的方法集。此时就调用了 tp_as_mapping 的 mp_ass_subscript 方法，此时就是调用 dict 的 dict_ass_sub 方法；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L2040)
 
@@ -425,7 +424,7 @@ dict_ass_sub(PyDictObject *mp, PyObject *v, PyObject *w)
 }
 ```
 
-可知，删除一个key就是PyDict_DelItem,设置一个key就是PyDict_SetItem；
+可知，删除一个 key 就是 PyDict_DelItem,设置一个 key 就是 PyDict_SetItem；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1433)
 
@@ -457,7 +456,7 @@ PyDict_SetItem(PyObject *op, PyObject *key, PyObject *value)
 
 ```
 
-insertdict方法就是将生成的方法，插入到字典中去；
+insertdict 方法就是将生成的方法，插入到字典中去；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L987)
 
@@ -471,7 +470,7 @@ insertdict(PyDictObject *mp, PyObject *key, Py_hash_t hash, PyObject *value)
 
     Py_INCREF(key);
     Py_INCREF(value);
-    if (mp->ma_values != NULL && !PyUnicode_CheckExact(key)) {  
+    if (mp->ma_values != NULL && !PyUnicode_CheckExact(key)) {
         if (insertion_resize(mp) < 0)                     // 重新设置mp的大小  如果ma_values有值
             goto Fail;
     }
@@ -551,7 +550,7 @@ Fail:
 
 首先会调用相关的查找方法，去查找待搜索的值是否已经存在字典中，如果当前字典数据已经满了则会按照增长大小的函数生成一个新的字典，并把旧数据设置到新的字典中，当找到的字典匹配时则返回。
 
-其中dk_lookup对应的方法，在初始化之后对应的是lookdict_unicode_nodummy；
+其中 dk_lookup 对应的方法，在初始化之后对应的是 lookdict_unicode_nodummy；
 
 `源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L813)
 
@@ -586,7 +585,7 @@ lookdict_unicode_nodummy(PyDictObject *mp, PyObject *key,
             *value_addr = NULL;　　　　　　　　　　　　　　　　　　　　　　　// 讲key对应的value设置为空
             return DKIX_EMPTY;　　　　　　　　　　　　　　　　　　　　　　　 // 返回
         }
-        PyDictKeyEntry *ep = &ep0[ix];           　　　　　　　　　　　　// 获取该位置元素值                  
+        PyDictKeyEntry *ep = &ep0[ix];           　　　　　　　　　　　　// 获取该位置元素值
         assert(ep->me_key != NULL);
         assert(PyUnicode_CheckExact(ep->me_key));
         if (ep->me_key == key ||
@@ -601,12 +600,11 @@ lookdict_unicode_nodummy(PyDictObject *mp, PyObject *key,
 }
 ```
 
-该函数的主要工作就是查找，字典中是否有空余的值，或者如果找到了满足hash值与key相同的就将value设置为找到的值（这也是字典查找的核心逻辑）。至此，字典的插入的大致流程已经分析完毕。
+该函数的主要工作就是查找，字典中是否有空余的值，或者如果找到了满足 hash 值与 key 相同的就将 value 设置为找到的值（这也是字典查找的核心逻辑）。至此，字典的插入的大致流程已经分析完毕。
 
+## Python 字典的操作测试
 
-## Python字典的操作测试
-
-现在我们动手观看一下具体的操作实例，首先声明，该例子仅供调试使用，目前调试的字典的key与value都是float类型并且不能del或者pop其中的key。操作字典如下所示；
+现在我们动手观看一下具体的操作实例，首先声明，该例子仅供调试使用，目前调试的字典的 key 与 value 都是 float 类型并且不能 del 或者 pop 其中的 key。操作字典如下所示；
 
 ```python
 ｄ = {20000:2}
@@ -614,7 +612,7 @@ d[1] = 2
 d[3] = 2
 ```
 
-首先，讲如下代码插入到dictobject.c的1060行；
+首先，讲如下代码插入到 dictobject.c 的 1060 行；
 
 ```c
 // 测试代码
@@ -652,43 +650,43 @@ if (ix1 == 0){
 然后编译运行；
 
 ```python
-Python 3.7.3 (default, May 22 2019, 16:17:57) 
+Python 3.7.3 (default, May 22 2019, 16:17:57)
 [GCC 7.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> d = {20000:2}
 found value : 20000
- indices index values :0  -1  -1  -1  -1  -1  -1  -1  
+ indices index values :0  -1  -1  -1  -1  -1  -1  -1
 size : 8 found value while 　key : 20000   value  : 2
 ```
 
-其中为什么初始化的时候输入20000，是根据代码找到相关的key值，因为字典也被python自身实现的结构中引用了多次，所以我们就设置了一个特殊值来跟踪我们想要的字典；当d初始化的时候，就输出如上所示内容；我们接下来继续操作；
+其中为什么初始化的时候输入 20000，是根据代码找到相关的 key 值，因为字典也被 python 自身实现的结构中引用了多次，所以我们就设置了一个特殊值来跟踪我们想要的字典；当 d 初始化的时候，就输出如上所示内容；我们接下来继续操作；
 
 ```python
 >>> d = {20000:2}
 found value : 20000
- indices index values :0  -1  -1  -1  -1  -1  -1  -1  
+ indices index values :0  -1  -1  -1  -1  -1  -1  -1
 size : 8 found value while 　key : 20000   value  : 2
 >>> d[2] = 3
 found value : 20000
- indices index values :0  -1  1  -1  -1  -1  -1  -1  
+ indices index values :0  -1  1  -1  -1  -1  -1  -1
 size : 8 found value while 　key : 20000   value  : 2
 size : 8 found value while 　key : 2   value  : 3
 >>> d[3] = 4
 found value : 20000
- indices index values :0  -1  1  2  -1  -1  -1  -1  
+ indices index values :0  -1  1  2  -1  -1  -1  -1
 size : 8 found value while 　key : 20000   value  : 2
 size : 8 found value while 　key : 2   value  : 3
 size : 8 found value while 　key : 3   value  : 4
 >>> d[5] = 6
 found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  -1  
+ indices index values :0  -1  1  2  -1  3  -1  -1
 size : 8 found value while 　key : 20000   value  : 2
 size : 8 found value while 　key : 2   value  : 3
 size : 8 found value while 　key : 3   value  : 4
 size : 8 found value while 　key : 5   value  : 6
 >>> d[7] = 8
 found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4  
+ indices index values :0  -1  1  2  -1  3  -1  4
 size : 8 found value while 　key : 20000   value  : 2
 size : 8 found value while 　key : 2   value  : 3
 size : 8 found value while 　key : 3   value  : 4
@@ -696,13 +694,13 @@ size : 8 found value while 　key : 5   value  : 6
 size : 8 found value while 　key : 7   value  : 8
 ```
 
-此后我们一直添加值进d，从输出信息可知，index就是记录了PyDictKeyEntry的索引值，-1就表示该处未使用。
-当我们继续向d中添加内容时；
+此后我们一直添加值进 d，从输出信息可知，index 就是记录了 PyDictKeyEntry 的索引值，-1 就表示该处未使用。
+当我们继续向 d 中添加内容时；
 
 ```python
 >>> d[9] = 10
 found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4  -1  5  -1  -1  -1  -1  -1  -1  
+ indices index values :0  -1  1  2  -1  3  -1  4  -1  5  -1  -1  -1  -1  -1  -1
 size : 16 found value while 　key : 20000   value  : 2
 size : 16 found value while 　key : 2   value  : 3
 size : 16 found value while 　key : 3   value  : 4
@@ -711,7 +709,7 @@ size : 16 found value while 　key : 7   value  : 8
 size : 16 found value while 　key : 9   value  : 10
 >>> d[10] = 11
 found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4  -1  5  6  -1  -1  -1  -1  -1  
+ indices index values :0  -1  1  2  -1  3  -1  4  -1  5  6  -1  -1  -1  -1  -1
 size : 16 found value while 　key : 20000   value  : 2
 size : 16 found value while 　key : 2   value  : 3
 size : 16 found value while 　key : 3   value  : 4
@@ -721,4 +719,4 @@ size : 16 found value while 　key : 9   value  : 10
 size : 16 found value while 　key : 10   value  : 11
 ```
 
-从输出内容可知，字典的大小随之改变了，这也说明了python字典的最佳大小容量限定在1/2到2/3之间，如果超过这个阈值则字典就会自动扩容，扩容的策略大家可详细查看源码。
+从输出内容可知，字典的大小随之改变了，这也说明了 python 字典的最佳大小容量限定在 1/2 到 2/3 之间，如果超过这个阈值则字典就会自动扩容，扩容的策略大家可详细查看源码。

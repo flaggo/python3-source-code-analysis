@@ -1,10 +1,10 @@
 # Python 对象初探
 
-在Python的世界一切皆对象，不论是整数，还是字符串，甚至连类型、函数等都是一种对象。
+在 Python 的世界一切皆对象，不论是整数，还是字符串，甚至连类型、函数等都是一种对象。
 
 ## 对象的分类
 
-以下是Python对象的大致的一个分类
+以下是 Python 对象的大致的一个分类
 
 - Fundamental 对象: 类型对象
 - Numeric 对象: 数值对象
@@ -12,13 +12,13 @@
 - Mapping 对象: 类似 C++中的 map 的关联对象
 - Internal 对象: Python 虚拟机在运行时内部使用的对象
 
-![object category](object_category.jpg)
+![object category](object-category.jpg)
 
 ## 对象机制的基石 PyObject
 
 对于初学者来说这么多类型的对象怎么学？别着急，我们后续章节会解答。
 
-在开始我们的学习之旅之前，我们要先认识一个结构体**PyObject**，可以说Python的对象机制就是基于**PyObject**拓展开来的，所以我们先看看**PyObject** 到底长什么样。
+在开始我们的学习之旅之前，我们要先认识一个结构体**PyObject**，可以说 Python 的对象机制就是基于**PyObject**拓展开来的，所以我们先看看**PyObject** 到底长什么样。
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L106)
 
@@ -35,7 +35,7 @@ typedef struct _object {
 } PyObject;
 ```
 
-Python中的所有对象都拥有一些相同的内容，而这些内容就定义在**PyObject**中，
+Python 中的所有对象都拥有一些相同的内容，而这些内容就定义在**PyObject**中，
 
 **PyObject** 包含 一个用于垃圾回收的双向链表，一个引用计数变量 `ob_refcnt` 和 一个类型对象指针`ob_type`
 
@@ -43,7 +43,7 @@ Python中的所有对象都拥有一些相同的内容，而这些内容就定�
 
 ## 定长对象与变长对象
 
-Python对象除了前面提到的那种分类方法外，还可以分为定长对象和变长对象这两种形式。
+Python 对象除了前面提到的那种分类方法外，还可以分为定长对象和变长对象这两种形式。
 
 变长对象都拥有一个相同的内容 **PyVarObject**，而 **PyVarObject**也是基于**PyObject**扩展的。
 
@@ -65,7 +65,6 @@ typedef struct {
 } PyVarObject;
 ```
 
-
 ![PyVarObject](PyVarObject.jpg)
 
 ## 类型对象
@@ -78,6 +77,7 @@ typedef struct {
 接下来我们看一下`struct _typeobject`代码
 
 在 **PyTypeObject** 的定义中包含许多信息，主要分类以下几类:
+
 - 类型名, tp_name, 主要用于 Python 内部调试用
 - 创建该类型对象时分配的空间大小信息，即 `tp_basicsize` 和 `tp_itemsize`
 - 与该类型对象相关的操作信息(如 `tp_print` 这样的函数指针)
@@ -122,7 +122,6 @@ typedef struct _typeobject {
 } PyTypeObject;
 ```
 
-
 ## 类型的类型
 
 在 **PyTypeObjet** 定义开始有一个宏`PyOject_VAR_HEAD`，查看源码可知 **PyTypeObjet** 是一个变长对象
@@ -155,10 +154,9 @@ PyTypeObject PyType_Type = {
 `PyType_Type` 在类型机制中至关重要，所有用户自定义 `class` 所
 对应的 `PyTypeObject` 对象都是通过 `PyType_Type`创建的
 
-
 接下来我们看 `PyLong_Type` 是怎么与 `PyType_Type` 建立联系的。
-前面提到，在Python中，每一个对象都将自己的引用计数、类型信息保存在开始的部分中。
-为了方便对这部分内存初始化，Python中提供了几个有用的宏:
+前面提到，在 Python 中，每一个对象都将自己的引用计数、类型信息保存在开始的部分中。
+为了方便对这部分内存初始化，Python 中提供了几个有用的宏:
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L69)
 
@@ -195,26 +193,26 @@ PyTypeObject PyLong_Type = {
 
 下图是对象运行时的图像表现
 
-![](object_runtime_relation.jpg)
-
+![](object-runtime-relation.jpg)
 
 ## 对象的创建
 
-Python创建对象有两种方式
+Python 创建对象有两种方式
 
-### 范型API 或称为 AOL (Abstract Object Layer)
+### 范型 API 或称为 AOL (Abstract Object Layer)
 
-这类API通常形如`PyObject_XXX`这样的形式。可以应用在任何Python对象上，
+这类 API 通常形如`PyObject_XXX`这样的形式。可以应用在任何 Python 对象上，
 如`PyObject_New`。创建一个整数对象的方式
 
 ```c
 PyObject* longobj = PyObject_New(Pyobject, &PyLong_Type);
 ```
 
-### 与类型相关的API 或称为 COL (Concrete Object Layer)
+### 与类型相关的 API 或称为 COL (Concrete Object Layer)
 
-这类API 通常只能作用于某一种类型的对象上，对于每一种内建对象
-Python都提供了这样一组API。例如整数对象，我们可以利用如下的API创建
+这类 API 通常只能作用于某一种类型的对象上，对于每一种内建对象
+Python 都提供了这样一组 API。例如整数对象，我们可以利用如下的 API 创建
+
 ```c
 PyObject *longObj = PyLong_FromLong(10);
 ```
@@ -225,10 +223,10 @@ PyObject *longObj = PyLong_FromLong(10);
 所定义的操作，这些操作直接决定着一个对象在运行时所表现出的行为，比如 **PyTypeObject** 中的 `tp_hash` 指明了该类型对象如何生成其`hash`值。
 
 在**PyTypeObject**的代码中，我们还可以看到非常重要的三组操作族
+
 - `PyNumberMethods *tp_as_number`
 - `PySequenceMethods *tp_as_sequence`
 - `PyMappingMethods *tp_as_mapping`
-
 
 **PyNumberMethods** 的代码如下
 
@@ -284,15 +282,14 @@ PyTypeObject PyLong_Type = {
 
 `PySequenceMethods *tp_as_sequence` 和 `PyMappingMethods *tp_as_mapping`的分析与`PyNumberMethods *tp_as_number` 相同，大家可以自行查阅源码
 
-
 ## 对象的多态性
 
-Python创建一个对象比如 **PyLongObject** 时，会分配内存进行初始化，然后
-Python内部会用 `PyObject*` 变量来维护这个对象，其他对象也与此类似
+Python 创建一个对象比如 **PyLongObject** 时，会分配内存进行初始化，然后
+Python 内部会用 `PyObject*` 变量来维护这个对象，其他对象也与此类似
 
 所以在 Python 内部各个函数之间传递的都是一种范型指针 `PyObject*`
 我们不知道这个指针所指的对象是什么类型，只能通过所指对象的 `ob_type` 域
-动态进行判断，而Python正是通过 `ob_type` 实现了多态机制
+动态进行判断，而 Python 正是通过 `ob_type` 实现了多态机制
 
 考虑以下的 calc_hash 函数
 
@@ -305,7 +302,7 @@ calc_hash(PyObject* object)
 }
 ```
 
-如果传递给 calc_hash 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongObject 对象对应的类型对象中定义的 hash操作`tp_hash`，`tp_hash`可以在**PyTypeObject**中找到，
+如果传递给 calc_hash 函数的指针是一个 `PyLongObject*`，那么它会调用 PyLongObject 对象对应的类型对象中定义的 hash 操作`tp_hash`，`tp_hash`可以在**PyTypeObject**中找到，
 而具体赋值绑定我们可以在 `PyLong_Type` 初始化代码中看到绑定的是`long_hash`函数
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L5379)
@@ -323,7 +320,7 @@ PyTypeObject PyLong_Type = {
 };
 ```
 
-如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的hash操作，查看源码可以看到 实际绑定的是 `unicode_hash`函数
+如果指针是一个 `PyUnicodeObject*`，那么就会调用 PyUnicodeObject 对象对应的类型对象中定义的 hash 操作，查看源码可以看到 实际绑定的是 `unicode_hash`函数
 
 `源文件：`[Objects/unicodeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/unicodeobject.c#L15066)
 
@@ -347,11 +344,11 @@ Python 通过引用计数来管理维护对象在内存中的存在与否
 
 Python 中的每个东西都是一个对象， 都有`ob_refcnt` 变量，这个变量维护对象的引用计数，从而最终决定该对象的创建与销毁
 
-在Python中，主要通过 `Py_INCREF(op)`与`Py_DECREF(op)` 这两个宏
-来增加和减少对一个对象的引用计数。当一个对象的引用计数减少到0之后，
+在 Python 中，主要通过 `Py_INCREF(op)`与`Py_DECREF(op)` 这两个宏
+来增加和减少对一个对象的引用计数。当一个对象的引用计数减少到 0 之后，
 `Py_DECREF`将调用该对象的`tp_dealloc`来释放对象所占用的内存和系统资源；
 
-但这并不意味着最终一定会调用 `free` 释放内存空间。因为频繁的申请、释放内存会大大降低Python的执行效率。因此Python中大量采用了内存对象池的技术，使得对象释放的空间归还给内存池而不是直接`free`，后续使用可先从对象池中获取
+但这并不意味着最终一定会调用 `free` 释放内存空间。因为频繁的申请、释放内存会大大降低 Python 的执行效率。因此 Python 中大量采用了内存对象池的技术，使得对象释放的空间归还给内存池而不是直接`free`，后续使用可先从对象池中获取
 
 `源文件：`[Include/object.h](https://github.com/python/cpython/blob/v3.7.0/Include/object.h#L777)
 

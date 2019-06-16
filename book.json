@@ -51,13 +51,12 @@
       "all": ["weibo", "douban", "linkedin", "facebook", "google", "twitter"]
     },
     "tbfed-pagefooter": {
-      "copyright": "Copyright © Prodesire 2018",
+      "copyright": "Copyright © FlagGo 2019",
       "modify_label": "该文件修订时间：",
       "modify_format": "YYYY-MM-DD HH:mm:ss"
     },
     "edit-link": {
-      "base":
-        "https://github.com/flaggo/python3-source-code-analysis/edit/master",
+      "base": "https://github.com/flaggo/python3-source-code-analysis/edit/master",
       "label": "编辑此页面"
     },
     "anchor-navigation-ex": {
@@ -71,9 +70,7 @@
         "console": "bash",
         "shell": "bash"
       },
-      "css": [
-        "prismjs/themes/prism-okaidia.css"
-      ]
+      "css": ["prismjs/themes/prism-okaidia.css"]
     }
   }
 }
