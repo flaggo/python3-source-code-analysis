@@ -21,18 +21,18 @@ typedef struct {
 其中，me_hash 就是哈希生成的值，me_key 就是对应的 key 值，me_value 就是对应的值。
 在 python 中，在一个 PyDictObject 对象的变化过程中，entry 的状态会在不同的状态间转换。基本上在如下四种状态中转换：Unused、Active、Dummy 和 Pending。
 
-1. Unused:没有插入任何一个获取的 key 与 value，并且在次之前也没有存储任何的 key,value，每一个 entry 在初始化的时候都会处于这种状态，并且 Unused 会被里面切换到 Active 态，当有 key 插入，这是就是 entry 初始化的状态。
-2. Active:当 index>=0 时，me_key 不为空并且 me_value 不为空，保存了一个键值对，Active 可以转变为 Dummy 或者 Pending 状态，当一个健被删除的时候，这只会在 me_value 不为空的时候出现。
+1. Unused:没有插入任何一个获取的 key 与 value，并且在此之前也没有存储任何的 key,value，每一个 entry 在初始化的时候都会处于这种状态，并且 Unused 会被里面切换到 Active 态，当有 key 插入，这就是 entry 初始化的状态。
+2. Active:当 index>=0 时，me_key 不为空并且 me_value 不为空，保存了一个键值对，Active 可以转变为 Dummy 或者 Pending 状态，当一个键被删除的时候，这只会在 me_value 不为空的时候出现。
 3. Dummy:先前保存了一个 Active 的键值对，但是这个键值对被删除了并且一个活跃的键值对还没有填入该位置，Dummy 可以转变为 Active 当删除的时候，Dummy 的位置不能被重新使用，一旦发生碰撞，探针序列就无法知道这对键值对曾是活跃的键值对。
-4. Pending:索引>=0，键！=空，值=空（仅拆分），尚未插入到拆分表中。
+4. Pending:索引>=0，键!=空，值=空（仅拆分），尚未插入到拆分表中。
 
 ## 字典的两种类型
 
-python 的字典类型中包含了两种联合字典（split-table dictionaries)与分离字典(combined-table dictonaries)。详细的信息可查看有关 dict 的描述[pep-0412](https://www.python.org/dev/peps/pep-0412/)。
+python 的字典类型中包含了两种，分离字典（split-table dictionaries)与联合字典(combined-table dictonaries)。详细的信息可查看有关 dict 的描述[pep-0412](https://www.python.org/dev/peps/pep-0412/)。
 
 ### split-table dictionaries
 
-当被创建的字典是用来保存 object 的\_\_dict\_\_属性时，该字典才会创建为一个 split-table，它们的健表都被缓存在类型属性中，并且允许所有该类型的实例都可以共享该 keys。当出现一个事件讲字典的属性值进行改变的时候，个别字典讲慢慢的转化成组合表的形式。这就保证了在大部分的应用场景下很高的内存利用效率，并保证了在各个场景下的正确性。当 split-dict 重新改变大小，它会立马改变为一个 combined-table，如果重置大小作为保存实例属性的结果，并且只有一个该 object 的实例，字典会立马再变为一个 split-table。如果从 split-table 中删除一个 key, value，它不会删除 keys tables 中对应的该值，而只是将 values 数值中移除了该 value。
+当被创建的字典是用来保存 object 的\_\_dict\_\_属性时，该字典才会创建为一个 split-table，它们的键表都被缓存在类型属性中，并且允许所有该类型的实例都可以共享该 keys。当出现一个事件将字典的属性值进行改变的时候，个别字典将慢慢的转化成组合表的形式。这就保证了在大部分的应用场景下很高的内存利用效率，并保证了在各个场景下的正确性。当 split-dict 重新改变大小，它会立马改变为一个 combined-table，如果重置大小作为保存实例属性的结果，并且只有一个该 object 的实例，字典会立马再变为一个 split-table。如果从 split-table 中删除一个 key, value，它不会删除 keys tables 中对应的该值，而只是将 values 数值中移除了该 value。
 
 ### combined-table dictionaries
 
@@ -55,7 +55,7 @@ typedef struct {
     PyObject_HEAD
 
     /* Number of items in the dictionary */
-    Py_ssize_t ma_used;　				// 使用的ｋｅｙｓ个数
+    Py_ssize_t ma_used;　				// 使用的keys个数
 
     /* Dictionary version: globally unique, value change each time
        the dictionary is modified */
