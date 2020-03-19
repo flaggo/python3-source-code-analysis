@@ -387,7 +387,7 @@ print(num)
 
 如下图所示
 
-![longobject storage](longo-storage.png)
+![longobject storage](long-storage.png)
 
 注：这里的 30 是由 **PyLong_SHIFT** 决定的，64 位系统中，**PyLong_SHIFT** 为 30，否则 **PyLong_SHIFT** 为 15
 
