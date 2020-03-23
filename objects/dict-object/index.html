@@ -1,0 +1,1104 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Python Dict 对象 · Python 3 源码分析</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Prodesire">
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search-plus/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism-okaidia.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-page-toc-button/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-back-to-top-button/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../set-object/" />
+    
+    
+    <link rel="prev" href="../list-object/" />
+    
+
+    <style>
+    @media only screen and (max-width: 640px) {
+        .book-header .hidden-mobile {
+            display: none;
+        }
+    }
+    </style>
+    <script>
+        window["gitbook-plugin-github-buttons"] = {"repo":"flaggo/python3-source-code-analysis","types":["star"],"size":"small"};
+    </script>
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://github.com/flaggo/python3-source-code-analysis" target="_blank" class="custom-link">主页</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        <li class="header">第 1 部分：序章</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                        <b>1.1.</b>
+                    
+                    前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../../preface/code-organization/">
+            
+                <a href="../../preface/code-organization/">
+            
+                    
+                        <b>1.2.</b>
+                    
+                    Python 源代码的组织
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../preface/windows-build/">
+            
+                <a href="../../preface/windows-build/">
+            
+                    
+                        <b>1.3.</b>
+                    
+                    Windows 环境下编译 Python
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../../preface/unix-linux-build/">
+            
+                <a href="../../preface/unix-linux-build/">
+            
+                    
+                        <b>1.4.</b>
+                    
+                    UNIX/Linux 环境下编译 Python
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../../preface/modify-code/">
+            
+                <a href="../../preface/modify-code/">
+            
+                    
+                        <b>1.5.</b>
+                    
+                    修改 Python 源码
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">第 2 部分：Python 内建对象</li>
+        
+        
+    
+        <li class="chapter " data-level="2.1" data-path="../object/">
+            
+                <a href="../object/">
+            
+                    
+                        <b>2.1.</b>
+                    
+                    Python 对象初探
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="../long-object/">
+            
+                <a href="../long-object/">
+            
+                    
+                        <b>2.2.</b>
+                    
+                    Python 整数对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="../string-object/index.md">
+            
+                <span>
+            
+                    
+                        <b>2.3.</b>
+                    
+                    Python 字符串 对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.4" data-path="../list-object/">
+            
+                <a href="../list-object/">
+            
+                    
+                        <b>2.4.</b>
+                    
+                    Python List 对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="2.5" data-path="./">
+            
+                <a href="./">
+            
+                    
+                        <b>2.5.</b>
+                    
+                    Python Dict 对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.6" data-path="../set-object/">
+            
+                <a href="../set-object/">
+            
+                    
+                        <b>2.6.</b>
+                    
+                    Python Set 对象
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.7" data-path="../simple-interpreter/">
+            
+                <a href="../simple-interpreter/">
+            
+                    
+                        <b>2.7.</b>
+                    
+                    实现简版 Python
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">第 3 部分：Python 虚拟机</li>
+        
+        
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Python Dict 对象</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="python-&#x5B57;&#x5178;">Python &#x5B57;&#x5178;</h1>
+<p>Dictionary object implementation using a hash table &#xFF0C;&#x901A;&#x8FC7;&#x63CF;&#x8FF0;&#x53EF;&#x77E5;&#xFF0C;python &#x7684;&#x5B57;&#x5178;&#x5C31;&#x662F;&#x5B9E;&#x73B0;&#x4E86;&#x4E00;&#x4E2A; hash &#x8868;&#x3002;</p>
+<h2 id="python-&#x5B57;&#x5178;&#x6982;&#x8FF0;">Python &#x5B57;&#x5178;&#x6982;&#x8FF0;</h2>
+<p>&#x5728; python &#x7684;&#x5B57;&#x5178;&#x4E2D;&#xFF0C;&#x4E00;&#x4E2A;&#x952E;&#x503C;&#x5BF9;&#x7684;&#x5BF9;&#x5E94;&#x4FDD;&#x5B58;&#x5C31;&#x662F; PyDictEntry &#x7C7B;&#x578B;&#x6765;&#x4FDD;&#x5B58;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L1" target="_blank">Include/dict-common.h</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dict-common.h</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    <span class="token comment">/* Cached hash code of me_key. */</span>
+    Py_hash_t me_hash<span class="token punctuation">;</span>
+    PyObject <span class="token operator">*</span>me_key<span class="token punctuation">;</span>
+    PyObject <span class="token operator">*</span>me_value<span class="token punctuation">;</span> <span class="token comment">/* This field is only meaningful for combined tables */</span>
+<span class="token punctuation">}</span> PyDictKeyEntry<span class="token punctuation">;</span>
+</code></pre>
+<p>&#x5176;&#x4E2D;&#xFF0C;me_hash &#x5C31;&#x662F;&#x54C8;&#x5E0C;&#x751F;&#x6210;&#x7684;&#x503C;&#xFF0C;me_key &#x5C31;&#x662F;&#x5BF9;&#x5E94;&#x7684; key &#x503C;&#xFF0C;me_value &#x5C31;&#x662F;&#x5BF9;&#x5E94;&#x7684;&#x503C;&#x3002;
+&#x5728; python &#x4E2D;&#xFF0C;&#x5728;&#x4E00;&#x4E2A; PyDictObject &#x5BF9;&#x8C61;&#x7684;&#x53D8;&#x5316;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;entry &#x7684;&#x72B6;&#x6001;&#x4F1A;&#x5728;&#x4E0D;&#x540C;&#x7684;&#x72B6;&#x6001;&#x95F4;&#x8F6C;&#x6362;&#x3002;&#x57FA;&#x672C;&#x4E0A;&#x5728;&#x5982;&#x4E0B;&#x56DB;&#x79CD;&#x72B6;&#x6001;&#x4E2D;&#x8F6C;&#x6362;&#xFF1A;Unused&#x3001;Active&#x3001;Dummy &#x548C; Pending&#x3002;</p>
+<ol>
+<li>Unused:&#x6CA1;&#x6709;&#x63D2;&#x5165;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x83B7;&#x53D6;&#x7684; key &#x4E0E; value&#xFF0C;&#x5E76;&#x4E14;&#x5728;&#x6B64;&#x4E4B;&#x524D;&#x4E5F;&#x6CA1;&#x6709;&#x5B58;&#x50A8;&#x4EFB;&#x4F55;&#x7684; key,value&#xFF0C;&#x6BCF;&#x4E00;&#x4E2A; entry &#x5728;&#x521D;&#x59CB;&#x5316;&#x7684;&#x65F6;&#x5019;&#x90FD;&#x4F1A;&#x5904;&#x4E8E;&#x8FD9;&#x79CD;&#x72B6;&#x6001;&#xFF0C;&#x5E76;&#x4E14; Unused &#x4F1A;&#x88AB;&#x91CC;&#x9762;&#x5207;&#x6362;&#x5230; Active &#x6001;&#xFF0C;&#x5F53;&#x6709; key &#x63D2;&#x5165;&#xFF0C;&#x8FD9;&#x5C31;&#x662F; entry &#x521D;&#x59CB;&#x5316;&#x7684;&#x72B6;&#x6001;&#x3002;</li>
+<li>Active:&#x5F53; index&gt;=0 &#x65F6;&#xFF0C;me_key &#x4E0D;&#x4E3A;&#x7A7A;&#x5E76;&#x4E14; me_value &#x4E0D;&#x4E3A;&#x7A7A;&#xFF0C;&#x4FDD;&#x5B58;&#x4E86;&#x4E00;&#x4E2A;&#x952E;&#x503C;&#x5BF9;&#xFF0C;Active &#x53EF;&#x4EE5;&#x8F6C;&#x53D8;&#x4E3A; Dummy &#x6216;&#x8005; Pending &#x72B6;&#x6001;&#xFF0C;&#x5F53;&#x4E00;&#x4E2A;&#x952E;&#x88AB;&#x5220;&#x9664;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x8FD9;&#x53EA;&#x4F1A;&#x5728; me_value &#x4E0D;&#x4E3A;&#x7A7A;&#x7684;&#x65F6;&#x5019;&#x51FA;&#x73B0;&#x3002;</li>
+<li>Dummy:&#x5148;&#x524D;&#x4FDD;&#x5B58;&#x4E86;&#x4E00;&#x4E2A; Active &#x7684;&#x952E;&#x503C;&#x5BF9;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x4E2A;&#x952E;&#x503C;&#x5BF9;&#x88AB;&#x5220;&#x9664;&#x4E86;&#x5E76;&#x4E14;&#x4E00;&#x4E2A;&#x6D3B;&#x8DC3;&#x7684;&#x952E;&#x503C;&#x5BF9;&#x8FD8;&#x6CA1;&#x6709;&#x586B;&#x5165;&#x8BE5;&#x4F4D;&#x7F6E;&#xFF0C;Dummy &#x53EF;&#x4EE5;&#x8F6C;&#x53D8;&#x4E3A; Active &#x5F53;&#x5220;&#x9664;&#x7684;&#x65F6;&#x5019;&#xFF0C;Dummy &#x7684;&#x4F4D;&#x7F6E;&#x4E0D;&#x80FD;&#x88AB;&#x91CD;&#x65B0;&#x4F7F;&#x7528;&#xFF0C;&#x4E00;&#x65E6;&#x53D1;&#x751F;&#x78B0;&#x649E;&#xFF0C;&#x63A2;&#x9488;&#x5E8F;&#x5217;&#x5C31;&#x65E0;&#x6CD5;&#x77E5;&#x9053;&#x8FD9;&#x5BF9;&#x952E;&#x503C;&#x5BF9;&#x66FE;&#x662F;&#x6D3B;&#x8DC3;&#x7684;&#x952E;&#x503C;&#x5BF9;&#x3002;</li>
+<li>Pending:&#x7D22;&#x5F15;&gt;=0&#xFF0C;&#x952E;!=&#x7A7A;&#xFF0C;&#x503C;=&#x7A7A;&#xFF08;&#x4EC5;&#x62C6;&#x5206;&#xFF09;&#xFF0C;&#x5C1A;&#x672A;&#x63D2;&#x5165;&#x5230;&#x62C6;&#x5206;&#x8868;&#x4E2D;&#x3002;</li>
+</ol>
+<h2 id="&#x5B57;&#x5178;&#x7684;&#x4E24;&#x79CD;&#x7C7B;&#x578B;">&#x5B57;&#x5178;&#x7684;&#x4E24;&#x79CD;&#x7C7B;&#x578B;</h2>
+<p>python &#x7684;&#x5B57;&#x5178;&#x7C7B;&#x578B;&#x4E2D;&#x5305;&#x542B;&#x4E86;&#x4E24;&#x79CD;&#xFF0C;&#x5206;&#x79BB;&#x5B57;&#x5178;&#xFF08;split-table dictionaries)&#x4E0E;&#x8054;&#x5408;&#x5B57;&#x5178;(combined-table dictonaries)&#x3002;&#x8BE6;&#x7EC6;&#x7684;&#x4FE1;&#x606F;&#x53EF;&#x67E5;&#x770B;&#x6709;&#x5173; dict &#x7684;&#x63CF;&#x8FF0;<a href="https://www.python.org/dev/peps/pep-0412/" target="_blank">pep-0412</a>&#x3002;</p>
+<h3 id="split-table-dictionaries">split-table dictionaries</h3>
+<p>&#x5F53;&#x88AB;&#x521B;&#x5EFA;&#x7684;&#x5B57;&#x5178;&#x662F;&#x7528;&#x6765;&#x4FDD;&#x5B58; object &#x7684;__dict__&#x5C5E;&#x6027;&#x65F6;&#xFF0C;&#x8BE5;&#x5B57;&#x5178;&#x624D;&#x4F1A;&#x521B;&#x5EFA;&#x4E3A;&#x4E00;&#x4E2A; split-table&#xFF0C;&#x5B83;&#x4EEC;&#x7684;&#x952E;&#x8868;&#x90FD;&#x88AB;&#x7F13;&#x5B58;&#x5728;&#x7C7B;&#x578B;&#x5C5E;&#x6027;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x5141;&#x8BB8;&#x6240;&#x6709;&#x8BE5;&#x7C7B;&#x578B;&#x7684;&#x5B9E;&#x4F8B;&#x90FD;&#x53EF;&#x4EE5;&#x5171;&#x4EAB;&#x8BE5; keys&#x3002;&#x5F53;&#x51FA;&#x73B0;&#x4E00;&#x4E2A;&#x4E8B;&#x4EF6;&#x5C06;&#x5B57;&#x5178;&#x7684;&#x5C5E;&#x6027;&#x503C;&#x8FDB;&#x884C;&#x6539;&#x53D8;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4E2A;&#x522B;&#x5B57;&#x5178;&#x5C06;&#x6162;&#x6162;&#x7684;&#x8F6C;&#x5316;&#x6210;&#x7EC4;&#x5408;&#x8868;&#x7684;&#x5F62;&#x5F0F;&#x3002;&#x8FD9;&#x5C31;&#x4FDD;&#x8BC1;&#x4E86;&#x5728;&#x5927;&#x90E8;&#x5206;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;&#x4E0B;&#x5F88;&#x9AD8;&#x7684;&#x5185;&#x5B58;&#x5229;&#x7528;&#x6548;&#x7387;&#xFF0C;&#x5E76;&#x4FDD;&#x8BC1;&#x4E86;&#x5728;&#x5404;&#x4E2A;&#x573A;&#x666F;&#x4E0B;&#x7684;&#x6B63;&#x786E;&#x6027;&#x3002;&#x5F53; split-dict &#x91CD;&#x65B0;&#x6539;&#x53D8;&#x5927;&#x5C0F;&#xFF0C;&#x5B83;&#x4F1A;&#x7ACB;&#x9A6C;&#x6539;&#x53D8;&#x4E3A;&#x4E00;&#x4E2A; combined-table&#xFF0C;&#x5982;&#x679C;&#x91CD;&#x7F6E;&#x5927;&#x5C0F;&#x4F5C;&#x4E3A;&#x4FDD;&#x5B58;&#x5B9E;&#x4F8B;&#x5C5E;&#x6027;&#x7684;&#x7ED3;&#x679C;&#xFF0C;&#x5E76;&#x4E14;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x8BE5; object &#x7684;&#x5B9E;&#x4F8B;&#xFF0C;&#x5B57;&#x5178;&#x4F1A;&#x7ACB;&#x9A6C;&#x518D;&#x53D8;&#x4E3A;&#x4E00;&#x4E2A; split-table&#x3002;&#x5982;&#x679C;&#x4ECE; split-table &#x4E2D;&#x5220;&#x9664;&#x4E00;&#x4E2A; key, value&#xFF0C;&#x5B83;&#x4E0D;&#x4F1A;&#x5220;&#x9664; keys tables &#x4E2D;&#x5BF9;&#x5E94;&#x7684;&#x8BE5;&#x503C;&#xFF0C;&#x800C;&#x53EA;&#x662F;&#x5C06; values &#x6570;&#x503C;&#x4E2D;&#x79FB;&#x9664;&#x4E86;&#x8BE5; value&#x3002;</p>
+<h3 id="combined-table-dictionaries">combined-table dictionaries</h3>
+<p>&#x76F4;&#x63A5;&#x901A;&#x8FC7; dict &#x5167;&#x5EFA;&#x51FD;&#x6570;&#x4E0E;{}&#x751F;&#x6210;&#x7684;&#x5B57;&#x5178;&#xFF0C;&#x6A21;&#x5757;&#x548C;&#x5927;&#x90E8;&#x5206;&#x5176;&#x4ED6;&#x5B57;&#x5178;&#x90FD;&#x4F1A;&#x521B;&#x5EFA;&#x4E3A; combined-table &#x5B57;&#x5178;&#xFF0C;&#x4E00;&#x4E2A; combined-table &#x4E0D;&#x4F1A;&#x6539;&#x53D8;&#x4E3A;&#x4E00;&#x4E2A; split-table &#x5B57;&#x5178;&#xFF0C;&#x8BE5;&#x5B57;&#x5178;&#x7684;&#x884C;&#x4E3A;&#x65B9;&#x5F0F;&#x4E0E;&#x6700;&#x521D;&#x7684;&#x5B57;&#x5178;&#x7684;&#x884C;&#x4E3A;&#x65B9;&#x5F0F;&#x5927;&#x81F4;&#x76F8;&#x540C;&#x3002;</p>
+<h2 id="&#x5BB9;&#x5668;&#x7684;&#x76F8;&#x5173;&#x6570;&#x636E;&#x7ED3;&#x6784;">&#x5BB9;&#x5668;&#x7684;&#x76F8;&#x5173;&#x6570;&#x636E;&#x7ED3;&#x6784;</h2>
+<p>&#x5B57;&#x5178;&#x5BF9;&#x8C61;&#x662F;&#x901A;&#x8FC7; PyDictObject &#x6765;&#x5B9E;&#x73B0;&#x6570;&#x636E;&#x7684;&#xFF0C;&#x8BE6;&#x60C5;&#x5982;&#x4E0B;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Include/dictobject.h#L17" target="_blank">Include/dictobject.h</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Include/dictobject.h</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">_dictkeysobject</span> PyDictKeysObject<span class="token punctuation">;</span>
+
+<span class="token comment">/* The ma_values pointer is NULL for a combined table
+ * or points to an array of PyObject* for a split table
+ */</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    PyObject_HEAD
+
+    <span class="token comment">/* Number of items in the dictionary */</span>
+    Py_ssize_t ma_used<span class="token punctuation">;</span>&#x3000;                <span class="token comment">// &#x4F7F;&#x7528;&#x7684;keys&#x4E2A;&#x6570;</span>
+
+    <span class="token comment">/* Dictionary version: globally unique, value change each time
+       the dictionary is modified */</span>
+    uint64_t ma_version_tag<span class="token punctuation">;</span>
+
+    PyDictKeysObject <span class="token operator">*</span>ma_keys<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;&#x6709;&#x5219;&#x662F;&#x4FDD;&#x5B58;&#x7684;keys&#x6570;&#x636E;</span>
+
+    <span class="token comment">/* If ma_values is NULL, the table is &quot;combined&quot;: keys and values
+       are stored in ma_keys.
+
+       If ma_values is not NULL, the table is splitted:
+       keys are stored in ma_keys and values are stored in ma_values */</span>
+    PyObject <span class="token operator">*</span><span class="token operator">*</span>ma_values<span class="token punctuation">;</span>&#x3000;             <span class="token comment">// &#x5982;&#x679C;&#x4E0D;&#x4E3A;&#x7A7A;&#x5219;&#x4FDD;&#x5B58;&#x7684;&#x662F;values</span>
+<span class="token punctuation">}</span> PyDictObject<span class="token punctuation">;</span>
+</code></pre>
+<p>&#x5176;&#x4E2D;&#xFF0C;PyDictKeysObject &#x7684;&#x5B9A;&#x4E49;&#x5982;&#x4E0B;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L20" target="_blank">Include/dict-common.h</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dict-common.h</span>
+<span class="token comment">/* See dictobject.c for actual layout of DictKeysObject */</span>
+<span class="token keyword">struct</span> <span class="token class-name">_dictkeysobject</span> <span class="token punctuation">{</span>
+    Py_ssize_t dk_refcnt<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5F15;&#x7528;&#x8BA1;&#x6570;</span>
+
+    <span class="token comment">/* Size of the hash table (dk_indices). It must be a power of 2. */</span>
+    Py_ssize_t dk_size<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// hash table &#x7684;&#x5927;&#x5C0F;&#x5FC5;&#x987B;&#x662F;&#xFF12;&#x7684;&#x500D;&#x6570;</span>
+
+    <span class="token comment">/* Function to lookup in the hash table (dk_indices):
+
+       - lookdict(): general-purpose, and may return DKIX_ERROR if (and
+         only if) a comparison raises an exception.
+
+       - lookdict_unicode(): specialized to Unicode string keys, comparison of
+         which can never raise an exception; that function can never return
+         DKIX_ERROR.
+
+       - lookdict_unicode_nodummy(): similar to lookdict_unicode() but further
+         specialized for Unicode string keys that cannot be the &lt;dummy&gt; value.
+
+       - lookdict_split(): Version of lookdict() for split tables. */</span>
+    dict_lookup_func dk_lookup<span class="token punctuation">;</span>                       <span class="token comment">// &#x54C8;&#x5E0C;&#x67E5;&#x627E;&#x51FD;&#x6570;</span>
+
+    <span class="token comment">/* Number of usable entries in dk_entries. */</span>
+    Py_ssize_t dk_usable<span class="token punctuation">;</span>                             <span class="token comment">// &#x53EF;&#x7528;&#x7684;entry&#x6570;&#x91CF;</span>
+
+    <span class="token comment">/* Number of used entries in dk_entries. */</span>&#x3000;
+    Py_ssize_t dk_nentries<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;            <span class="token comment">// &#x5DF2;&#x7ECF;&#x4F7F;&#x7528;&#x7684;entry&#x6570;&#x91CF;</span>
+
+    <span class="token comment">/* Actual hash table of dk_size entries. It holds indices in dk_entries,
+       or DKIX_EMPTY(-1) or DKIX_DUMMY(-2).
+
+       Indices must be: 0 &lt;= indice &lt; USABLE_FRACTION(dk_size).
+
+       The size in bytes of an indice depends on dk_size:
+
+       - 1 byte if dk_size &lt;= 0xff (char*)
+       - 2 bytes if dk_size &lt;= 0xffff (int16_t*)
+       - 4 bytes if dk_size &lt;= 0xffffffff (int32_t*)
+       - 8 bytes otherwise (int64_t*)
+
+       Dynamically sized, SIZEOF_VOID_P is minimum. */</span>
+    <span class="token keyword">char</span> dk_indices<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>  <span class="token comment">/* char is required to avoid strict aliasing. */</span>&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5B58;&#x5165;&#x7684;entries</span>
+
+    <span class="token comment">/* &quot;PyDictKeyEntry dk_entries[dk_usable];&quot; array follows:
+       see the DK_ENTRIES() macro */</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+<p>&#x76F8;&#x5173;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x7684;&#x5185;&#x5B58;&#x5E03;&#x5C40;&#x4E3A;&#xFF1B;
+<img src="dict-mem.png" alt="python_dict_mem"></p>
+<h2 id="python-&#x5B57;&#x5178;&#x793A;&#x4F8B;">Python &#x5B57;&#x5178;&#x793A;&#x4F8B;</h2>
+<p>&#x672C;&#x6B21;&#x793A;&#x4F8B;&#x811A;&#x672C;&#x5982;&#x4E0B;&#xFF1A;</p>
+<pre class="language-"><code class="lang-python">d <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+d<span class="token punctuation">[</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">&apos;2&apos;</span>
+d<span class="token punctuation">[</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token string">&apos;e&apos;</span>
+d<span class="token punctuation">.</span>pop<span class="token punctuation">(</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">)</span>
+</code></pre>
+<p>&#x901A;&#x8FC7; Python &#x7684;&#x53CD;&#x6C47;&#x7F16;&#x5DE5;&#x5177;&#x83B7;&#x53D6;&#x5B57;&#x8282;&#x7801;&#xFF1B;</p>
+<pre class="language-"><code class="lang-shell">python -m dis dict_test.py
+</code></pre>
+<p>&#x8F93;&#x51FA;&#x7684;&#x5B57;&#x8282;&#x7801;&#x5982;&#x4E0B;&#xFF1B;</p>
+<pre class="language-"><code class="lang-shell">  2           0 BUILD_MAP                0
+              2 STORE_NAME               0 <span class="token punctuation">(</span>d<span class="token punctuation">)</span>
+
+  3           4 LOAD_CONST               0 <span class="token punctuation">(</span><span class="token string">&apos;2&apos;</span><span class="token punctuation">)</span>
+              6 LOAD_NAME                0 <span class="token punctuation">(</span>d<span class="token punctuation">)</span>
+              8 LOAD_CONST               1 <span class="token punctuation">(</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">)</span>
+             10 STORE_SUBSCR
+
+  4          12 LOAD_CONST               2 <span class="token punctuation">(</span><span class="token string">&apos;e&apos;</span><span class="token punctuation">)</span>
+             14 LOAD_NAME                0 <span class="token punctuation">(</span>d<span class="token punctuation">)</span>
+             16 LOAD_CONST               1 <span class="token punctuation">(</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">)</span>
+             18 STORE_SUBSCR
+
+  5          20 LOAD_NAME                0 <span class="token punctuation">(</span>d<span class="token punctuation">)</span>
+             22 LOAD_METHOD              1 <span class="token punctuation">(</span>pop<span class="token punctuation">)</span>
+             24 LOAD_CONST               1 <span class="token punctuation">(</span><span class="token string">&apos;1&apos;</span><span class="token punctuation">)</span>
+             26 CALL_METHOD              1
+             28 POP_TOP
+             30 LOAD_CONST               3 <span class="token punctuation">(</span>None<span class="token punctuation">)</span>
+             32 RETURN_VALUE
+</code></pre>
+<p>&#x901A;&#x8FC7;&#x5B57;&#x8282;&#x7801;&#x6307;&#x4EE4;&#x53EF;&#x77E5;&#xFF0C;&#x9996;&#x5148;&#x8C03;&#x7528;&#x4E86; BUILD_MAP &#x6765;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5B57;&#x5178;&#xFF0C;&#x63A5;&#x7740;&#x5C31;&#x5BF9;&#x65B0;&#x5EFA;&#x7684;&#x5B57;&#x5178; d &#x8FDB;&#x884C;&#x4E86;&#x8D4B;&#x503C;&#x64CD;&#x4F5C;&#x4E0E;&#x66F4;&#x65B0;&#x64CD;&#x4F5C;&#xFF0C;&#x6700;&#x540E;&#x8C03;&#x7528;&#x4E86; pop &#x65B9;&#x6CD5;&#x5220;&#x9664;&#x4E00;&#x4E2A; key&#x3002;&#x63A5;&#x4E0B;&#x6765;&#x5C31;&#x8BE6;&#x7EC6;&#x5206;&#x6790;&#x4E00;&#x4E0B;&#x76F8;&#x5173;&#x6D41;&#x7A0B;&#x3002;</p>
+<h2 id="&#x5B57;&#x5178;&#x7684;&#x521D;&#x59CB;&#x5316;&#x6D41;&#x7A0B;">&#x5B57;&#x5178;&#x7684;&#x521D;&#x59CB;&#x5316;&#x6D41;&#x7A0B;</h2>
+<p>&#x901A;&#x8FC7;&#x67E5;&#x627E; BUILD_MAP &#x7684;&#x865A;&#x62DF;&#x673A;&#x6267;&#x884C;&#x51FD;&#x6570;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L2357" target="_blank">Python/ceval.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Python/ceval.c</span>
+<span class="token keyword">switch</span> <span class="token punctuation">(</span>opcode<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+    <span class="token function">TARGET</span><span class="token punctuation">(</span>BUILD_MAP<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Py_ssize_t i<span class="token punctuation">;</span>
+        PyObject <span class="token operator">*</span>map <span class="token operator">=</span> <span class="token function">_PyDict_NewPresized</span><span class="token punctuation">(</span><span class="token punctuation">(</span>Py_ssize_t<span class="token punctuation">)</span>oparg<span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment">// &#x65B0;&#x5EFA;&#x5E76;&#x521D;&#x59CB;&#x5316;&#x4E00;&#x4E2A;&#x5B57;&#x5178;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>map <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+            <span class="token keyword">goto</span> error<span class="token punctuation">;</span>&#x3000;                                          <span class="token comment">// &#x5982;&#x679C;&#x65B0;&#x5EFA;&#x5931;&#x8D25;&#x5219;&#x62A5;&#x9519;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>i <span class="token operator">=</span> oparg<span class="token punctuation">;</span> i <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;                          &#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x5728;&#x65B0;&#x5EFA;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#x662F;&#x5426;&#x901A;&#x8FC7;&#x53C2;&#x6570;&#x4F20;&#x503C;</span>
+            <span class="token keyword">int</span> err<span class="token punctuation">;</span>
+            PyObject <span class="token operator">*</span>key <span class="token operator">=</span> <span class="token function">PEEK</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>i<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            PyObject <span class="token operator">*</span>value <span class="token operator">=</span> <span class="token function">PEEK</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token operator">*</span>i <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            err <span class="token operator">=</span> <span class="token function">PyDict_SetItem</span><span class="token punctuation">(</span>map<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;        &#x3000;&#x3000;&#x3000;<span class="token comment">// &#x627E;&#x5230;&#x5BF9;&#x5E94;&#x7684;&#x503C;&#x5E76;&#x8BB2;&#x8BE5;&#x503C;&#x8BBE;&#x7F6E;&#x5230;map&#x4E2D;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>err <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x62A5;&#x9519;</span>
+                <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>map<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword">goto</span> error<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;&#x9519;&#x8BEF;&#x5C31;&#x62A5;&#x9519;&#x5904;&#x7406;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>oparg<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">Py_DECREF</span><span class="token punctuation">(</span><span class="token function">POP</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5F39;&#x51FA;&#x6808;&#x4E0A;&#x8F93;&#x5165;&#x53C2;&#x6570;&#x7684;&#x5F15;&#x7528;</span>
+            <span class="token function">Py_DECREF</span><span class="token punctuation">(</span><span class="token function">POP</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token function">PUSH</span><span class="token punctuation">(</span>map<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8BB2;&#x751F;&#x6210;&#x7684;map&#x538B;&#x6808;</span>
+        <span class="token function">DISPATCH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x9700;&#x8981;&#x6267;&#x884C;&#x4E0B;&#x4E00;&#x6761;&#x5B57;&#x8282;&#x7801;&#x6307;&#x4EE4;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x4ECE;&#x8BE5;&#x51FD;&#x6570;&#x7684;&#x6267;&#x884C;&#x53EF;&#x77E5;&#xFF0C;&#x521D;&#x59CB;&#x5316;&#x7684;&#x51FD;&#x6570;&#x662F;&#x4ECE;_PyDict_NewPresized &#x5F00;&#x59CB;&#xFF0C;&#x8BE5;&#x51FD;&#x6570;&#x5C31;&#x662F;&#x751F;&#x6210;&#x5E76;&#x521D;&#x59CB;&#x5316;&#x4E00;&#x4E2A;&#x5B57;&#x5178;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1240" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+
+PyObject <span class="token operator">*</span>
+<span class="token function">_PyDict_NewPresized</span><span class="token punctuation">(</span>Py_ssize_t minused<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">const</span> Py_ssize_t max_presize <span class="token operator">=</span> <span class="token number">128</span> <span class="token operator">*</span> <span class="token number">1024</span><span class="token punctuation">;</span>&#x3000;         <span class="token comment">// &#x5B57;&#x5178;&#x6700;&#x5927;&#x7684;&#x5BB9;&#x91CF;</span>
+    Py_ssize_t newsize<span class="token punctuation">;</span>
+    PyDictKeysObject <span class="token operator">*</span>new_keys<span class="token punctuation">;</span>
+
+    <span class="token comment">/* There are no strict guarantee that returned dict can contain minused
+     * items without resize.  So we create medium size dict instead of very
+     * large dict or MemoryError.
+     */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>minused <span class="token operator">&gt;</span> <span class="token function">USABLE_FRACTION</span><span class="token punctuation">(</span>max_presize<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>       <span class="token comment">// &#x68C0;&#x67E5;&#x4F20;&#x5165;&#x7684;&#x6570;&#x91CF;&#x662F;&#x5426;&#x8D85;&#x8FC7;&#x6700;&#x5927;&#x503C;</span>
+        newsize <span class="token operator">=</span> max_presize<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        Py_ssize_t minsize <span class="token operator">=</span> <span class="token function">ESTIMATE_SIZE</span><span class="token punctuation">(</span>minused<span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment">// &#x83B7;&#x53D6;&#x6700;&#x5C0F;&#x7684;&#x503C;,&#x5728;&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x7A7A;&#x7684;&#x5B57;&#x5178;&#x7684;&#x65F6;&#x5019;&#x8BE5;&#x503C;&#x4E3A;&#xFF10;</span>
+        newsize <span class="token operator">=</span> PyDict_MINSIZE<span class="token punctuation">;</span>                       <span class="token comment">// &#x8BBE;&#x7F6E;&#x5B57;&#x5178;&#x7684;&#x6700;&#x5C0F;&#x503C;&#x3000;&#x4E3A;&#xFF18;</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span>newsize <span class="token operator">&lt;</span> minsize<span class="token punctuation">)</span> <span class="token punctuation">{</span>                     <span class="token comment">// &#x5982;&#x679C;&#x4F20;&#x5165;&#x7684;&#x503C;&#x5927;&#x4E8E;&#x6700;&#x5C0F;&#x503C;&#x5219;&#x8C03;&#x6574;newsize &#x5927;&#x5C0F;</span>
+            newsize <span class="token operator">&lt;&lt;=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">IS_POWER_OF_2</span><span class="token punctuation">(</span>newsize<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    new_keys <span class="token operator">=</span> <span class="token function">new_keys_object</span><span class="token punctuation">(</span>newsize<span class="token punctuation">)</span><span class="token punctuation">;</span>                <span class="token comment">// &#x751F;&#x6210;&#x5E76;&#x521D;&#x59CB;&#x5316;&#x4E00;&#x4E2A;PyDictKeysObject&#x5BF9;&#x8C61;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>new_keys <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token function">new_dict</span><span class="token punctuation">(</span>new_keys<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                    <span class="token comment">// &#x751F;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5BF9;&#x8C61;&#x5E76;&#x8FD4;&#x56DE;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x9996;&#x5148;&#xFF0C;&#x5148;&#x8BA1;&#x7B97;&#x51FA;&#x9700;&#x8981;&#x751F;&#x6210;&#x7684;&#x5B57;&#x5178;&#x7684;&#x5927;&#x5C0F;&#xFF0C;&#x7136;&#x540E;&#x518D;&#x521D;&#x59CB;&#x5316;&#x4E00;&#x4E2A; PyDictKeysObject&#xFF0C;&#x6700;&#x540E;&#x5C31;&#x751F;&#x6210;&#x4E00;&#x4E2A; PyDictObject &#x8FD4;&#x56DE;&#x3002;&#x7EE7;&#x7EED;&#x67E5;&#x770B; new_keys_object &#x7684;&#x6267;&#x884C;&#x6D41;&#x7A0B;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L503" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+
+<span class="token keyword">static</span> PyDictKeysObject <span class="token operator">*</span><span class="token function">new_keys_object</span><span class="token punctuation">(</span>Py_ssize_t size<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    PyDictKeysObject <span class="token operator">*</span>dk<span class="token punctuation">;</span>
+    Py_ssize_t es<span class="token punctuation">,</span> usable<span class="token punctuation">;</span>
+
+    <span class="token function">assert</span><span class="token punctuation">(</span>size <span class="token operator">&gt;=</span> PyDict_MINSIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>           <span class="token comment">// &#x68C0;&#x67E5;size&#x662F;&#x5426;&#x5927;&#x4E8E;&#x6700;&#x5C0F;size</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">IS_POWER_OF_2</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>              <span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x662F;&#xFF12;&#x7684;&#x500D;&#x6570;</span>
+
+    usable <span class="token operator">=</span> <span class="token function">USABLE_FRACTION</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>           <span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x53EF;&#x7528;&#x3000;&#x3000;&#x6839;&#x636E;&#x7ECF;&#x9A8C;&#x5728;&#xFF11;/2&#x548C;&#xFF12;/3&#x4E4B;&#x95F4;&#x6548;&#x679C;&#x6700;&#x597D;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">&lt;=</span> <span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        es <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">&lt;=</span> <span class="token number">0xffff</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        es <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token macro property">#<span class="token directive keyword">if</span> SIZEOF_VOID_P &gt; 4</span>
+    <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">&lt;=</span> <span class="token number">0xffffffff</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        es <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token macro property">#<span class="token directive keyword">endif</span></span>
+    <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        es <span class="token operator">=</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>Py_ssize_t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">==</span> PyDict_MINSIZE <span class="token operator">&amp;&amp;</span> numfreekeys <span class="token operator">&gt;</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x662F;&#x5426;&#x6709;&#x7F13;&#x5B58;&#xFF0C;&#x5982;&#x679C;&#x6709;&#x7F13;&#x5B58;&#x5C31;&#x9009;&#x62E9;&#x7F13;&#x5B58;&#x4E2D;&#x7684;dk</span>
+        dk <span class="token operator">=</span> keys_free_list<span class="token punctuation">[</span><span class="token operator">--</span>numfreekeys<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        dk <span class="token operator">=</span> <span class="token function">PyObject_MALLOC</span><span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>PyDictKeysObject<span class="token punctuation">)</span>
+                             <span class="token operator">+</span> es <span class="token operator">*</span> size
+                             <span class="token operator">+</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>PyDictKeyEntry<span class="token punctuation">)</span> <span class="token operator">*</span> usable<span class="token punctuation">)</span><span class="token punctuation">;</span>    <span class="token comment">// &#x6CA1;&#x6709;&#x7F13;&#x5B58;&#x53EF;&#x4F7F;&#x7528;&#x7684;&#x5B57;&#x5178;&#x5219;&#x7533;&#x8BF7;&#x5185;&#x5B58;&#x751F;&#x6210;&#x4E00;&#x4E2A;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>dk <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">PyErr_NoMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    DK_DEBUG_INCREF dk<span class="token operator">-&gt;</span>dk_refcnt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>                              <span class="token comment">// &#x8BBE;&#x7F6E;&#x5F15;&#x7528;&#x8BA1;&#x6570;</span>
+    dk<span class="token operator">-&gt;</span>dk_size <span class="token operator">=</span> size<span class="token punctuation">;</span>                                             <span class="token comment">// &#x8BBE;&#x7F6E;&#x5927;&#x5C0F;</span>
+    dk<span class="token operator">-&gt;</span>dk_usable <span class="token operator">=</span> usable<span class="token punctuation">;</span>                                        <span class="token comment">// &#x8BBE;&#x7F6E;&#x662F;&#x5426;&#x53EF;&#x7528;</span>
+    dk<span class="token operator">-&gt;</span>dk_lookup <span class="token operator">=</span> lookdict_unicode_nodummy<span class="token punctuation">;</span>                       <span class="token comment">// &#x8BBE;&#x7F6E;&#x67E5;&#x627E;&#x51FD;&#x6570;</span>
+    dk<span class="token operator">-&gt;</span>dk_nentries <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token function">memset</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>dk<span class="token operator">-&gt;</span>dk_indices<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0xff</span><span class="token punctuation">,</span> es <span class="token operator">*</span> size<span class="token punctuation">)</span><span class="token punctuation">;</span>                    <span class="token comment">// &#x5C06;&#x7533;&#x8BF7;&#x7684;&#x5185;&#x5B58;&#x7F6E;&#x7A7A;</span>
+    <span class="token function">memset</span><span class="token punctuation">(</span><span class="token function">DK_ENTRIES</span><span class="token punctuation">(</span>dk<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span>PyDictKeyEntry<span class="token punctuation">)</span> <span class="token operator">*</span> usable<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> dk<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x4E3B;&#x8981;&#x5C31;&#x662F;&#x901A;&#x8FC7;&#x4F20;&#x5165;&#x7684; size&#xFF0C;&#x68C0;&#x67E5;&#x662F;&#x5426;&#x8D85;&#x8FC7;&#x8BBE;&#x7F6E;&#x7684;&#x5927;&#x5C0F;&#xFF0C;&#x68C0;&#x67E5;&#x662F;&#x5426;&#x6709;&#x7F13;&#x5B58;&#x7684;&#x5B57;&#x5178;&#x6570;&#x636E;&#x53EF;&#x7528;&#xFF0C;&#x5982;&#x679C;&#x6CA1;&#x6709;&#x5219;&#x7533;&#x8BF7;&#x5185;&#x5B58;&#x91CD;&#x65B0;&#x751F;&#x6210;&#x4E00;&#x4E2A; dk&#xFF0C;&#x6700;&#x540E;&#x8FDB;&#x884C;&#x7533;&#x8BF7;&#x5230;&#x7684;&#x5185;&#x5B58;&#x8BB2;&#x5185;&#x5BB9;&#x6E05;&#x7A7A;&#x3002;&#x63A5;&#x7740;&#x5C31;&#x4F1A;&#x8FDB;&#x884C; new_dict &#x521D;&#x59CB;&#x5316;&#x6570;&#x636E;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L568" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+
+<span class="token comment">/* Consumes a reference to the keys object */</span>
+<span class="token keyword">static</span> PyObject <span class="token operator">*</span>
+<span class="token function">new_dict</span><span class="token punctuation">(</span>PyDictKeysObject <span class="token operator">*</span>keys<span class="token punctuation">,</span> PyObject <span class="token operator">*</span><span class="token operator">*</span>values<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    PyDictObject <span class="token operator">*</span>mp<span class="token punctuation">;</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span>keys <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>numfree<span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5224;&#x65AD;&#x7F13;&#x51B2;&#x6C60;&#x662F;&#x5426;&#x6709;</span>
+        mp <span class="token operator">=</span> free_list<span class="token punctuation">[</span><span class="token operator">--</span>numfree<span class="token punctuation">]</span><span class="token punctuation">;</span>
+        assert <span class="token punctuation">(</span>mp <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        assert <span class="token punctuation">(</span><span class="token function">Py_TYPE</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">&amp;</span>PyDict_Type<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;
+        <span class="token function">_Py_NewReference</span><span class="token punctuation">(</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span>mp<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x4F7F;&#x7528;&#x7F13;&#x51B2;&#x6C60;&#x5BF9;&#x8C61;&#x3000;&#x3000;&#x3000;&#x3000;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        mp <span class="token operator">=</span> <span class="token function">PyObject_GC_New</span><span class="token punctuation">(</span>PyDictObject<span class="token punctuation">,</span> <span class="token operator">&amp;</span>PyDict_Type<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x7F13;&#x51B2;&#x6C60;&#x6CA1;&#x6709;&#x5219;&#x7533;&#x8BF7;&#x65B0;&#x7684;&#x5BF9;&#x8C61;&#x5E76;&#x521D;&#x59CB;&#x5316;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>mp <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">DK_DECREF</span><span class="token punctuation">(</span>keys<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token function">free_values</span><span class="token punctuation">(</span>values<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    mp<span class="token operator">-&gt;</span>ma_keys <span class="token operator">=</span> keys<span class="token punctuation">;</span>
+    mp<span class="token operator">-&gt;</span>ma_values <span class="token operator">=</span> values<span class="token punctuation">;</span>
+    mp<span class="token operator">-&gt;</span>ma_used <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8BBE;&#x7F6E;ma_used&#x4E3A;0</span>
+    mp<span class="token operator">-&gt;</span>ma_version_tag <span class="token operator">=</span> <span class="token function">DICT_NEXT_VERSION</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">_PyDict_CheckConsistency</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span>mp<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>new_dict &#x5C31;&#x662F;&#x6839;&#x636E; keys&#xFF0C;values &#x8BBE;&#x7F6E;&#x5230;&#x4ECE;&#x7F13;&#x51B2;&#x6C60;&#x6216;&#x8005;&#x65B0;&#x751F;&#x6210;&#x4E00;&#x4E2A; dict &#x5BF9;&#x8C61;&#xFF0C;&#x6700;&#x540E;&#x8FD4;&#x56DE;&#x3002;&#x81F3;&#x6B64;&#xFF0C;dict &#x7684;&#x521B;&#x5EFA;&#x5DE5;&#x4F5C;&#x5DF2;&#x7ECF;&#x5B8C;&#x6210;&#x3002;</p>
+<h2 id="&#x5B57;&#x5178;&#x7684;&#x63D2;&#x5165;&#x4E0E;&#x67E5;&#x627E;">&#x5B57;&#x5178;&#x7684;&#x63D2;&#x5165;&#x4E0E;&#x67E5;&#x627E;</h2>
+<p>&#x901A;&#x8FC7;&#x5B57;&#x8282;&#x7801;&#x7684;&#x6307;&#x4EE4; STORE_SUBSCR &#x53EF;&#x77E5;&#xFF0C;&#x8BE5;&#x547D;&#x4EE4;&#x5C31;&#x662F;&#x8BB2;&apos;1&apos;&#x4F5C;&#x4E3A; key, &apos;2&apos;&#x4F5C;&#x4E3A; value &#x63D2;&#x5165;&#x5230; d &#x4E2D;&#xFF0C;&#x6B64;&#x65F6;&#x67E5;&#x770B;&#x8BE5;&#x6267;&#x884C;&#x51FD;&#x6570;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L1561" target="_blank">Python/ceval.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Python/ceval.c</span>
+<span class="token keyword">switch</span> <span class="token punctuation">(</span>opcode<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+    <span class="token function">TARGET</span><span class="token punctuation">(</span>STORE_SUBSCR<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        PyObject <span class="token operator">*</span>sub <span class="token operator">=</span> <span class="token function">TOP</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// &#x7B2C;&#x4E00;&#x4E2A;&#x503C;&#x4E3A;key</span>
+        PyObject <span class="token operator">*</span>container <span class="token operator">=</span> <span class="token function">SECOND</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        <span class="token comment">// &#x8BE5;&#x4E3A;&#x5B57;&#x5178;&#x5BF9;&#x8C61;</span>
+        PyObject <span class="token operator">*</span>v <span class="token operator">=</span> <span class="token function">THIRD</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                 <span class="token comment">// &#x8BE5;&#x4E3A;value</span>
+        <span class="token keyword">int</span> err<span class="token punctuation">;</span>
+        <span class="token function">STACKADJ</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">/* container[sub] = v */</span>
+        err <span class="token operator">=</span> <span class="token function">PyObject_SetItem</span><span class="token punctuation">(</span>container<span class="token punctuation">,</span> sub<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment">// &#x8C03;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;&#x8BBE;&#x7F6E;&#x503C;</span>
+        <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>container<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>sub<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>err <span class="token operator">!=</span> <span class="token number">0</span><span class="token punctuation">)</span>
+            <span class="token keyword">goto</span> error<span class="token punctuation">;</span>
+        <span class="token function">DISPATCH</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x6B64;&#x65F6;&#xFF0C;&#x4ECE;&#x6808;&#x4E2D;&#x53D6;&#x51FA;&#x76F8;&#x5173;&#x53C2;&#x6570;&#xFF0C;&#x5E76;&#x5C06;&#x8FD9;&#x4E9B;&#x503C;&#x4F20;&#x5165; PyObject_SetItem &#x51FD;&#x6570;&#x8FDB;&#x884C;&#x5904;&#x7406;&#x8BBE;&#x7F6E;&#x503C;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/abstract.c#L186" target="_blank">Objects/abstract.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/abstract.c</span>
+<span class="token keyword">int</span>
+<span class="token function">PyObject_SetItem</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>o<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>key<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    PyMappingMethods <span class="token operator">*</span>m<span class="token punctuation">;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>o <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">||</span> key <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">||</span> value <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x4E3A;&#x7A7A;&#x5982;&#x679C;&#x4EFB;&#x4E00;&#x4E3A;&#x7A7A;&#x5219;&#x62A5;&#x9519;</span>
+        <span class="token function">null_error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    m <span class="token operator">=</span> o<span class="token operator">-&gt;</span>ob_type<span class="token operator">-&gt;</span>tp_as_mapping<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x7C7B;&#x578B;&#x7684;tp_as_mapping&#x65B9;&#x6CD5;&#x96C6;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>m <span class="token operator">&amp;&amp;</span> m<span class="token operator">-&gt;</span>mp_ass_subscript<span class="token punctuation">)</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;&#x6709;&#x8BBE;&#x7F6E;&#x8BE5;&#x7C7B;&#x578B;</span>
+        <span class="token keyword">return</span> m<span class="token operator">-&gt;</span><span class="token function">mp_ass_subscript</span><span class="token punctuation">(</span>o<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>                    <span class="token comment">// &#x8C03;&#x7528;&#x8BE5;mp_ass_subscript&#x65B9;&#x6CD5;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token operator">-&gt;</span>ob_type<span class="token operator">-&gt;</span>tp_as_sequence<span class="token punctuation">)</span> <span class="token punctuation">{</span>                                 <span class="token comment">// &#x83B7;&#x53D6;&#x4F5C;&#x4E3A;&#x961F;&#x5217;&#x7684;&#x64CD;&#x4F5C;&#x96C6;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">PyIndex_Check</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;key&#x662F;&#x5426;&#x662F;&#x7D22;&#x5F15;</span>
+            Py_ssize_t key_value<span class="token punctuation">;</span>
+            key_value <span class="token operator">=</span> <span class="token function">PyNumber_AsSsize_t</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> PyExc_IndexError<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>key_value <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">&amp;&amp;</span> <span class="token function">PyErr_Occurred</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token function">PySequence_SetItem</span><span class="token punctuation">(</span>o<span class="token punctuation">,</span> key_value<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8C03;&#x7528;&#x7D22;&#x5F15;&#x63D2;&#x5165;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token operator">-&gt;</span>ob_type<span class="token operator">-&gt;</span>tp_as_sequence<span class="token operator">-&gt;</span>sq_ass_item<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token function">type_error</span><span class="token punctuation">(</span><span class="token string">&quot;sequence index must be &quot;</span>
+                       <span class="token string">&quot;integer, not &apos;%.200s&apos;&quot;</span><span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token function">type_error</span><span class="token punctuation">(</span><span class="token string">&quot;&apos;%.200s&apos; object does not support item assignment&quot;</span><span class="token punctuation">,</span> o<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5219;&#x8BE5;&#x7C7B;&#x578B;&#x5BF9;&#x8C61;&#x4E0D;&#x652F;&#x6301;&#x8BBE;&#x7F6E;</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x5176;&#x4E2D;&#x5C31;&#x8C03;&#x7528;&#x4E86;&#x5B57;&#x5178;&#x7684; tp_as_mapping &#x7684;&#x65B9;&#x6CD5;&#x96C6;&#xFF0C;&#x5E76;&#x8C03;&#x7528;&#x4E86;&#x8BE5;&#x65B9;&#x6CD5;&#x96C6;&#x7684; mp_ass_subscript &#x65B9;&#x6CD5;&#xFF1B;&#x6B64;&#x65F6;&#x6211;&#x4EEC;&#x5206;&#x6790;&#x4E00;&#x4E0B;&#xFF0C;dict &#x7684; tp_as_mapping &#x7684;&#x65B9;&#x6CD5;&#x96C6;&#x3002;&#x6B64;&#x65F6;&#x5C31;&#x8C03;&#x7528;&#x4E86; tp_as_mapping &#x7684; mp_ass_subscript &#x65B9;&#x6CD5;&#xFF0C;&#x6B64;&#x65F6;&#x5C31;&#x662F;&#x8C03;&#x7528; dict &#x7684; dict_ass_sub &#x65B9;&#x6CD5;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L2040" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+<span class="token keyword">static</span> <span class="token keyword">int</span>
+<span class="token function">dict_ass_sub</span><span class="token punctuation">(</span>PyDictObject <span class="token operator">*</span>mp<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>v<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>w<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>w <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span> <span class="token function">PyDict_DelItem</span><span class="token punctuation">(</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span>mp<span class="token punctuation">,</span> v<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">else</span>
+        <span class="token keyword">return</span> <span class="token function">PyDict_SetItem</span><span class="token punctuation">(</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span><span class="token punctuation">)</span>mp<span class="token punctuation">,</span> v<span class="token punctuation">,</span> w<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x53EF;&#x77E5;&#xFF0C;&#x5220;&#x9664;&#x4E00;&#x4E2A; key &#x5C31;&#x662F; PyDict_DelItem,&#x8BBE;&#x7F6E;&#x4E00;&#x4E2A; key &#x5C31;&#x662F; PyDict_SetItem&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1433" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+<span class="token keyword">int</span>
+<span class="token function">PyDict_SetItem</span><span class="token punctuation">(</span>PyObject <span class="token operator">*</span>op<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>key<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    PyDictObject <span class="token operator">*</span>mp<span class="token punctuation">;</span>
+    Py_hash_t hash<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyDict_Check</span><span class="token punctuation">(</span>op<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000; <span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x662F;&#x5B57;&#x5178;&#x7C7B;&#x578B;</span>
+        <span class="token function">PyErr_BadInternalCall</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mp <span class="token operator">=</span> <span class="token punctuation">(</span>PyDictObject <span class="token operator">*</span><span class="token punctuation">)</span>op<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_CheckExact</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span> <span class="token operator">||</span>
+        <span class="token punctuation">(</span>hash <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>PyASCIIObject <span class="token operator">*</span><span class="token punctuation">)</span> key<span class="token punctuation">)</span><span class="token operator">-&gt;</span>hash<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x4F20;&#x5165;&#x7684;key&#x662F;&#x5426;hash&#x4E3A;-1</span>
+    <span class="token punctuation">{</span>
+        hash <span class="token operator">=</span> <span class="token function">PyObject_Hash</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>                      <span class="token comment">// &#x751F;&#x6210;hash&#x8C03;&#x7528;key&#x5BF9;&#x5E94;&#x7684;tp_hash&#x65B9;&#x6CD5;&#xFF0C;&#x5728;&#x672C;&#x4F8B;&#x4E2D;&#x4F20;&#x5165;&#x7684;&#x662F;str&#x7C7B;&#x578B;&#xFF0C;&#x5219;&#x8C03;&#x7528;str&#x7C7B;&#x578B;&#x7684;tp_hash&#x65B9;&#x6CD5;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>hash <span class="token operator">==</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+            <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token comment">/* insertdict() handles any resizing that might be necessary */</span>
+    <span class="token keyword">return</span> <span class="token function">insertdict</span><span class="token punctuation">(</span>mp<span class="token punctuation">,</span> key<span class="token punctuation">,</span> hash<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>          <span class="token comment">// &#x751F;&#x6210;hash&#x8C03;&#x7528;key&#x5BF9;&#x5E94;&#x7684;tp_hash&#x65B9;&#x6CD5;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>insertdict &#x65B9;&#x6CD5;&#x5C31;&#x662F;&#x5C06;&#x751F;&#x6210;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x63D2;&#x5165;&#x5230;&#x5B57;&#x5178;&#x4E2D;&#x53BB;&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L987" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+<span class="token keyword">static</span> <span class="token keyword">int</span>
+<span class="token function">insertdict</span><span class="token punctuation">(</span>PyDictObject <span class="token operator">*</span>mp<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>key<span class="token punctuation">,</span> Py_hash_t hash<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>value<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    PyObject <span class="token operator">*</span>old_value<span class="token punctuation">;</span>
+    PyDictKeyEntry <span class="token operator">*</span>ep<span class="token punctuation">;</span>
+
+    <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Py_INCREF</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_values <span class="token operator">!=</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token function">PyUnicode_CheckExact</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">insertion_resize</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>                     <span class="token comment">// &#x91CD;&#x65B0;&#x8BBE;&#x7F6E;mp&#x7684;&#x5927;&#x5C0F;  &#x5982;&#x679C;ma_values&#x6709;&#x503C;</span>
+            <span class="token keyword">goto</span> Fail<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    Py_ssize_t ix <span class="token operator">=</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span><span class="token function">dk_lookup</span><span class="token punctuation">(</span>mp<span class="token punctuation">,</span> key<span class="token punctuation">,</span> hash<span class="token punctuation">,</span> <span class="token operator">&amp;</span>old_value<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000; <span class="token comment">// &#x8C03;&#x7528;&#x67E5;&#x627E;&#x65B9;&#x6CD5;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ix <span class="token operator">==</span> DKIX_ERROR<span class="token punctuation">)</span>
+        <span class="token keyword">goto</span> Fail<span class="token punctuation">;</span>
+
+    <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">PyUnicode_CheckExact</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span> <span class="token operator">||</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_lookup <span class="token operator">==</span> lookdict<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">MAINTAIN_TRACKING</span><span class="token punctuation">(</span>mp<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>                                        <span class="token comment">// &#x68C0;&#x67E5;mp key values&#x662F;&#x5426;&#x9700;&#x8981;&#x52A0;&#x5165;&#x5783;&#x573E;&#x56DE;&#x6536;</span>
+
+    <span class="token comment">/* When insertion order is different from shared key, we can&apos;t share
+     * the key anymore.  Convert this instance to combine table.
+     */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_PyDict_HasSplitTable</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span>
+        <span class="token punctuation">(</span><span class="token punctuation">(</span>ix <span class="token operator">&gt;=</span> <span class="token number">0</span> <span class="token operator">&amp;&amp;</span> old_value <span class="token operator">==</span> <span class="token constant">NULL</span> <span class="token operator">&amp;&amp;</span> mp<span class="token operator">-&gt;</span>ma_used <span class="token operator">!=</span> ix<span class="token punctuation">)</span> <span class="token operator">||</span>
+         <span class="token punctuation">(</span>ix <span class="token operator">==</span> DKIX_EMPTY <span class="token operator">&amp;&amp;</span> mp<span class="token operator">-&gt;</span>ma_used <span class="token operator">!=</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x662F;&#x5426;&#x662F;&#x5206;&#x79BB;&#x8868;&#xFF0C;&#x5982;&#x679C;&#x6CA1;&#x67E5;&#x627E;&#x5230;&#x65E7;&#x503C;&#x5E76;&#x4E14;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">insertion_resize</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x91CD;&#x65B0;&#x8BBE;&#x7F6E;&#x8BE5;&#x5B57;&#x5178;&#x5927;&#x5C0F;</span>
+            <span class="token keyword">goto</span> Fail<span class="token punctuation">;</span>
+        ix <span class="token operator">=</span> DKIX_EMPTY<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>ix <span class="token operator">==</span> DKIX_EMPTY<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">/* Insert into new slot. */</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span>old_value <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_usable <span class="token operator">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;&#x53EF;&#x7528;&#x7684;&#x503C;&#x5C0F;&#x4E8E;&#xFF10;</span>
+            <span class="token comment">/* Need to resize. */</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">insertion_resize</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x9700;&#x8981;&#x91CD;&#x65B0;&#x6269;&#x5C55;&#x5B57;&#x5178;&#x5927;&#x5C0F;</span>
+                <span class="token keyword">goto</span> Fail<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        Py_ssize_t hashpos <span class="token operator">=</span> <span class="token function">find_empty_slot</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">,</span> hash<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x67E5;&#x627E;&#x4E00;&#x4E2A;&#x53EF;&#x7528;&#x7684;hash&#x4F4D;&#x7F6E;</span>
+        ep <span class="token operator">=</span> <span class="token operator">&amp;</span><span class="token function">DK_ENTRIES</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">)</span><span class="token punctuation">[</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token punctuation">]</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x5B58;&#x53D6;&#x7684;&#x5730;&#x5740;</span>
+        <span class="token function">dk_set_index</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">,</span> hashpos<span class="token punctuation">,</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8BBE;&#x7F6E;&#x8BE5;&#x503C;</span>
+        ep<span class="token operator">-&gt;</span>me_key <span class="token operator">=</span> key<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x4FDD;&#x5B58;key</span>
+        ep<span class="token operator">-&gt;</span>me_hash <span class="token operator">=</span> hash<span class="token punctuation">;</span>                                                   <span class="token comment">// &#x4FDD;&#x5B58;&#x8BA1;&#x7B97;&#x5F97;&#x51FA;&#x7684;hash&#x503C;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_values<span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;mp&#x7684;ma_values&#x6709;&#x503C;</span>
+            assert <span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_values<span class="token punctuation">[</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            mp<span class="token operator">-&gt;</span>ma_values<span class="token punctuation">[</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token punctuation">]</span> <span class="token operator">=</span> value<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8BBE;&#x7F6E;&#x8BE5;key&#x5BF9;&#x5E94;&#x7684;value</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">else</span> <span class="token punctuation">{</span>
+            ep<span class="token operator">-&gt;</span>me_value <span class="token operator">=</span> value<span class="token punctuation">;</span>                                             <span class="token comment">// &#x76F4;&#x63A5;&#x8BB2;value&#x8BBE;&#x7F6E;&#x5230;entry&#x4E0A;&#x9762;</span>
+        <span class="token punctuation">}</span>
+        mp<span class="token operator">-&gt;</span>ma_used<span class="token operator">++</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000; <span class="token comment">// &#x4F7F;&#x7528;&#x4E2A;&#x6570;&#x52A0;&#xFF11;</span>
+        mp<span class="token operator">-&gt;</span>ma_version_tag <span class="token operator">=</span> <span class="token function">DICT_NEXT_VERSION</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;
+        mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_usable<span class="token operator">--</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x53EF;&#x7528;&#x51CF;&#xFF11;</span>
+        mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_nentries<span class="token operator">++</span><span class="token punctuation">;</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_usable <span class="token operator">&gt;=</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">_PyDict_CheckConsistency</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_PyDict_HasSplitTable</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>                                         <span class="token comment">// &#x5982;&#x679C;&#x662F;&#x5206;&#x79BB;&#x7684;</span>
+        mp<span class="token operator">-&gt;</span>ma_values<span class="token punctuation">[</span>ix<span class="token punctuation">]</span> <span class="token operator">=</span> value<span class="token punctuation">;</span>                                           <span class="token comment">// &#x76F4;&#x63A5;&#x8BBE;&#x7F6E;ma_values&#x5BF9;&#x5E94;&#x7684;ix&#x5230;values&#x4E2D;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>old_value <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">/* pending state */</span>
+            <span class="token function">assert</span><span class="token punctuation">(</span>ix <span class="token operator">==</span> mp<span class="token operator">-&gt;</span>ma_used<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            mp<span class="token operator">-&gt;</span>ma_used<span class="token operator">++</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x4F7F;&#x7528;&#x52A0;&#xFF11;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span> <span class="token punctuation">{</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span>old_value <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">DK_ENTRIES</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">)</span><span class="token punctuation">[</span>ix<span class="token punctuation">]</span><span class="token punctuation">.</span>me_value <span class="token operator">=</span> value<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    mp<span class="token operator">-&gt;</span>ma_version_tag <span class="token operator">=</span> <span class="token function">DICT_NEXT_VERSION</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Py_XDECREF</span><span class="token punctuation">(</span>old_value<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">/* which **CAN** re-enter (see issue #22653) */</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">_PyDict_CheckConsistency</span><span class="token punctuation">(</span>mp<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+Fail<span class="token operator">:</span>
+    <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">Py_DECREF</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x9996;&#x5148;&#x4F1A;&#x8C03;&#x7528;&#x76F8;&#x5173;&#x7684;&#x67E5;&#x627E;&#x65B9;&#x6CD5;&#xFF0C;&#x53BB;&#x67E5;&#x627E;&#x5F85;&#x641C;&#x7D22;&#x7684;&#x503C;&#x662F;&#x5426;&#x5DF2;&#x7ECF;&#x5B58;&#x5728;&#x5B57;&#x5178;&#x4E2D;&#xFF0C;&#x5982;&#x679C;&#x5F53;&#x524D;&#x5B57;&#x5178;&#x6570;&#x636E;&#x5DF2;&#x7ECF;&#x6EE1;&#x4E86;&#x5219;&#x4F1A;&#x6309;&#x7167;&#x589E;&#x957F;&#x5927;&#x5C0F;&#x7684;&#x51FD;&#x6570;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5B57;&#x5178;&#xFF0C;&#x5E76;&#x628A;&#x65E7;&#x6570;&#x636E;&#x8BBE;&#x7F6E;&#x5230;&#x65B0;&#x7684;&#x5B57;&#x5178;&#x4E2D;&#xFF0C;&#x5F53;&#x627E;&#x5230;&#x7684;&#x5B57;&#x5178;&#x5339;&#x914D;&#x65F6;&#x5219;&#x8FD4;&#x56DE;&#x3002;</p>
+<p>&#x5176;&#x4E2D; dk_lookup &#x5BF9;&#x5E94;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x5728;&#x521D;&#x59CB;&#x5316;&#x4E4B;&#x540E;&#x5BF9;&#x5E94;&#x7684;&#x662F; lookdict_unicode_nodummy&#xFF1B;</p>
+<p><code>&#x6E90;&#x6587;&#x4EF6;&#xFF1A;</code><a href="https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L813" target="_blank">Objects/dictobject.c</a></p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// Objects/dictobject.c</span>
+
+<span class="token comment">/* Faster version of lookdict_unicode when it is known that no &lt;dummy&gt; keys
+ * will be present. */</span>
+<span class="token keyword">static</span> Py_ssize_t _Py_HOT_FUNCTION
+<span class="token function">lookdict_unicode_nodummy</span><span class="token punctuation">(</span>PyDictObject <span class="token operator">*</span>mp<span class="token punctuation">,</span> PyObject <span class="token operator">*</span>key<span class="token punctuation">,</span>
+                         Py_hash_t hash<span class="token punctuation">,</span> PyObject <span class="token operator">*</span><span class="token operator">*</span>value_addr<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token function">assert</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_values <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">/* Make sure this function doesn&apos;t have to handle non-unicode keys,
+       including subclasses of str; e.g., one reason to subclass
+       unicodes is to override __eq__, and for speed we don&apos;t cater to
+       that here. */</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">PyUnicode_CheckExact</span><span class="token punctuation">(</span>key<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x68C0;&#x67E5;&#x5982;&#x679C;&#x4E0D;&#x662F;&#xFF55;&#xFF4E;icode&#x5219;&#x76F4;&#x63A5;&#x8C03;&#x7528;lookdict&#x65B9;&#x6CD5;&#x67E5;&#x627E;</span>
+        mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_lookup <span class="token operator">=</span> lookdict<span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token function">lookdict</span><span class="token punctuation">(</span>mp<span class="token punctuation">,</span> key<span class="token punctuation">,</span> hash<span class="token punctuation">,</span> value_addr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    PyDictKeyEntry <span class="token operator">*</span>ep0 <span class="token operator">=</span> <span class="token function">DK_ENTRIES</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;keys&#x7684;&#x9996;&#x4E2A;&#x5143;&#x7D20;&#x5730;&#x5740;</span>
+    size_t mask <span class="token operator">=</span> <span class="token function">DK_MASK</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x5927;&#x5C0F;</span>
+    size_t perturb <span class="token operator">=</span> <span class="token punctuation">(</span>size_t<span class="token punctuation">)</span>hash<span class="token punctuation">;</span>
+    size_t i <span class="token operator">=</span> <span class="token punctuation">(</span>size_t<span class="token punctuation">)</span>hash <span class="token operator">&amp;</span> mask<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x751F;&#x6210;&#x7684;&#x6700;&#x7EC8;&#x7684;&#x503C;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        Py_ssize_t ix <span class="token operator">=</span> <span class="token function">dk_get_index</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">,</span> i<span class="token punctuation">)</span><span class="token punctuation">;</span>                <span class="token comment">// &#x4FBF;&#x5229;ma_keys&#x3000;&#xFF4B;ey&#x5217;&#x8868;</span>
+        assert <span class="token punctuation">(</span>ix <span class="token operator">!=</span> DKIX_DUMMY<span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x5224;&#x65AD;&#x4E0D;&#x80FD;&#x4E3A;&#x7A7A;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ix <span class="token operator">==</span> DKIX_EMPTY<span class="token punctuation">)</span> <span class="token punctuation">{</span>                                     <span class="token comment">// &#x5982;&#x679C;&#x4E3A;&#x7A7A;&#x5219;&#x8BC1;&#x660E;&#x627E;&#x5230;&#x4E00;&#x4E2A;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x7684;</span>
+            <span class="token operator">*</span>value_addr <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x8BB2;key&#x5BF9;&#x5E94;&#x7684;value&#x8BBE;&#x7F6E;&#x4E3A;&#x7A7A;</span>
+            <span class="token keyword">return</span> DKIX_EMPTY<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000; <span class="token comment">// &#x8FD4;&#x56DE;</span>
+        <span class="token punctuation">}</span>
+        PyDictKeyEntry <span class="token operator">*</span>ep <span class="token operator">=</span> <span class="token operator">&amp;</span>ep0<span class="token punctuation">[</span>ix<span class="token punctuation">]</span><span class="token punctuation">;</span>           &#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x8BE5;&#x4F4D;&#x7F6E;&#x5143;&#x7D20;&#x503C;</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span>ep<span class="token operator">-&gt;</span>me_key <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">assert</span><span class="token punctuation">(</span><span class="token function">PyUnicode_CheckExact</span><span class="token punctuation">(</span>ep<span class="token operator">-&gt;</span>me_key<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>ep<span class="token operator">-&gt;</span>me_key <span class="token operator">==</span> key <span class="token operator">||</span>
+            <span class="token punctuation">(</span>ep<span class="token operator">-&gt;</span>me_hash <span class="token operator">==</span> hash <span class="token operator">&amp;&amp;</span> <span class="token function">unicode_eq</span><span class="token punctuation">(</span>ep<span class="token operator">-&gt;</span>me_key<span class="token punctuation">,</span> key<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>&#x3000;&#x3000;<span class="token comment">// &#x5982;&#x679C;key&#x76F8;&#x540C; &#xFF48;&#xFF41;&#xFF53;&#xFF48;&#x503C;&#x4E5F;&#x76F8;&#x540C;</span>
+            <span class="token operator">*</span>value_addr <span class="token operator">=</span> ep<span class="token operator">-&gt;</span>me_value<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000; <span class="token comment">// &#x5C06;&#x8BE5;&#x503C;&#x8D4B;&#x503C;</span>
+            <span class="token keyword">return</span> ix<span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        perturb <span class="token operator">&gt;&gt;=</span> PERTURB_SHIFT<span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x504F;&#x79FB;</span>
+        i <span class="token operator">=</span> mask <span class="token operator">&amp;</span> <span class="token punctuation">(</span>i<span class="token operator">*</span><span class="token number">5</span> <span class="token operator">+</span> perturb <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;&#x3000;<span class="token comment">// &#x83B7;&#x53D6;&#x4E0B;&#x4E00;&#x4E2A;&#x4F4D;&#x7F6E;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">Py_UNREACHABLE</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x8BE5;&#x51FD;&#x6570;&#x7684;&#x4E3B;&#x8981;&#x5DE5;&#x4F5C;&#x5C31;&#x662F;&#x67E5;&#x627E;&#xFF0C;&#x5B57;&#x5178;&#x4E2D;&#x662F;&#x5426;&#x6709;&#x7A7A;&#x4F59;&#x7684;&#x503C;&#xFF0C;&#x6216;&#x8005;&#x5982;&#x679C;&#x627E;&#x5230;&#x4E86;&#x6EE1;&#x8DB3; hash &#x503C;&#x4E0E; key &#x76F8;&#x540C;&#x7684;&#x5C31;&#x5C06; value &#x8BBE;&#x7F6E;&#x4E3A;&#x627E;&#x5230;&#x7684;&#x503C;&#xFF08;&#x8FD9;&#x4E5F;&#x662F;&#x5B57;&#x5178;&#x67E5;&#x627E;&#x7684;&#x6838;&#x5FC3;&#x903B;&#x8F91;&#xFF09;&#x3002;&#x81F3;&#x6B64;&#xFF0C;&#x5B57;&#x5178;&#x7684;&#x63D2;&#x5165;&#x7684;&#x5927;&#x81F4;&#x6D41;&#x7A0B;&#x5DF2;&#x7ECF;&#x5206;&#x6790;&#x5B8C;&#x6BD5;&#x3002;</p>
+<h2 id="python-&#x5B57;&#x5178;&#x7684;&#x64CD;&#x4F5C;&#x6D4B;&#x8BD5;">Python &#x5B57;&#x5178;&#x7684;&#x64CD;&#x4F5C;&#x6D4B;&#x8BD5;</h2>
+<p>&#x73B0;&#x5728;&#x6211;&#x4EEC;&#x52A8;&#x624B;&#x89C2;&#x770B;&#x4E00;&#x4E0B;&#x5177;&#x4F53;&#x7684;&#x64CD;&#x4F5C;&#x5B9E;&#x4F8B;&#xFF0C;&#x9996;&#x5148;&#x58F0;&#x660E;&#xFF0C;&#x8BE5;&#x4F8B;&#x5B50;&#x4EC5;&#x4F9B;&#x8C03;&#x8BD5;&#x4F7F;&#x7528;&#xFF0C;&#x76EE;&#x524D;&#x8C03;&#x8BD5;&#x7684;&#x5B57;&#x5178;&#x7684; key &#x4E0E; value &#x90FD;&#x662F; float &#x7C7B;&#x578B;&#x5E76;&#x4E14;&#x4E0D;&#x80FD; del &#x6216;&#x8005; pop &#x5176;&#x4E2D;&#x7684; key&#x3002;&#x64CD;&#x4F5C;&#x5B57;&#x5178;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1B;</p>
+<pre class="language-"><code class="lang-python">&#xFF44; <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">20000</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">}</span>
+d<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">2</span>
+d<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">2</span>
+</code></pre>
+<p>&#x9996;&#x5148;&#xFF0C;&#x8BB2;&#x5982;&#x4E0B;&#x4EE3;&#x7801;&#x63D2;&#x5165;&#x5230; dictobject.c &#x7684; 1060 &#x884C;&#xFF1B;</p>
+<pre class="language-"><code class="lang-c"><span class="token comment">// &#x6D4B;&#x8BD5;&#x4EE3;&#x7801;</span>
+PyObject<span class="token operator">*</span> key1 <span class="token operator">=</span> <span class="token function">PyLong_FromLong</span><span class="token punctuation">(</span><span class="token number">20000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Py_hash_t hash1 <span class="token operator">=</span> <span class="token function">PyObject_Hash</span><span class="token punctuation">(</span>key1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+PyObject<span class="token operator">*</span> old_value1<span class="token punctuation">;</span>
+Py_ssize_t ix1 <span class="token operator">=</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span><span class="token function">dk_lookup</span><span class="token punctuation">(</span>mp<span class="token punctuation">,</span> key1<span class="token punctuation">,</span> hash1<span class="token punctuation">,</span> <span class="token operator">&amp;</span>old_value1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>ix1 <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    PyLongObject<span class="token operator">*</span> give<span class="token punctuation">;</span>
+    give <span class="token operator">=</span> <span class="token punctuation">(</span>PyLongObject<span class="token operator">*</span> <span class="token punctuation">)</span>key1<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;found value : %ld\n&quot;</span><span class="token punctuation">,</span> give<span class="token operator">-&gt;</span>ob_digit<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    PyDictKeyEntry <span class="token operator">*</span>ep01 <span class="token operator">=</span> <span class="token function">DK_ENTRIES</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">int</span> i<span class="token punctuation">,</span> count<span class="token punctuation">;</span>
+    count <span class="token operator">=</span> mp<span class="token operator">-&gt;</span>ma_used<span class="token punctuation">;</span>
+    <span class="token keyword">int</span> size_count<span class="token punctuation">,</span> j<span class="token punctuation">;</span>
+    size_count <span class="token operator">=</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_size<span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%s &quot;</span><span class="token punctuation">,</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_indices<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    int8_t <span class="token operator">*</span>indices <span class="token operator">=</span> <span class="token punctuation">(</span>int8_t<span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_indices<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;indices index values :&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>j<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> j<span class="token operator">&lt;</span>size_count<span class="token punctuation">;</span>j<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;%d  &quot;</span><span class="token punctuation">,</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">)</span> indices<span class="token punctuation">[</span>j<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;\n&quot;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span> i<span class="token operator">&lt;</span>count<span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+        give <span class="token operator">=</span> <span class="token punctuation">(</span>PyLongObject<span class="token operator">*</span> <span class="token punctuation">)</span>ep01<span class="token operator">-&gt;</span>me_key<span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;size : %d &quot;</span><span class="token punctuation">,</span> mp<span class="token operator">-&gt;</span>ma_keys<span class="token operator">-&gt;</span>dk_size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;found value while &#x3000;key : %ld   &quot;</span><span class="token punctuation">,</span> give<span class="token operator">-&gt;</span>ob_digit<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        give <span class="token operator">=</span> <span class="token punctuation">(</span>PyLongObject<span class="token operator">*</span> <span class="token punctuation">)</span>ep01<span class="token operator">-&gt;</span>me_value<span class="token punctuation">;</span>
+        <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">&quot;value  : %ld\n&quot;</span><span class="token punctuation">,</span> give<span class="token operator">-&gt;</span>ob_digit<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        ep01<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>&#x7136;&#x540E;&#x7F16;&#x8BD1;&#x8FD0;&#x884C;&#xFF1B;</p>
+<pre class="language-"><code class="lang-python">Python <span class="token number">3.7</span><span class="token number">.3</span> <span class="token punctuation">(</span>default<span class="token punctuation">,</span> May <span class="token number">22</span> <span class="token number">2019</span><span class="token punctuation">,</span> <span class="token number">16</span><span class="token punctuation">:</span><span class="token number">17</span><span class="token punctuation">:</span><span class="token number">57</span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span>GCC <span class="token number">7.3</span><span class="token number">.0</span><span class="token punctuation">]</span> on linux
+Type <span class="token string">&quot;help&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;copyright&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;credits&quot;</span> <span class="token keyword">or</span> <span class="token string">&quot;license&quot;</span> <span class="token keyword">for</span> more information<span class="token punctuation">.</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">20000</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">}</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+</code></pre>
+<p>&#x5176;&#x4E2D;&#x4E3A;&#x4EC0;&#x4E48;&#x521D;&#x59CB;&#x5316;&#x7684;&#x65F6;&#x5019;&#x8F93;&#x5165; 20000&#xFF0C;&#x662F;&#x6839;&#x636E;&#x4EE3;&#x7801;&#x627E;&#x5230;&#x76F8;&#x5173;&#x7684; key &#x503C;&#xFF0C;&#x56E0;&#x4E3A;&#x5B57;&#x5178;&#x4E5F;&#x88AB; python &#x81EA;&#x8EAB;&#x5B9E;&#x73B0;&#x7684;&#x7ED3;&#x6784;&#x4E2D;&#x5F15;&#x7528;&#x4E86;&#x591A;&#x6B21;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x5C31;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x7279;&#x6B8A;&#x503C;&#x6765;&#x8DDF;&#x8E2A;&#x6211;&#x4EEC;&#x60F3;&#x8981;&#x7684;&#x5B57;&#x5178;&#xFF1B;&#x5F53; d &#x521D;&#x59CB;&#x5316;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5C31;&#x8F93;&#x51FA;&#x5982;&#x4E0A;&#x6240;&#x793A;&#x5185;&#x5BB9;&#xFF1B;&#x6211;&#x4EEC;&#x63A5;&#x4E0B;&#x6765;&#x7EE7;&#x7EED;&#x64CD;&#x4F5C;&#xFF1B;</p>
+<pre class="language-"><code class="lang-python"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">20000</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">}</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">3</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">4</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token number">2</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">3</span>   value  <span class="token punctuation">:</span> <span class="token number">4</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">6</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token number">2</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">3</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">3</span>   value  <span class="token punctuation">:</span> <span class="token number">4</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">5</span>   value  <span class="token punctuation">:</span> <span class="token number">6</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">8</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token number">2</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">3</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">4</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">3</span>   value  <span class="token punctuation">:</span> <span class="token number">4</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">5</span>   value  <span class="token punctuation">:</span> <span class="token number">6</span>
+size <span class="token punctuation">:</span> <span class="token number">8</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">7</span>   value  <span class="token punctuation">:</span> <span class="token number">8</span>
+</code></pre>
+<p>&#x6B64;&#x540E;&#x6211;&#x4EEC;&#x4E00;&#x76F4;&#x6DFB;&#x52A0;&#x503C;&#x8FDB; d&#xFF0C;&#x4ECE;&#x8F93;&#x51FA;&#x4FE1;&#x606F;&#x53EF;&#x77E5;&#xFF0C;index &#x5C31;&#x662F;&#x8BB0;&#x5F55;&#x4E86; PyDictKeyEntry &#x7684;&#x7D22;&#x5F15;&#x503C;&#xFF0C;-1 &#x5C31;&#x8868;&#x793A;&#x8BE5;&#x5904;&#x672A;&#x4F7F;&#x7528;&#x3002;
+&#x5F53;&#x6211;&#x4EEC;&#x7EE7;&#x7EED;&#x5411; d &#x4E2D;&#x6DFB;&#x52A0;&#x5185;&#x5BB9;&#x65F6;&#xFF1B;</p>
+<pre class="language-"><code class="lang-python"><span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">10</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token number">2</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">3</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">4</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">5</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">3</span>   value  <span class="token punctuation">:</span> <span class="token number">4</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">5</span>   value  <span class="token punctuation">:</span> <span class="token number">6</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">7</span>   value  <span class="token punctuation">:</span> <span class="token number">8</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">9</span>   value  <span class="token punctuation">:</span> <span class="token number">10</span>
+<span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> d<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">11</span>
+found value <span class="token punctuation">:</span> <span class="token number">20000</span>
+ indices index values <span class="token punctuation">:</span><span class="token number">0</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">1</span>  <span class="token number">2</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">3</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">4</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token number">5</span>  <span class="token number">6</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>  <span class="token operator">-</span><span class="token number">1</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">20000</span>   value  <span class="token punctuation">:</span> <span class="token number">2</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">2</span>   value  <span class="token punctuation">:</span> <span class="token number">3</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">3</span>   value  <span class="token punctuation">:</span> <span class="token number">4</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">5</span>   value  <span class="token punctuation">:</span> <span class="token number">6</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">7</span>   value  <span class="token punctuation">:</span> <span class="token number">8</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">9</span>   value  <span class="token punctuation">:</span> <span class="token number">10</span>
+size <span class="token punctuation">:</span> <span class="token number">16</span> found value <span class="token keyword">while</span> &#x3000;key <span class="token punctuation">:</span> <span class="token number">10</span>   value  <span class="token punctuation">:</span> <span class="token number">11</span>
+</code></pre>
+<p>&#x4ECE;&#x8F93;&#x51FA;&#x5185;&#x5BB9;&#x53EF;&#x77E5;&#xFF0C;&#x5B57;&#x5178;&#x7684;&#x5927;&#x5C0F;&#x968F;&#x4E4B;&#x6539;&#x53D8;&#x4E86;&#xFF0C;&#x8FD9;&#x4E5F;&#x8BF4;&#x660E;&#x4E86; python &#x5B57;&#x5178;&#x7684;&#x6700;&#x4F73;&#x5927;&#x5C0F;&#x5BB9;&#x91CF;&#x9650;&#x5B9A;&#x5728; 1/2 &#x5230; 2/3 &#x4E4B;&#x95F4;&#xFF0C;&#x5982;&#x679C;&#x8D85;&#x8FC7;&#x8FD9;&#x4E2A;&#x9608;&#x503C;&#x5219;&#x5B57;&#x5178;&#x5C31;&#x4F1A;&#x81EA;&#x52A8;&#x6269;&#x5BB9;&#xFF0C;&#x6269;&#x5BB9;&#x7684;&#x7B56;&#x7565;&#x5927;&#x5BB6;&#x53EF;&#x8BE6;&#x7EC6;&#x67E5;&#x770B;&#x6E90;&#x7801;&#x3002;</p>
+<footer class="page-footer"><span class="copyright">Copyright &#xA9; FlagGo 2019 all right reserved&#xFF0C;powered by Gitbook</span><span class="footer-modification">&#x8BE5;&#x6587;&#x4EF6;&#x4FEE;&#x8BA2;&#x65F6;&#x95F4;&#xFF1A;
+2020-03-23 19:36:27
+</span></footer>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../list-object/" class="navigation navigation-prev " aria-label="Previous page: Python List 对象">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../set-object/" class="navigation navigation-next " aria-label="Next page: Python Set 对象">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Python Dict 对象","level":"2.5","depth":1,"next":{"title":"Python Set 对象","level":"2.6","depth":1,"path":"objects/set-object/index.md","ref":"objects/set-object/index.md","articles":[]},"previous":{"title":"Python List 对象","level":"2.4","depth":1,"path":"objects/list-object/index.md","ref":"objects/list-object/index.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-search","search-plus@^0.0.11","-sharing","sharing-plus","github@^2.0.0","github-buttons@2.1.0","edit-link@^2.0.2","splitter","tbfed-pagefooter","prism","page-toc-button","back-to-top-button"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"Copyright © FlagGo 2019","modify_label":"该文件修订时间：","modify_format":"YYYY-MM-DD HH:mm:ss"},"prism":{"lang":{"console":"bash","shell":"bash"},"css":["prismjs/themes/prism-okaidia.css"]},"github":{"url":"https://github.com/flaggo/python3-source-code-analysis"},"splitter":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"anchor-navigation-ex":{"isRewritePageTitle":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right"},"page-toc-button":{},"back-to-top-button":{},"github-buttons":{"repo":"flaggo/python3-source-code-analysis","types":["star"],"size":"small"},"sharing":{"weibo":true,"douban":true,"linkedin":true,"facebook":true,"google":true,"twitter":true,"all":["weibo","douban","linkedin","facebook","google","twitter"]},"edit-link":{"label":"编辑此页面","base":"https://github.com/flaggo/python3-source-code-analysis/edit/master"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":true},"search-plus":{}},"theme":"default","author":"Prodesire","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Python 3 源码分析","language":"zh-hans","output.name":"site","links":{"sidebar":{"主页":"https://github.com/flaggo/python3-source-code-analysis"}},"gitbook":"3.2.3","description":"致力于分析Python 3.7.0 的源码实现"},"file":{"path":"objects/dict-object/index.md","mtime":"2020-03-23T11:36:27.712Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2020-03-23T11:37:27.594Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-plus/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github-buttons/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-page-toc-button/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-back-to-top-button/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/buttons.js"></script>
+        
+    
+
+    </body>
+</html>
+

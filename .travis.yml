@@ -1,0 +1,49 @@
+language: node_js
+
+node_js:
+  - "10.6"
+
+# 缓存依赖
+cache:
+  directories:
+    - $HOME/.npm
+
+before_install:
+  - export TZ='Asia/Shanghai' # 更改时区
+
+# 依赖安装
+install:
+  - npm install gitbook-cli -g
+  # 安装 gitbook 插件
+  - gitbook install
+  # npm -g 是全局安装, 下面的npm install是安装在项目的node_modules中，这两种构建不冲突
+  - npm install
+
+# 构建脚本
+script:
+  - gitbook build
+  # 不冲突
+  - npm run build
+
+# 分支白名单
+branches:
+  only:
+    - master # 只对 master 分支进行构建
+
+# GitHub Pages 部署
+deploy:
+  provider: pages
+  skip_cleanup: true
+  # 在项目仪表盘的 Settings -> Environment Variables 中配置
+  github_token: $GITHUB_TOKEN
+  # 将 build 目录下的内容推送到默认的 gh-pages 分支上，并不会连带 build 目录一起
+  local_dir: _book
+  on:
+    branch: master
+
+# 通知
+notifications:
+  email:
+    recipients:
+      - wangbinxin001@126.com
+    on_failure: always
