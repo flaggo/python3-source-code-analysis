@@ -4,7 +4,7 @@
     "build": "gitbook build"
   },
   "dependencies": {
-    "gitbook": "^2.6.9",
+    "gitbook": "^3.2.3",
     "gitbook-cli": "^2.3.2",
     "gitbook-plugin-back-to-top-button": "^0.1.4",
     "gitbook-plugin-edit-link": "^2.0.2",
