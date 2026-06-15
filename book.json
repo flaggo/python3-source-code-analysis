@@ -16,11 +16,11 @@
   },
   "plugins": [
     "-search",
-    "search-plus@^0.0.11",
+    "search-plus@^1.0.4-alpha-3",
     "-sharing",
     "sharing-plus",
     "github@^2.0.0",
-    "github-buttons@2.1.0",
+    "github-buttons@^3.0.0",
     "edit-link@^2.0.2",
     "splitter",
     "tbfed-pagefooter",
@@ -51,7 +51,7 @@
       "all": ["weibo", "douban", "linkedin", "facebook", "google", "twitter"]
     },
     "tbfed-pagefooter": {
-      "copyright": "Copyright © FlagGo 2019",
+      "copyright": "Copyright © FlagGo 2019-2026",
       "modify_label": "该文件修订时间：",
       "modify_format": "YYYY-MM-DD HH:mm:ss"
     },

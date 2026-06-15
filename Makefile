@@ -1,17 +1,23 @@
+NPM ?= npm
+
+.DEFAULT_GOAL := help
+
+.PHONY: help install serve build clean
+
 help:
-	@echo "\033[32minit\033[0m"
-	@echo "    初始化GitBook"
-	@echo "\033[32mrun\033[0m"
-	@echo "    运行GitBook服务器"
-	@echo "\033[32mbuild\033[0m"
-	@echo "    构建GitBook静态页面"
+	@printf "\033[32m%-10s\033[0m %s\n" "install" "安装项目依赖"
+	@printf "\033[32m%-10s\033[0m %s\n" "serve" "运行 GitBook 服务器"
+	@printf "\033[32m%-10s\033[0m %s\n" "build" "构建 GitBook 静态页面"
+	@printf "\033[32m%-10s\033[0m %s\n" "clean" "删除构建产物"
 
-init:
-	sudo npm i -g gitbook-cli
-	gitbook install
+install:
+	$(NPM) install
 
-run:
-	gitbook serve
+serve:
+	$(NPM) run serve
 
 build:
-	gitbook build
+	$(NPM) run build
+
+clean:
+	rm -rf _book

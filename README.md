@@ -16,21 +16,27 @@
 
 ### 使用 make 命令的方式构建：
 
-若您可使用 make 命令，简单执行如下命令进行初始化：
+若您可使用 make 命令，简单执行如下命令安装依赖：
 
 ```console
-make init
+make install
 ```
 
 执行如下命令运行服务端：
 
 ```console
-make run
+make serve
+```
+
+执行如下命令构建静态页面：
+
+```console
+make build
 ```
 
 ### 使用 npm 命令的方式构建：
 
-若您不能使用 make 命令，或想直接使用 npm 命令，执行如下命令进行初始化：
+若您不能使用 make 命令，或想直接使用 npm 命令，执行如下命令安装依赖：
 
 安装项目依赖：
 
@@ -42,6 +48,12 @@ npm install
 
 ```console
 npm run serve
+```
+
+执行如下命令构建静态页面：
+
+```console
+npm run build
 ```
 
 ## 访问
@@ -77,6 +89,4 @@ npm run serve
     - [ ] Python 模块加载机制
     - [ ] Python 多线程机制
     - [ ] Python 内存管理机制
-
-
 
