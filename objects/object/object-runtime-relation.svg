@@ -1,0 +1,68 @@
+<svg width="100%" viewBox="0 0 900 360" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>对象运行时的类型关系</title>
+<desc>实例 int(10) 的 ob_type 指向类型对象 PyLong_Type；PyLong_Type 的 tp_base 指向基类型 PyBaseObject_Type，其 ob_type 指向元类型 PyType_Type；PyLong_Type 的 ob_type 也指向 PyType_Type；而 PyType_Type 的 ob_type 指向自身。</desc>
+<defs>
+  <style>
+    .ct{font-size:12.5px;font-weight:600;}
+    .fd{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .dim{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:11px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8EEEE"/><stop offset="1" stop-color="#F1E1E1"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="900" height="360" fill="#FBFAF6"/>
+
+<!-- ===== arrows (under cards) ===== -->
+<g fill="none" stroke="#8E8B80" stroke-width="1.7" marker-end="url(#ah)">
+  <path d="M176,222 C212,222 212,182 246,182"/>
+  <path d="M388,210 C460,150 600,118 690,132"/>
+  <path d="M388,266 C424,266 424,240 468,240"/>
+  <path d="M610,268 C652,268 658,160 690,152"/>
+  <path d="M832,138 C886,128 884,54 764,66"/>
+</g>
+
+<!-- ===== int (10) — green ===== -->
+<rect x="36" y="150" width="140" height="142" rx="9" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
+<path d="M36,180 V159 Q36,150 45,150 H167 Q176,150 176,159 V180 Z" fill="url(#gG)"/>
+<text x="106" y="170" text-anchor="middle" class="ct" fill="#0A463A">int (10)</text>
+<rect x="36" y="208" width="140" height="28" fill="#E4F2EB"/>
+<g stroke="#EDEAE2" stroke-width="1"><line x1="36" y1="180" x2="176" y2="180"/><line x1="36" y1="208" x2="176" y2="208"/><line x1="36" y1="236" x2="176" y2="236"/><line x1="36" y1="264" x2="176" y2="264"/></g>
+<g class="fd" fill="#0A463A"><text x="50" y="199">ob_refcnt</text><text x="50" y="227">*ob_type</text><text x="50" y="255">ob_size</text><text x="50" y="283">ob_digit</text></g>
+
+<!-- ===== PyLong_Type — blue ===== -->
+<rect x="248" y="138" width="140" height="170" rx="9" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
+<path d="M248,168 V147 Q248,138 257,138 H379 Q388,138 388,147 V168 Z" fill="url(#gB)"/>
+<text x="318" y="158" text-anchor="middle" class="ct" fill="#28415F">PyLong_Type</text>
+<rect x="248" y="196" width="140" height="28" fill="#EEF3FA"/>
+<rect x="248" y="252" width="140" height="28" fill="#EEF3FA"/>
+<g stroke="#EDEAE2" stroke-width="1"><line x1="248" y1="168" x2="388" y2="168"/><line x1="248" y1="196" x2="388" y2="196"/><line x1="248" y1="224" x2="388" y2="224"/><line x1="248" y1="252" x2="388" y2="252"/><line x1="248" y1="280" x2="388" y2="280"/></g>
+<g class="fd" fill="#28415F"><text x="262" y="187">ob_refcnt</text><text x="262" y="215">*ob_type</text><text x="262" y="271">tp_base</text></g>
+<g class="dim" fill="#A9B4C4"><text x="262" y="243">… …</text><text x="262" y="299">… …</text></g>
+
+<!-- ===== PyBaseObject_Type — rose ===== -->
+<rect x="470" y="196" width="140" height="114" rx="9" fill="#FFFFFF" stroke="#E0C6C6" stroke-width="1" filter="url(#sh)"/>
+<path d="M470,226 V205 Q470,196 479,196 H601 Q610,196 610,205 V226 Z" fill="url(#gR)"/>
+<text x="540" y="216" text-anchor="middle" class="ct" fill="#5C3030" font-size="11">PyBaseObject_Type</text>
+<rect x="470" y="254" width="140" height="28" fill="#F7EAEA"/>
+<g stroke="#EDEAE2" stroke-width="1"><line x1="470" y1="226" x2="610" y2="226"/><line x1="470" y1="254" x2="610" y2="254"/><line x1="470" y1="282" x2="610" y2="282"/></g>
+<g class="fd" fill="#5C3030"><text x="484" y="245">ob_refcnt</text><text x="484" y="273">*ob_type</text></g>
+<g class="dim" fill="#CBB1B1"><text x="484" y="301">… …</text></g>
+
+<!-- ===== PyType_Type — purple ===== -->
+<rect x="692" y="66" width="140" height="114" rx="9" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
+<path d="M692,96 V75 Q692,66 701,66 H823 Q832,66 832,75 V96 Z" fill="url(#gP)"/>
+<text x="762" y="86" text-anchor="middle" class="ct" fill="#2E2972">PyType_Type</text>
+<rect x="692" y="124" width="140" height="28" fill="#EFEDFB"/>
+<g stroke="#EDEAE2" stroke-width="1"><line x1="692" y1="96" x2="832" y2="96"/><line x1="692" y1="124" x2="832" y2="124"/><line x1="692" y1="152" x2="832" y2="152"/></g>
+<g class="fd" fill="#2E2972"><text x="706" y="115">ob_refcnt</text><text x="706" y="143">*ob_type</text></g>
+<g class="dim" fill="#B7B2DC"><text x="706" y="171">… …</text></g>
+
+<!-- caption -->
+<text x="450" y="344" text-anchor="middle" class="cap" fill="#9A988F">运行时类型关系：实例 int(10) → 类型对象 PyLong_Type → 元类型 PyType_Type（其类型指向自身）</text>
+</svg>

@@ -1,0 +1,37 @@
+<svg width="100%" viewBox="0 0 400 296" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>PyVarObject 变长对象结构</title>
+<desc>PyVarObject 在 PyObject 对象头（ob_base：引用计数 ob_refcnt 与类型指针 ob_type）的基础上，扩展出一个记录元素个数的 ob_size 字段。</desc>
+<defs>
+  <style>
+    .ct{font-size:13px;font-weight:600;}
+    .sct{font-size:11px;font-weight:600;}
+    .fd{font-size:12.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:10.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gHdr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gAmb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="400" height="296" fill="#FBFAF6"/>
+
+<!-- outer card -->
+<rect x="90" y="32" width="220" height="216" rx="11" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
+<path d="M90,68 V43 Q90,32 101,32 H299 Q310,32 310,43 V68 Z" fill="url(#gHdr)"/>
+<text x="200" y="55" text-anchor="middle" class="ct" fill="#28415F">PyVarObject</text>
+
+<!-- nested PyObject ob_base -->
+<rect x="106" y="82" width="188" height="104" rx="8" fill="#FBFCFE" stroke="#CCD8EA" stroke-width="1"/>
+<path d="M106,110 V90 Q106,82 114,82 H286 Q294,82 294,90 V110 Z" fill="#EAEFF8"/>
+<text x="200" y="100" text-anchor="middle" class="sct" fill="#4A5E80">PyObject ob_base</text>
+<line x1="106" y1="148" x2="294" y2="148" stroke="#E4E9F2" stroke-width="1"/>
+<text x="200" y="133" text-anchor="middle" class="fd" fill="#28415F">ob_refcnt</text>
+<text x="200" y="171" text-anchor="middle" class="fd" fill="#28415F">*ob_type</text>
+
+<!-- ob_size extra field (amber, subtle) -->
+<rect x="106" y="198" width="188" height="36" rx="8" fill="url(#gAmb)" stroke="#E8CB94" stroke-width="1"/>
+<text x="200" y="221" text-anchor="middle" class="fd" fill="#5C3C08">ob_size</text>
+
+<!-- caption -->
+<text x="200" y="276" text-anchor="middle" class="cap" fill="#9A988F">变长对象 = PyObject 对象头 + ob_size（元素个数）</text>
+</svg>

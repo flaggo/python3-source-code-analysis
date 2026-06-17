@@ -1,0 +1,81 @@
+<svg width="100%" viewBox="0 0 660 580" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>Python 对象的分类</title>
+<desc>Python 对象大致分为五类：Fundamental（类型对象，如 type）、Numeric（数值对象，如 int、float、bool）、Sequence（序列对象，如 str、list、tuple、set）、Mapping（映射对象，如 dict）、Internal（虚拟机内部对象，如 function、code、frame、module、method）。</desc>
+<defs>
+  <style>
+    .root{font-size:15px;font-weight:700;}
+    .ct{font-size:12.5px;font-weight:600;}
+    .leaf{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gFund" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gNum"  x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gSeq"  x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gMap"  x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gInt"  x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8EEEE"/><stop offset="1" stop-color="#F1E1E1"/></linearGradient>
+  <linearGradient id="gRoot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="660" height="580" fill="#FBFAF6"/>
+
+<!-- ===== connectors: root -> categories ===== -->
+<g fill="none" stroke="#D2CDC0" stroke-width="1.4">
+  <path d="M130,290 C190,290 190,55 240,55"/>
+  <path d="M130,290 C190,290 190,150 240,150"/>
+  <path d="M130,290 C190,290 190,290 240,290"/>
+  <path d="M130,290 C190,290 190,390 240,390"/>
+  <path d="M130,290 C190,290 190,490 240,490"/>
+</g>
+<!-- ===== connectors: categories -> leaves ===== -->
+<g fill="none" stroke="#DBD6C9" stroke-width="1.2">
+  <path d="M390,55 H470"/>
+  <path d="M390,150 C430,150 430,110 470,110"/>
+  <path d="M390,150 H470"/>
+  <path d="M390,150 C430,150 430,190 470,190"/>
+  <path d="M390,290 C430,290 430,250 470,250"/>
+  <path d="M390,290 H470"/>
+  <path d="M390,290 C430,290 430,330 470,330"/>
+  <path d="M390,290 C430,290 430,370 470,370"/>
+  <path d="M390,390 C430,390 430,430 470,430"/>
+  <path d="M390,490 C430,490 430,470 470,470"/>
+  <path d="M390,490 H470"/>
+  <path d="M390,490 C430,490 430,550 470,550"/>
+</g>
+
+<!-- ===== root ===== -->
+<rect x="20" y="264" width="110" height="52" rx="12" fill="url(#gRoot)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
+<text x="75" y="296" text-anchor="middle" class="root" fill="#33322E">object</text>
+
+<!-- ===== category nodes ===== -->
+<rect x="240" y="33"  width="150" height="44" rx="10" fill="url(#gFund)" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
+<text x="315" y="60"  text-anchor="middle" class="ct" fill="#28415F">Fundamental</text>
+<rect x="240" y="128" width="150" height="44" rx="10" fill="url(#gNum)" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
+<text x="315" y="155" text-anchor="middle" class="ct" fill="#0A463A">Numeric</text>
+<rect x="240" y="268" width="150" height="44" rx="10" fill="url(#gSeq)" stroke="#E8CB94" stroke-width="1" filter="url(#sh)"/>
+<text x="315" y="295" text-anchor="middle" class="ct" fill="#5C3C08">Sequence</text>
+<rect x="240" y="368" width="150" height="44" rx="10" fill="url(#gMap)" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
+<text x="315" y="395" text-anchor="middle" class="ct" fill="#2E2972">Mapping</text>
+<rect x="240" y="468" width="150" height="44" rx="10" fill="url(#gInt)" stroke="#E0C6C6" stroke-width="1" filter="url(#sh)"/>
+<text x="315" y="495" text-anchor="middle" class="ct" fill="#5C3030">Internal</text>
+
+<!-- ===== leaf nodes ===== -->
+<g class="leaf">
+  <!-- Fundamental -->
+  <rect x="470" y="38"  width="150" height="34" rx="8" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1"/><text x="545" y="60"  text-anchor="middle" fill="#28415F">type</text>
+  <!-- Numeric -->
+  <rect x="470" y="93"  width="150" height="34" rx="8" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1"/><text x="545" y="115" text-anchor="middle" fill="#0A463A">int</text>
+  <rect x="470" y="133" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1"/><text x="545" y="155" text-anchor="middle" fill="#0A463A">float</text>
+  <rect x="470" y="173" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1"/><text x="545" y="195" text-anchor="middle" fill="#0A463A">bool</text>
+  <!-- Sequence -->
+  <rect x="470" y="233" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/><text x="545" y="255" text-anchor="middle" fill="#5C3C08">str</text>
+  <rect x="470" y="273" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/><text x="545" y="295" text-anchor="middle" fill="#5C3C08">list</text>
+  <rect x="470" y="313" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/><text x="545" y="335" text-anchor="middle" fill="#5C3C08">tuple</text>
+  <rect x="470" y="353" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/><text x="545" y="375" text-anchor="middle" fill="#5C3C08">set</text>
+  <!-- Mapping -->
+  <rect x="470" y="413" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1"/><text x="545" y="435" text-anchor="middle" fill="#2E2972">dict</text>
+  <!-- Internal -->
+  <rect x="470" y="453" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E0C6C6" stroke-width="1"/><text x="545" y="475" text-anchor="middle" fill="#5C3030">function</text>
+  <rect x="470" y="493" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E0C6C6" stroke-width="1"/><text x="545" y="515" text-anchor="middle" fill="#5C3030">code / frame</text>
+  <rect x="470" y="533" width="150" height="34" rx="8" fill="#FFFFFF" stroke="#E0C6C6" stroke-width="1"/><text x="545" y="555" text-anchor="middle" fill="#5C3030">module / method</text>
+</g>
+</svg>

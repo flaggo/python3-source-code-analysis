@@ -1,0 +1,33 @@
+<svg width="100%" viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>PyObject 对象头结构</title>
+<desc>PyObject 是所有 Python 对象共享的对象头，包含引用计数 ob_refcnt 和指向类型对象的指针 ob_type。</desc>
+<defs>
+  <style>
+    .ct{font-size:13px;font-weight:600;}
+    .fd{font-size:12.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .an{font-size:11px;}
+    .cap{font-size:10.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gHdr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="360" height="200" fill="#FBFAF6"/>
+
+<!-- card -->
+<rect x="80" y="36" width="200" height="128" rx="10" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
+<!-- header band -->
+<path d="M80,74 V46 Q80,36 90,36 H270 Q280,36 280,46 V74 Z" fill="url(#gHdr)"/>
+<text x="180" y="60" text-anchor="middle" class="ct" fill="#28415F">PyObject</text>
+<line x1="80" y1="74" x2="280" y2="74" stroke="#C3D2E8" stroke-width="1"/>
+<!-- pointer field subtle tint -->
+<rect x="80" y="119" width="200" height="45" rx="0" fill="#EEF3FA"/>
+<line x1="80" y1="119" x2="280" y2="119" stroke="#ECEAE2" stroke-width="1"/>
+<!-- fields -->
+<text x="96" y="101" class="fd" fill="#28415F">ob_refcnt</text>
+<text x="264" y="101" text-anchor="end" class="an" fill="#7B7A72">引用计数</text>
+<text x="96" y="146" class="fd" fill="#28415F">*ob_type</text>
+<text x="264" y="146" text-anchor="end" class="an" fill="#7B7A72">类型指针</text>
+<!-- caption -->
+<text x="180" y="186" text-anchor="middle" class="cap" fill="#9A988F">所有 Python 对象共享的对象头</text>
+</svg>
