@@ -1,25 +1,11 @@
 {
   "scripts": {
-    "gitbook": "node scripts/gitbook.js",
-    "serve": "node scripts/gitbook.js serve",
-    "build": "node scripts/gitbook.js build"
+    "serve": "vitepress dev",
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
   },
-  "dependencies": {
-    "gitbook": "3.2.3",
-    "gitbook-plugin-back-to-top-button": "^0.1.4",
-    "gitbook-plugin-edit-link": "^2.0.2",
-    "gitbook-plugin-github": "^2.0.0",
-    "gitbook-plugin-github-buttons": "^3.0.0",
-    "gitbook-plugin-page-toc-button": "^0.1.1",
-    "gitbook-plugin-prism": "^2.4.0",
-    "gitbook-plugin-search-plus": "^1.0.4-alpha-3",
-    "gitbook-plugin-sharing-plus": "0.0.2",
-    "gitbook-plugin-splitter": "0.0.8",
-    "gitbook-plugin-tbfed-pagefooter": "0.0.1"
-  },
-  "overrides": {
-    "moment": "2.29.4",
-    "prismjs": "1.27.0",
-    "websocket-extensions": "0.1.4"
+  "devDependencies": {
+    "vitepress": "^1.6.4"
   }
 }

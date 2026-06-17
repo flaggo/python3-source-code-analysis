@@ -10,6 +10,10 @@ node_modules
 # Book build output
 _book
 
+# VitePress build output / cache
+.vitepress/dist
+.vitepress/cache
+
 # eBook build output
 *.epub
 *.mobi

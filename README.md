@@ -8,57 +8,41 @@
 
 您可以直接访问 [在线版](https://flaggo.github.io/python3-source-code-analysis/)，或者根据以下步骤访问本地版。
 
+本项目使用 [VitePress](https://vitepress.dev/) 构建。
+
 ## 前置条件
 
-您的系统上需要安装好 node （会自带npm）。
+您的系统上需要安装好 Node.js 18 及以上版本（会自带 npm）。
 
-## 使用 make 或者使用 npm 命令去构建
-
-### 使用 make 命令的方式构建：
-
-若您可使用 make 命令，简单执行如下命令安装依赖：
-
-```console
-make install
-```
-
-执行如下命令运行服务端：
-
-```console
-make serve
-```
-
-执行如下命令构建静态页面：
-
-```console
-make build
-```
-
-### 使用 npm 命令的方式构建：
-
-若您不能使用 make 命令，或想直接使用 npm 命令，执行如下命令安装依赖：
-
-安装项目依赖：
+## 安装依赖
 
 ```console
 npm install
 ```
 
-执行如下命令运行服务端：
+## 本地预览
+
+启动本地开发服务器（支持热更新）：
 
 ```console
-npm run serve
+npm run dev
 ```
 
-执行如下命令构建静态页面：
+然后访问 http://localhost:5173/python3-source-code-analysis/ 即可查看本书内容。
+
+> 也可以使用 `make serve`，等价于 `npm run dev`。
+
+## 构建静态页面
 
 ```console
 npm run build
 ```
 
-## 访问
+构建产物输出到 `.vitepress/dist`，可用如下命令在本地预览构建结果：
 
-直接访问 http://localhost:4000 即可查看本书内容。
+```console
+npm run preview
+```
 
 # Roadmap
 

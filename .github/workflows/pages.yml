@@ -1,4 +1,4 @@
-name: Deploy GitBook to GitHub Pages
+name: Deploy VitePress to GitHub Pages
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build GitBook
+      - name: Build with VitePress
         run: npm run build
 
       - name: Configure GitHub Pages
@@ -44,7 +44,7 @@ jobs:
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: _book
+          path: .vitepress/dist
 
   deploy:
     runs-on: ubuntu-latest
