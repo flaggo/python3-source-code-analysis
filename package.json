@@ -16,5 +16,10 @@
     "gitbook-plugin-sharing-plus": "0.0.2",
     "gitbook-plugin-splitter": "0.0.8",
     "gitbook-plugin-tbfed-pagefooter": "0.0.1"
+  },
+  "overrides": {
+    "moment": "2.29.4",
+    "prismjs": "1.27.0",
+    "websocket-extensions": "0.1.4"
   }
 }
