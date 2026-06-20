@@ -1,0 +1,48 @@
+<svg width="100%" viewBox="0 0 440 340" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>整数加法 x_add 示意</title>
+<desc>x_add 从 ob_digit 低位开始按位相加：a 为 [1,6,8]，b 为 [1,6,8]，逐位相加得 z 为 [2,12,16]，进位单元为 2 的 30 次方。</desc>
+<defs>
+  <style>
+    .rl{font-size:15px;font-weight:700;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .val{font-size:14px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:11px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="440" height="340" fill="#FBFAF6"/>
+
+<!-- index labels -->
+<g class="idx" fill="#9A988F">
+  <text x="209" y="52" text-anchor="middle">0</text>
+  <text x="267" y="52" text-anchor="middle">1</text>
+  <text x="325" y="52" text-anchor="middle">2</text>
+</g>
+
+<!-- row a -->
+<text x="158" y="87" text-anchor="end" class="rl" fill="#0A463A">a</text>
+<rect x="180" y="62" width="174" height="40" rx="6" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="238" y1="62" x2="238" y2="102" stroke="#CFE6DC"/><line x1="296" y1="62" x2="296" y2="102" stroke="#CFE6DC"/>
+<g class="val" fill="#0A463A"><text x="209" y="87" text-anchor="middle">1</text><text x="267" y="87" text-anchor="middle">6</text><text x="325" y="87" text-anchor="middle">8</text></g>
+
+<!-- plus -->
+<text x="150" y="122" text-anchor="middle" class="rl" fill="#5C5B53">+</text>
+
+<!-- row b -->
+<text x="158" y="157" text-anchor="end" class="rl" fill="#0A463A">b</text>
+<rect x="180" y="132" width="174" height="40" rx="6" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="238" y1="132" x2="238" y2="172" stroke="#CFE6DC"/><line x1="296" y1="132" x2="296" y2="172" stroke="#CFE6DC"/>
+<g class="val" fill="#0A463A"><text x="209" y="157" text-anchor="middle">1</text><text x="267" y="157" text-anchor="middle">6</text><text x="325" y="157" text-anchor="middle">8</text></g>
+
+<!-- sum rule -->
+<line x1="170" y1="196" x2="364" y2="196" stroke="#B7B5AC" stroke-width="1.4"/>
+
+<!-- row z -->
+<text x="158" y="247" text-anchor="end" class="rl" fill="#0A463A">z</text>
+<rect x="180" y="222" width="174" height="40" rx="6" fill="#E4F2EB" stroke="#A8DCC9" stroke-width="1.4" filter="url(#sh)"/>
+<line x1="238" y1="222" x2="238" y2="262" stroke="#BFDDD0"/><line x1="296" y1="222" x2="296" y2="262" stroke="#BFDDD0"/>
+<g class="val" fill="#0A463A"><text x="209" y="247" text-anchor="middle">2</text><text x="267" y="247" text-anchor="middle">12</text><text x="325" y="247" text-anchor="middle">16</text></g>
+
+<text x="220" y="300" text-anchor="middle" class="cap" fill="#9A988F">从低位按位相加，进位单元为 2<tspan dy="-5" font-size="9">30</tspan><tspan dy="5">（carry）</tspan></text>
+</svg>

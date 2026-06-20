@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import taskLists from 'markdown-it-task-lists'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -9,20 +10,20 @@ export default defineConfig({
   // 部署在 https://flaggo.github.io/python3-source-code-analysis/
   base: '/python3-source-code-analysis/',
 
-  // 用仓库根目录作为内容源；README.md 作为首页
+  // 用仓库根目录作为内容源；首页为 index.md（背景 + Roadmap）
   srcDir: '.',
-  rewrites: {
-    'README.md': 'index.md'
-  },
-  // 不作为页面渲染的文件 / 旧构建产物
-  srcExclude: ['SUMMARY.md', '_book/**', '**/node_modules/**'],
+  // 不作为页面渲染的文件：README 仅供 GitHub 仓库使用，不进站点
+  srcExclude: ['README.md', 'SUMMARY.md', '_book/**', '**/node_modules/**'],
 
   lastUpdated: true,
   cleanUrls: true,
   ignoreDeadLinks: true,
 
   markdown: {
-    lineNumbers: true
+    lineNumbers: true,
+    config: (md) => {
+      md.use(taskLists)
+    }
   },
 
   themeConfig: {

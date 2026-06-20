@@ -39,7 +39,7 @@ lst.append(1)
 
 其存储结构如下图
 
-![PyList structure](PyListStructure.png)
+![PyList structure](PyListStructure.svg)
 
 
 

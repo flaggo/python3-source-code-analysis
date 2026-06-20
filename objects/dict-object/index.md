@@ -127,7 +127,7 @@ struct _dictkeysobject {
 ```
 
 相关数据结构的内存布局为；
-![python_dict_mem](dict-mem.png)
+![python_dict_mem](dict-mem.svg)
 
 ## Python 字典示例
 

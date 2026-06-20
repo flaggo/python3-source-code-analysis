@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>整数减法 x_sub 示意</title>
+<desc>x_sub 从低位按位相减，不够减则向高位借位（借 2 的 30 次方）：a 为 [1,0,3]，b 为 [5,8]，相减得 z 为 [1073741820, 1073741815, 2]。</desc>
+<defs>
+  <style>
+    .rl{font-size:15px;font-weight:700;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .val{font-size:14px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .big{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:11px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="560" height="320" fill="#FBFAF6"/>
+
+<!-- row a -->
+<g class="idx" fill="#9A988F"><text x="179" y="52" text-anchor="middle">0</text><text x="237" y="52" text-anchor="middle">1</text><text x="295" y="52" text-anchor="middle">2</text></g>
+<text x="130" y="87" text-anchor="end" class="rl" fill="#0A463A">a</text>
+<rect x="150" y="62" width="174" height="40" rx="6" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="208" y1="62" x2="208" y2="102" stroke="#CFE6DC"/><line x1="266" y1="62" x2="266" y2="102" stroke="#CFE6DC"/>
+<g class="val" fill="#0A463A"><text x="179" y="87" text-anchor="middle">1</text><text x="237" y="87" text-anchor="middle">0</text><text x="295" y="87" text-anchor="middle">3</text></g>
+
+<!-- minus -->
+<text x="122" y="122" text-anchor="middle" class="rl" fill="#5C5B53">−</text>
+
+<!-- row b -->
+<g class="idx" fill="#9A988F"><text x="179" y="122" text-anchor="middle">0</text><text x="237" y="122" text-anchor="middle">1</text></g>
+<text x="130" y="157" text-anchor="end" class="rl" fill="#0A463A">b</text>
+<rect x="150" y="132" width="116" height="40" rx="6" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="208" y1="132" x2="208" y2="172" stroke="#CFE6DC"/>
+<g class="val" fill="#0A463A"><text x="179" y="157" text-anchor="middle">5</text><text x="237" y="157" text-anchor="middle">8</text></g>
+
+<!-- sum rule -->
+<line x1="140" y1="196" x2="510" y2="196" stroke="#B7B5AC" stroke-width="1.4"/>
+
+<!-- row z -->
+<g class="idx" fill="#9A988F"><text x="225" y="222" text-anchor="middle">0</text><text x="375" y="222" text-anchor="middle">1</text><text x="480" y="222" text-anchor="middle">2</text></g>
+<text x="130" y="257" text-anchor="end" class="rl" fill="#0A463A">z</text>
+<rect x="150" y="232" width="360" height="40" rx="6" fill="#E4F2EB" stroke="#A8DCC9" stroke-width="1.4" filter="url(#sh)"/>
+<line x1="300" y1="232" x2="300" y2="272" stroke="#BFDDD0"/><line x1="450" y1="232" x2="450" y2="272" stroke="#BFDDD0"/>
+<g class="big" fill="#0A463A"><text x="225" y="257" text-anchor="middle">1073741820</text><text x="375" y="257" text-anchor="middle">1073741815</text><text x="480" y="257" text-anchor="middle">2</text></g>
+
+<text x="300" y="300" text-anchor="middle" class="cap" fill="#9A988F">不够减则向高位借位（借 2<tspan dy="-5" font-size="9">30</tspan><tspan dy="5">，borrow）</tspan></text>
+</svg>

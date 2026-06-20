@@ -48,7 +48,7 @@ typedef struct {
 
 一个 set 就对应一个 PySetObject 类型数据，set 会根据保存的元素自动调整大小。相关的内存布局如下；
 
-![内存图片](set.png)
+![内存图片](set.svg)
 
 ## python 集合(set)示例
 
@@ -368,19 +368,19 @@ set_add_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 s.add(1)   // index = 1 & 7 = 1
 ```
 
-![插入1](set-insert-one.png)
+![插入1](set-insert-one.svg)
 
 ```python
 s.add(2) // index = 2 & 7 = 2
 ```
 
-![插入2](set-insert-two.png)
+![插入2](set-insert-two.svg)
 
 ```python
 s.add(7)  // index = 9 & 7 = 1
 ```
 
-![插入9](set-insert-nine.png)
+![插入9](set-insert-nine.svg)
 
 大致的 set 的插入过程执行完毕。
 

@@ -387,7 +387,7 @@ print(num)
 
 如下图所示
 
-![longobject storage](long-storage.png)
+![longobject storage](long-storage.svg)
 
 注：这里的 30 是由 **PyLong_SHIFT** 决定的，64 位系统中，**PyLong_SHIFT** 为 30，否则 **PyLong_SHIFT** 为 15
 
@@ -524,7 +524,7 @@ x_add(PyLongObject *a, PyLongObject *b)
 
 加法运算函数 x_add 从 ob_digit 数组的低位开始依次按位相加，carry 做进位处理，然后处理 a 对象的高位数字，最后使用 long_normalize 函数调整 ob_size，确保 ob_digit[abs(ob_size)-1]不为零，这与普通四则运算的加法运算相同，只不过进位单元不同而已
 
-![longobject x_add](long-x-add.png)
+![longobject x_add](long-x-add.svg)
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L3025)
 
@@ -593,7 +593,7 @@ x_sub(PyLongObject *a, PyLongObject *b)
 与普通四则运算减法相同，数不够大则向高一位借位，
 减法运算函数 x_sub 的示例图如下，注：PyLong_SHIFT 为 30
 
-![longobject x_sub](long-x-sub.png)
+![longobject x_sub](long-x-sub.svg)
 
 ### 整数相乘
 

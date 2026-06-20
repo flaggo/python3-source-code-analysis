@@ -1,0 +1,58 @@
+<svg width="100%" viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>set 插入 2</title>
+<desc>在已存入 1 的基础上执行 s.add(2)，索引 = 2 &amp; 7 = 2，槽位 2 为空，直接将 key 与 hash 都设为 2 存入 setentry 数组。</desc>
+<defs>
+  <style>
+    .ct{font-size:12.5px;font-weight:600;}
+    .fd{font-size:11px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .an{font-size:11px;}
+    .idx{font-size:10.5px;}
+    .cap{font-size:12px;}
+    .big{font-size:22px;font-weight:700;}
+    .sub{font-size:12.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="900" height="480" fill="#FBFAF6"/>
+
+<!-- PySetObject struct -->
+<rect x="110" y="50" width="150" height="408" rx="10" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
+<path d="M110,80 V60 Q110,50 120,50 H250 Q260,50 260,60 V80 Z" fill="url(#gP)"/>
+<text x="185" y="70" text-anchor="middle" class="ct" fill="#2E2972">PySetObject</text>
+<rect x="110" y="248" width="150" height="42" fill="#EFEDFB"/>
+<g stroke="#EEE9F6"><line x1="110" y1="122" x2="260" y2="122"/><line x1="110" y1="164" x2="260" y2="164"/><line x1="110" y1="206" x2="260" y2="206"/><line x1="110" y1="248" x2="260" y2="248"/><line x1="110" y1="290" x2="260" y2="290"/><line x1="110" y1="332" x2="260" y2="332"/><line x1="110" y1="374" x2="260" y2="374"/><line x1="110" y1="416" x2="260" y2="416"/></g>
+<g class="fd" fill="#2E2972" text-anchor="middle">
+  <text x="185" y="106">Pyobject_HEAD</text><text x="185" y="148">fill</text><text x="185" y="190">used</text><text x="185" y="232">mask</text><text x="185" y="274">*table</text><text x="185" y="316">hash</text><text x="185" y="358">finger</text><text x="185" y="400" font-size="10">smalltable[size]</text><text x="185" y="442">*weakreflist</text>
+</g>
+<g class="an" fill="#9A988F" text-anchor="end">
+  <text x="98" y="105">python 基本类型</text><text x="98" y="147">活跃与空元素总数</text><text x="98" y="189">真正活跃的数量</text><text x="98" y="231">hash 数组掩码</text><text x="98" y="273">指向 key 数组</text><text x="98" y="399">默认 8 个元素</text>
+</g>
+
+<!-- connector -->
+<g fill="none" stroke="#8E8B80" stroke-width="1.6">
+  <line x1="260" y1="269" x2="300" y2="269"/><line x1="260" y1="395" x2="300" y2="395"/><line x1="300" y1="269" x2="300" y2="395"/><path d="M300,342 H340" marker-end="url(#ah)"/>
+</g>
+
+<!-- step heading -->
+<text x="470" y="186" class="big" fill="#5C5B53">插入 2</text>
+<text x="470" y="212" class="sub" fill="#9A988F">index = 2 &amp; 7 = 2</text>
+
+<!-- setentry array -->
+<text x="596" y="252" text-anchor="middle" class="cap" fill="#7B7A72">set 集合存入的元素值，默认初始化 8 个元素（setentry）</text>
+<g class="idx" fill="#9A988F" text-anchor="middle">
+  <text x="372" y="294">0</text><text x="436" y="294">1</text><text x="500" y="294">2</text><text x="564" y="294">3</text><text x="628" y="294">4</text><text x="692" y="294">5</text><text x="756" y="294">6</text><text x="820" y="294">7</text>
+</g>
+<rect x="340" y="300" width="512" height="84" rx="8" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
+<!-- occupied slots 1,2 -->
+<rect x="405" y="301" width="62" height="40" fill="#E4F2EB"/><rect x="405" y="343" width="62" height="40" fill="#E4F2EB"/>
+<rect x="469" y="301" width="62" height="40" fill="#E4F2EB"/><rect x="469" y="343" width="62" height="40" fill="#E4F2EB"/>
+<line x1="340" y1="342" x2="852" y2="342" stroke="#EEE9F6"/>
+<g stroke="#EEE9F6"><line x1="404" y1="300" x2="404" y2="384"/><line x1="468" y1="300" x2="468" y2="384"/><line x1="532" y1="300" x2="532" y2="384"/><line x1="596" y1="300" x2="596" y2="384"/><line x1="660" y1="300" x2="660" y2="384"/><line x1="724" y1="300" x2="724" y2="384"/><line x1="788" y1="300" x2="788" y2="384"/></g>
+<g class="fd" text-anchor="middle">
+  <text x="372" y="326" fill="#A9A4C4">*key</text><text x="436" y="326" fill="#0A463A" font-weight="700">1</text><text x="500" y="326" fill="#0A463A" font-weight="700">2</text><text x="564" y="326" fill="#A9A4C4">*key</text><text x="628" y="326" fill="#A9A4C4">*key</text><text x="692" y="326" fill="#A9A4C4">*key</text><text x="756" y="326" fill="#A9A4C4">*key</text><text x="820" y="326" fill="#A9A4C4">*key</text>
+  <text x="372" y="368" fill="#A9A4C4">hash</text><text x="436" y="368" fill="#0A463A" font-weight="700">1</text><text x="500" y="368" fill="#0A463A" font-weight="700">2</text><text x="564" y="368" fill="#A9A4C4">hash</text><text x="628" y="368" fill="#A9A4C4">hash</text><text x="692" y="368" fill="#A9A4C4">hash</text><text x="756" y="368" fill="#A9A4C4">hash</text><text x="820" y="368" fill="#A9A4C4">hash</text>
+</g>
+</svg>
