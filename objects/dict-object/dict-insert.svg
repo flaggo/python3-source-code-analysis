@@ -1,0 +1,52 @@
+<svg width="100%" viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>字典插入 d["1"]="2" 示意</title>
+<desc>插入一个新键值对：先算 key 的 hash 并 &amp; mask 定位到一个索引槽，槽里记下新记录在 dk_entries 中的下标 0；记录本身（me_hash、me_key、me_value）追加到 dk_entries 的末尾，保持插入顺序。</desc>
+<defs>
+  <style>
+    .h{font-size:13px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11px;}
+    .val{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="620" height="320" fill="#FBFAF6"/>
+<text x="310" y="34" text-anchor="middle" class="h" fill="#28415F">d["1"] = "2"</text>
+
+<!-- step 1: hash & mask -->
+<text x="310" y="66" text-anchor="middle" class="lab" fill="#9A988F">① hash("1") &amp; mask → 定位索引槽</text>
+
+<!-- dk_indices -->
+<text x="58" y="103" text-anchor="end" class="lab" fill="#7B7A72">dk_indices</text>
+<rect x="70" y="84" width="360" height="34" rx="7" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.1" filter="url(#sh)"/>
+<rect x="205" y="85" width="44" height="32" fill="#E4F2EB"/>
+<g stroke="#F0DEBB"><line x1="115" y1="84" x2="115" y2="118"/><line x1="160" y1="84" x2="160" y2="118"/><line x1="205" y1="84" x2="205" y2="118"/><line x1="250" y1="84" x2="250" y2="118"/><line x1="295" y1="84" x2="295" y2="118"/><line x1="340" y1="84" x2="340" y2="118"/><line x1="385" y1="84" x2="385" y2="118"/></g>
+<g class="val" fill="#B98C46" text-anchor="middle"><text x="92" y="105">-1</text><text x="137" y="105">-1</text><text x="182" y="105">-1</text><text x="272" y="105">-1</text><text x="317" y="105">-1</text><text x="362" y="105">-1</text><text x="407" y="105">-1</text></g>
+<text x="227" y="105" text-anchor="middle" class="val" fill="#0A463A" font-weight="700">0</text>
+<text x="227" y="138" text-anchor="middle" class="lab" fill="#9A988F">② 记下下标 0</text>
+
+<!-- arrow to entries -->
+<path d="M227,118 C227,150 150,150 150,176" fill="none" stroke="#8E8B80" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="300" y="170" text-anchor="middle" class="lab" fill="#9A988F">③ 记录追加到 dk_entries 末尾</text>
+
+<!-- dk_entries -->
+<text x="58" y="222" text-anchor="end" class="lab" fill="#7B7A72">dk_entries</text>
+<!-- entry 0 (filled) -->
+<rect x="78" y="178" width="144" height="92" rx="8" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="79" y="179" width="142" height="90" rx="8" fill="#EAF6F0"/>
+<g stroke="#D2E9DF"><line x1="78" y1="208" x2="222" y2="208"/><line x1="78" y1="238" x2="222" y2="238"/><line x1="150" y1="178" x2="150" y2="270"/></g>
+<g class="val" fill="#0A463A"><text x="86" y="198">me_hash</text><text x="86" y="228">me_key</text><text x="86" y="258">me_value</text></g>
+<g class="val" fill="#0A463A" text-anchor="middle" font-weight="700"><text x="186" y="198">h</text><text x="186" y="228">"1"</text><text x="186" y="258">"2"</text></g>
+<text x="150" y="288" text-anchor="middle" class="lab" fill="#9A988F">entry 0</text>
+<!-- entry 1,2 empty -->
+<rect x="238" y="178" width="64" height="92" rx="8" fill="#FFFFFF" stroke="#CDE3D8" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="312" y="178" width="64" height="92" rx="8" fill="#FFFFFF" stroke="#CDE3D8" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="270" y="228" text-anchor="middle" class="lab" fill="#C0BDB4">空</text>
+<text x="344" y="228" text-anchor="middle" class="lab" fill="#C0BDB4">空</text>
+
+<text x="450" y="226" class="cap" fill="#9A988F">查找撞空槽 →</text>
+<text x="450" y="244" class="cap" fill="#9A988F">即新 key，</text>
+<text x="450" y="262" class="cap" fill="#9A988F">在此落库</text>
+</svg>

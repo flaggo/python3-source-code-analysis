@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>列表删除 remove 示意</title>
+<desc>对 [1,2,3,4] 执行 remove(2)：从头线性查找（按 == 比较）到 index 1 的元素 2，删除后其后的 3、4 整体左移一位填补，ob_size 减一，结果为 [1,3,4]，是 O(n) 操作。</desc>
+<defs>
+  <style>
+    .h{font-size:14px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11.5px;}
+    .val{font-size:14px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:10.5px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="520" height="300" fill="#FBFAF6"/>
+<text x="260" y="38" text-anchor="middle" class="h" fill="#28415F">remove(2)</text>
+
+<!-- before -->
+<text x="120" y="100" text-anchor="end" class="lab" fill="#7B7A72">调用前</text>
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="158" y="64">0</text><text x="214" y="64">1</text><text x="270" y="64">2</text><text x="326" y="64">3</text></g>
+<rect x="130" y="74" width="224" height="44" rx="8" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="187" y="75" width="54" height="42" fill="#F7EAEA"/>
+<g stroke="#DCE6F2"><line x1="186" y1="74" x2="186" y2="118"/><line x1="242" y1="74" x2="242" y2="118"/><line x1="298" y1="74" x2="298" y2="118"/></g>
+<g class="val" fill="#28415F" text-anchor="middle"><text x="158" y="102">1</text><text x="270" y="102">3</text><text x="326" y="102">4</text></g>
+<text x="214" y="102" text-anchor="middle" class="val" fill="#5C3030" font-weight="700">2</text>
+<text x="395" y="100" class="lab" fill="#9A988F">查找到 2，删除</text>
+
+<!-- shift-left connectors -->
+<g fill="none" stroke="#B7B5AC" stroke-width="1.4" stroke-dasharray="4 4">
+  <path d="M158,118 V204"/>
+  <path d="M270,118 C270,160 214,162 214,204"/>
+  <path d="M326,118 C326,160 270,162 270,204"/>
+</g>
+<text x="395" y="165" class="lab" fill="#9A988F">3、4 左移一位</text>
+
+<!-- after -->
+<text x="120" y="230" text-anchor="end" class="lab" fill="#7B7A72">调用后</text>
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="158" y="196">0</text><text x="214" y="196">1</text><text x="270" y="196">2</text><text x="326" y="196">3</text></g>
+<rect x="130" y="204" width="224" height="44" rx="8" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#DCE6F2"><line x1="186" y1="204" x2="186" y2="248"/><line x1="242" y1="204" x2="242" y2="248"/><line x1="298" y1="204" x2="298" y2="248"/></g>
+<g class="val" fill="#28415F" text-anchor="middle"><text x="158" y="232">1</text><text x="214" y="232">3</text><text x="270" y="232">4</text></g>
+<text x="326" y="232" text-anchor="middle" class="idx" fill="#C0BDB4">空</text>
+
+<text x="260" y="284" text-anchor="middle" class="cap" fill="#9A988F">线性查找目标值，删除后其后元素整体左移一位，ob_size 减一（O(n)）</text>
+</svg>

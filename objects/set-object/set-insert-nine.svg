@@ -1,6 +1,6 @@
 <svg width="100%" viewBox="0 0 900 470" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
-<title>set 插入 7（哈希冲突与开放寻址探测）</title>
-<desc>执行 s.add(7)，hash 为 9，9 &amp; 7 = 1，但槽位 1 已被 1 占用产生冲突；按 i = (i*5 + 1 + perturb) &amp; mask 探测，得索引 6，于是把 7 存入槽位 6。</desc>
+<title>set 插入 9（哈希冲突与开放寻址探测）</title>
+<desc>执行 s.add(9)，hash 为 9，9 &amp; 7 = 1，但槽位 1 已被 1 占用产生冲突；按 i = (i*5 + 1 + perturb) &amp; mask 探测，得索引 6，于是把 9 存入槽位 6。</desc>
 <defs>
   <style>
     .ct{font-size:12.5px;font-weight:600;}
@@ -38,7 +38,7 @@
 </g>
 
 <!-- step heading + collision explanation -->
-<text x="436" y="180" class="big" fill="#5C5B53">插入 7</text>
+<text x="436" y="180" class="big" fill="#5C5B53">插入 9</text>
 <text x="436" y="206" class="sub" fill="#9A988F">hash = 9，9 &amp; 7 = 1 → 槽位 1 冲突</text>
 <text x="436" y="226" class="sub" fill="#9A988F">i = (i*5 + 1 + perturb) &amp; mask = 6</text>
 
@@ -55,8 +55,8 @@
 <line x1="340" y1="342" x2="852" y2="342" stroke="#EEE9F6"/>
 <g stroke="#EEE9F6"><line x1="404" y1="300" x2="404" y2="384"/><line x1="468" y1="300" x2="468" y2="384"/><line x1="532" y1="300" x2="532" y2="384"/><line x1="596" y1="300" x2="596" y2="384"/><line x1="660" y1="300" x2="660" y2="384"/><line x1="724" y1="300" x2="724" y2="384"/><line x1="788" y1="300" x2="788" y2="384"/></g>
 <g class="fd" text-anchor="middle">
-  <text x="372" y="326" fill="#A9A4C4">*key</text><text x="436" y="326" fill="#0A463A" font-weight="700">1</text><text x="500" y="326" fill="#0A463A" font-weight="700">2</text><text x="564" y="326" fill="#A9A4C4">*key</text><text x="628" y="326" fill="#A9A4C4">*key</text><text x="692" y="326" fill="#A9A4C4">*key</text><text x="756" y="326" fill="#0A463A" font-weight="700">7</text><text x="820" y="326" fill="#A9A4C4">*key</text>
-  <text x="372" y="368" fill="#A9A4C4">hash</text><text x="436" y="368" fill="#0A463A" font-weight="700">1</text><text x="500" y="368" fill="#0A463A" font-weight="700">2</text><text x="564" y="368" fill="#A9A4C4">hash</text><text x="628" y="368" fill="#A9A4C4">hash</text><text x="692" y="368" fill="#A9A4C4">hash</text><text x="756" y="368" fill="#0A463A" font-weight="700">7</text><text x="820" y="368" fill="#A9A4C4">hash</text>
+  <text x="372" y="326" fill="#A9A4C4">*key</text><text x="436" y="326" fill="#0A463A" font-weight="700">1</text><text x="500" y="326" fill="#0A463A" font-weight="700">2</text><text x="564" y="326" fill="#A9A4C4">*key</text><text x="628" y="326" fill="#A9A4C4">*key</text><text x="692" y="326" fill="#A9A4C4">*key</text><text x="756" y="326" fill="#0A463A" font-weight="700">9</text><text x="820" y="326" fill="#A9A4C4">*key</text>
+  <text x="372" y="368" fill="#A9A4C4">hash</text><text x="436" y="368" fill="#0A463A" font-weight="700">1</text><text x="500" y="368" fill="#0A463A" font-weight="700">2</text><text x="564" y="368" fill="#A9A4C4">hash</text><text x="628" y="368" fill="#A9A4C4">hash</text><text x="692" y="368" fill="#A9A4C4">hash</text><text x="756" y="368" fill="#0A463A" font-weight="700">9</text><text x="820" y="368" fill="#A9A4C4">hash</text>
 </g>
 
 <!-- probe arrow slot1 -> slot6 -->

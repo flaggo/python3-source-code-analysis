@@ -1,416 +1,171 @@
-# Python 字典
+# Python 字典对象
 
-Dictionary object implementation using a hash table ，通过描述可知，python 的字典就是实现了一个 hash 表。
+字典是 Python 里最重要的数据结构之一——变量名查找、对象属性、关键字参数、模块命名空间……背后几乎都是字典。我们天天用它，靠的是两个让人放心的特性：
 
-## Python 字典概述
+```python
+>>> d = {"name": "py", "year": 1991}
+>>> d["name"]        # 按 key 取值，平均 O(1)，再大也几乎不变慢
+'py'
+>>> list(d)          # 从 Python 3.7 起，遍历顺序 == 插入顺序
+['name', 'year']
+```
 
-在 python 的字典中，一个键值对的对应保存就是 PyDictEntry 类型来保存；
+按 key 存取近乎常数时间，说明它底层是一张**哈希表**；而「遍历有序」这个 3.7 才正式写进语言规范的特性，则要归功于 3.6 引入的**紧凑字典（compact dict）**设计。这一章我们就来看 CPython 是怎么把这两件事一起做到的。
 
-`源文件：`[Include/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L1)
+## 核心设计：稀疏索引 + 紧凑条目
+
+传统哈希表会开一个很大的数组，直接把「键值对」按哈希散落在里面。空间利用率低（数组大半是空槽），而且遍历顺序由哈希决定、杂乱无章。
+
+CPython 3.6 改用了一个巧妙的两段式结构，把「哈希定位」和「数据存储」拆开：
+
+- **`dk_indices`**：一个稀疏的索引数组，大小为 2 的幂。它**不直接存键值对**，只存一个个小整数——指向下面 entries 数组的下标（空槽用 -1 表示）。哈希就散布在这个数组里。
+- **`dk_entries`**：一个紧凑的条目数组，**按插入顺序**依次存放真正的记录（哈希、key、value）。
+
+查找一个 key 时：先用哈希在稀疏的 `dk_indices` 里定位，拿到一个下标，再去紧凑的 `dk_entries` 里取出那条记录。
+
+这样设计的两个好处立竿见影：
+
+1. **省内存**：稀疏的大数组只存小整数（按规模可能只占 1 字节），而又大又重的键值记录紧凑排列、不留空洞。
+2. **天然有序**：`dk_entries` 按插入顺序追加，遍历它自然就是插入顺序——这正是 dict 有序的由来。
+
+每条记录的类型是 `PyDictKeyEntry`：
+
+`源文件：`[Objects/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L4)
 
 ```c
 // Objects/dict-common.h
 typedef struct {
-    /* Cached hash code of me_key. */
-    Py_hash_t me_hash;
-    PyObject *me_key;
-    PyObject *me_value; /* This field is only meaningful for combined tables */
-} PyDictKeyEntry;　
+    Py_hash_t me_hash;   // 缓存的哈希值（避免重复计算）
+    PyObject *me_key;    // 键
+    PyObject *me_value;  // 值（仅 combined 表用到，见下）
+} PyDictKeyEntry;
 ```
 
-其中，me_hash 就是哈希生成的值，me_key 就是对应的 key 值，me_value 就是对应的值。
-在 python 中，在一个 PyDictObject 对象的变化过程中，entry 的状态会在不同的状态间转换。基本上在如下四种状态中转换：Unused、Active、Dummy 和 Pending。
+把这套结构画出来，就是下面这张图：稀疏的 `dk_indices` 存的是「位置」，真正的键值记录在右侧紧凑的 `PyDictKeyEntry` 数组里：
 
-1. Unused:没有插入任何一个获取的 key 与 value，并且在此之前也没有存储任何的 key,value，每一个 entry 在初始化的时候都会处于这种状态，并且 Unused 会被里面切换到 Active 态，当有 key 插入，这就是 entry 初始化的状态。
-2. Active:当 index>=0 时，me_key 不为空并且 me_value 不为空，保存了一个键值对，Active 可以转变为 Dummy 或者 Pending 状态，当一个键被删除的时候，这只会在 me_value 不为空的时候出现。
-3. Dummy:先前保存了一个 Active 的键值对，但是这个键值对被删除了并且一个活跃的键值对还没有填入该位置，Dummy 可以转变为 Active 当删除的时候，Dummy 的位置不能被重新使用，一旦发生碰撞，探针序列就无法知道这对键值对曾是活跃的键值对。
-4. Pending:索引>=0，键!=空，值=空（仅拆分），尚未插入到拆分表中。
+![python_dict_mem](dict-mem.svg)
 
-## 字典的两种类型
+## 数据结构
 
-python 的字典类型中包含了两种，分离字典（split-table dictionaries)与联合字典(combined-table dictonaries)。详细的信息可查看有关 dict 的描述[pep-0412](https://www.python.org/dev/peps/pep-0412/)。
-
-### split-table dictionaries
-
-当被创建的字典是用来保存 object 的\_\_dict\_\_属性时，该字典才会创建为一个 split-table，它们的键表都被缓存在类型属性中，并且允许所有该类型的实例都可以共享该 keys。当出现一个事件将字典的属性值进行改变的时候，个别字典将慢慢的转化成组合表的形式。这就保证了在大部分的应用场景下很高的内存利用效率，并保证了在各个场景下的正确性。当 split-dict 重新改变大小，它会立马改变为一个 combined-table，如果重置大小作为保存实例属性的结果，并且只有一个该 object 的实例，字典会立马再变为一个 split-table。如果从 split-table 中删除一个 key, value，它不会删除 keys tables 中对应的该值，而只是将 values 数值中移除了该 value。
-
-### combined-table dictionaries
-
-直接通过 dict 內建函数与{}生成的字典，模块和大部分其他字典都会创建为 combined-table 字典，一个 combined-table 不会改变为一个 split-table 字典，该字典的行为方式与最初的字典的行为方式大致相同。
-
-## 容器的相关数据结构
-
-字典对象是通过 PyDictObject 来实现数据的，详情如下；
+字典对象本体是 `PyDictObject`：
 
 `源文件：`[Include/dictobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/dictobject.h#L17)
 
 ```c
 // Include/dictobject.h
-typedef struct _dictkeysobject PyDictKeysObject;
-
-/* The ma_values pointer is NULL for a combined table
- * or points to an array of PyObject* for a split table
- */
 typedef struct {
     PyObject_HEAD
-
-    /* Number of items in the dictionary */
-    Py_ssize_t ma_used;　				// 使用的keys个数
-
-    /* Dictionary version: globally unique, value change each time
-       the dictionary is modified */
-    uint64_t ma_version_tag;
-
-    PyDictKeysObject *ma_keys;　　　　　// 如果有则是保存的keys数据
-
-    /* If ma_values is NULL, the table is "combined": keys and values
-       are stored in ma_keys.
-
-       If ma_values is not NULL, the table is splitted:
-       keys are stored in ma_keys and values are stored in ma_values */
-    PyObject **ma_values;　			 // 如果不为空则保存的是values
+    Py_ssize_t ma_used;            // 当前键值对个数，即 len(d)
+    uint64_t ma_version_tag;       // 版本号：每次修改都变，用于优化与一致性检查
+    PyDictKeysObject *ma_keys;     // 指向 keys 对象（哈希表主体）
+    PyObject **ma_values;          // combined 表为 NULL；split 表时单独存放 values
 } PyDictObject;
 ```
 
-其中，PyDictKeysObject 的定义如下；
+而哈希表的主体在 `PyDictKeysObject`：
 
-`源文件：`[Include/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L20)
+`源文件：`[Objects/dict-common.h](https://github.com/python/cpython/blob/v3.7.0/Objects/dict-common.h#L22)
 
 ```c
 // Objects/dict-common.h
-/* See dictobject.c for actual layout of DictKeysObject */
 struct _dictkeysobject {
-    Py_ssize_t dk_refcnt;　　　　　　　　　　　　　　　　　　// 引用计数
-
-    /* Size of the hash table (dk_indices). It must be a power of 2. */
-    Py_ssize_t dk_size;　　　　　　　　　　　　　　　　　　　// hash table 的大小必须是２的倍数
-
-    /* Function to lookup in the hash table (dk_indices):
-
-       - lookdict(): general-purpose, and may return DKIX_ERROR if (and
-         only if) a comparison raises an exception.
-
-       - lookdict_unicode(): specialized to Unicode string keys, comparison of
-         which can never raise an exception; that function can never return
-         DKIX_ERROR.
-
-       - lookdict_unicode_nodummy(): similar to lookdict_unicode() but further
-         specialized for Unicode string keys that cannot be the <dummy> value.
-
-       - lookdict_split(): Version of lookdict() for split tables. */
-    dict_lookup_func dk_lookup;                       // 哈希查找函数
-
-    /* Number of usable entries in dk_entries. */
-    Py_ssize_t dk_usable;                             // 可用的entry数量
-
-    /* Number of used entries in dk_entries. */　
-    Py_ssize_t dk_nentries;　　　　　　　　　            // 已经使用的entry数量
-
-    /* Actual hash table of dk_size entries. It holds indices in dk_entries,
-       or DKIX_EMPTY(-1) or DKIX_DUMMY(-2).
-
-       Indices must be: 0 <= indice < USABLE_FRACTION(dk_size).
-
-       The size in bytes of an indice depends on dk_size:
-
-       - 1 byte if dk_size <= 0xff (char*)
-       - 2 bytes if dk_size <= 0xffff (int16_t*)
-       - 4 bytes if dk_size <= 0xffffffff (int32_t*)
-       - 8 bytes otherwise (int64_t*)
-
-       Dynamically sized, SIZEOF_VOID_P is minimum. */
-    char dk_indices[];  /* char is required to avoid strict aliasing. */　　　// 存入的entries
-
-    /* "PyDictKeyEntry dk_entries[dk_usable];" array follows:
-       see the DK_ENTRIES() macro */
+    Py_ssize_t dk_refcnt;          // 引用计数（keys 可被多个实例共享）
+    Py_ssize_t dk_size;            // dk_indices 的大小，必须是 2 的幂
+    dict_lookup_func dk_lookup;    // 查找函数（按 key 类型特化，见下）
+    Py_ssize_t dk_usable;          // 还能再放多少个 entry
+    Py_ssize_t dk_nentries;        // dk_entries 中已用的条目数
+    char dk_indices[];             // 稀疏索引数组；其后紧跟 dk_entries 数组
 };
 ```
 
-相关数据结构的内存布局为；
-![python_dict_mem](dict-mem.svg)
+`dk_indices` 之后紧跟着 `dk_entries` 数组（用 `DK_ENTRIES()` 宏访问），两者连续分配在同一块内存里。索引槽里存的值有两个特殊含义：`DKIX_EMPTY`（-1，空槽）和 `DKIX_DUMMY`（-2，曾用过、现已删除）。
 
-## Python 字典示例
+> **entry 的几种状态**：一个槽位会在这几种状态间流转——*Unused*（从未使用，索引为 EMPTY）、*Active*（存着有效键值对）、*Dummy*（键值对被删除后留下的「墓碑」，探测时不能当空槽跳过，否则会漏掉它后面发生过哈希冲突的键）、*Pending*（split 表特有，key 已就位但 value 尚未填入）。
 
-本次示例脚本如下：
+## 两种表：combined 与 split
+
+字典分两种实现（细节见 [PEP 412](https://www.python.org/dev/peps/pep-0412/)）：
+
+- **combined 表（联合表）**：默认形态。`{}`、`dict()`、模块命名空间等绝大多数字典都是它。key 和 value 都存在 `ma_keys` 指向的 entries 里，`ma_values` 为 `NULL`。
+- **split 表（分离表）**：专门用于实例的 `__dict__`。同一个类的所有实例属性名（keys）是一样的，于是大家**共享同一份 keys**，各自的 value 单独存到 `ma_values` 数组里，从而省下大量内存。一旦实例属性的结构发生变化（比如删 key、重新调整大小），它会退化成 combined 表以保证正确性。
+
+![两种表对比](dict-tables.svg)
+
+下面以最常见的 combined 表为例，跟着源码走一遍「创建 → 插入 → 查找」。
+
+## 字典的创建
+
+从一段最简单的脚本入手，看它的字节码：
 
 ```python
 d = {}
-d['1']='2'
-d['1']='e'
-d.pop('1')
-
 ```
 
-通过 Python 的反汇编工具获取字节码；
-
-```shell
-python -m dis dict_test.py
+```text
+BUILD_MAP   0     # 创建一个空字典
+STORE_NAME  d
 ```
 
-输出的字节码如下；
+`BUILD_MAP` 对应的虚拟机指令最终调用 `_PyDict_NewPresized` 来创建字典：
 
-```shell
-  2           0 BUILD_MAP                0
-              2 STORE_NAME               0 (d)
-
-  3           4 LOAD_CONST               0 ('2')
-              6 LOAD_NAME                0 (d)
-              8 LOAD_CONST               1 ('1')
-             10 STORE_SUBSCR
-
-  4          12 LOAD_CONST               2 ('e')
-             14 LOAD_NAME                0 (d)
-             16 LOAD_CONST               1 ('1')
-             18 STORE_SUBSCR
-
-  5          20 LOAD_NAME                0 (d)
-             22 LOAD_METHOD              1 (pop)
-             24 LOAD_CONST               1 ('1')
-             26 CALL_METHOD              1
-             28 POP_TOP
-             30 LOAD_CONST               3 (None)
-             32 RETURN_VALUE
-```
-
-通过字节码指令可知，首先调用了 BUILD_MAP 来创建一个新的字典，接着就对新建的字典 d 进行了赋值操作与更新操作，最后调用了 pop 方法删除一个 key。接下来就详细分析一下相关流程。
-
-## 字典的初始化流程
-
-通过查找 BUILD_MAP 的虚拟机执行函数；
-
-`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L2357)
-
-```c
-// Python/ceval.c
-switch (opcode) {
-    ...
-
-    TARGET(BUILD_MAP) {
-        Py_ssize_t i;
-        PyObject *map = _PyDict_NewPresized((Py_ssize_t)oparg);    // 新建并初始化一个字典
-        if (map == NULL)
-            goto error;　                                          // 如果新建失败则报错
-        for (i = oparg; i > 0; i--) {　                          　// 检查在新建的过程中是否通过参数传值
-            int err;
-            PyObject *key = PEEK(2*i);
-            PyObject *value = PEEK(2*i - 1);
-            err = PyDict_SetItem(map, key, value);　　        　　　// 找到对应的值并讲该值设置到map中
-            if (err != 0) {　　　　　　　　　　　　　　　　　　　　　　　　// 检查是否报错
-                Py_DECREF(map);
-                goto error;　　　　　　　　　　　　　　　　　　　　　　　　// 如果错误就报错处理
-            }
-        }
-
-        while (oparg--) {
-            Py_DECREF(POP());　　　　　　　　　　　　　　　　　　　　　　　// 弹出栈上输入参数的引用
-            Py_DECREF(POP());
-        }
-        PUSH(map);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 讲生成的map压栈
-        DISPATCH();　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 检查是否需要执行下一条字节码指令
-    }
-}
-```
-
-从该函数的执行可知，初始化的函数是从\_PyDict_NewPresized 开始，该函数就是生成并初始化一个字典；
-
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1240)
+`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L2358) · [Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1242)
 
 ```c
 // Objects/dictobject.c
-
 PyObject *
 _PyDict_NewPresized(Py_ssize_t minused)
 {
-    const Py_ssize_t max_presize = 128 * 1024;　         // 字典最大的容量
-    Py_ssize_t newsize;
-    PyDictKeysObject *new_keys;
-
-    /* There are no strict guarantee that returned dict can contain minused
-     * items without resize.  So we create medium size dict instead of very
-     * large dict or MemoryError.
-     */
-    if (minused > USABLE_FRACTION(max_presize)) {       // 检查传入的数量是否超过最大值
-        newsize = max_presize;
-    }
-    else {
-        Py_ssize_t minsize = ESTIMATE_SIZE(minused);    // 获取最小的值,在新建一个空的字典的时候该值为０
-        newsize = PyDict_MINSIZE;                       // 设置字典的最小值　为８
-        while (newsize < minsize) {                     // 如果传入的值大于最小值则调整newsize 大小
-            newsize <<= 1;
-        }
-    }
-    assert(IS_POWER_OF_2(newsize));
-
-    new_keys = new_keys_object(newsize);                // 生成并初始化一个PyDictKeysObject对象
-    if (new_keys == NULL)
-        return NULL;
-    return new_dict(new_keys, NULL);                    // 生成一个新的对象并返回
+    ......
+    Py_ssize_t newsize = PyDict_MINSIZE;       // 起始大小为 8
+    while (newsize < minsize) newsize <<= 1;   // 不够则翻倍，始终保持 2 的幂
+    ......
+    new_keys = new_keys_object(newsize);       // 1. 创建 keys 对象（哈希表主体）
+    return new_dict(new_keys, NULL);           // 2. 包装成 PyDictObject 返回
 }
 ```
 
-首先，先计算出需要生成的字典的大小，然后再初始化一个 PyDictKeysObject，最后就生成一个 PyDictObject 返回。继续查看 new_keys_object 的执行流程；
+新字典的初始大小是 `PyDict_MINSIZE`，也就是 **8**。`new_keys_object` 负责申请并初始化 keys 对象——它会根据 `dk_size` 选择索引槽的字节宽度（表小就用 1 字节存索引，省内存），把索引数组全部填成 -1（空），并把查找函数 `dk_lookup` 设为针对字符串 key 优化的 `lookdict_unicode_nodummy`：
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L503)
+`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L504)
 
 ```c
 // Objects/dictobject.c
-
 static PyDictKeysObject *new_keys_object(Py_ssize_t size)
 {
-    PyDictKeysObject *dk;
-    Py_ssize_t es, usable;
-
-    assert(size >= PyDict_MINSIZE);           // 检查size是否大于最小size
-    assert(IS_POWER_OF_2(size));              // 检查是否是２的倍数
-
-    usable = USABLE_FRACTION(size);           // 检查是否可用　　根据经验在１/2和２/3之间效果最好
-    if (size <= 0xff) {
-        es = 1;
-    }
-    else if (size <= 0xffff) {
-        es = 2;
-    }
-#if SIZEOF_VOID_P > 4
-    else if (size <= 0xffffffff) {
-        es = 4;
-    }
-#endif
-    else {
-        es = sizeof(Py_ssize_t);
-    }
-
-    if (size == PyDict_MINSIZE && numfreekeys > 0) {　　　　　　// 是否有缓存，如果有缓存就选择缓存中的dk
-        dk = keys_free_list[--numfreekeys];
-    }
-    else {
-        dk = PyObject_MALLOC(sizeof(PyDictKeysObject)
-                             + es * size
-                             + sizeof(PyDictKeyEntry) * usable);    // 没有缓存可使用的字典则申请内存生成一个
-        if (dk == NULL) {
-            PyErr_NoMemory();
-            return NULL;
-        }
-    }
-    DK_DEBUG_INCREF dk->dk_refcnt = 1;                              // 设置引用计数
-    dk->dk_size = size;                                             // 设置大小
-    dk->dk_usable = usable;                                        // 设置是否可用
-    dk->dk_lookup = lookdict_unicode_nodummy;                       // 设置查找函数
+    ......
+    usable = USABLE_FRACTION(size);            // 可用条目数 = size 的 2/3
+    if (size <= 0xff)        es = 1;           // 索引槽宽度随表大小而定
+    else if (size <= 0xffff) es = 2;
+    ......
+    dk->dk_size = size;
+    dk->dk_usable = usable;
+    dk->dk_lookup = lookdict_unicode_nodummy;  // 默认查找函数（字符串优化版）
     dk->dk_nentries = 0;
-    memset(&dk->dk_indices[0], 0xff, es * size);                    // 将申请的内存置空
-    memset(DK_ENTRIES(dk), 0, sizeof(PyDictKeyEntry) * usable);
+    memset(&dk->dk_indices[0], 0xff, es * size);   // 索引数组全置 -1（空）
+    ......
     return dk;
 }
 ```
 
-主要就是通过传入的 size，检查是否超过设置的大小，检查是否有缓存的字典数据可用，如果没有则申请内存重新生成一个 dk，最后进行申请到的内存讲内容清空。接着就会进行 new_dict 初始化数据；
+`new_dict` 则把 keys 包进一个 `PyDictObject`（同样有对象缓冲池可复用），把 `ma_used` 置 0，于是一个空字典就准备好了。这里出现的 `USABLE_FRACTION(size)` 是个关键数字——它等于 `size × 2 / 3`，意味着**哈希表最多用到 2/3 就会扩容**，留出足够空槽来降低冲突。
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L568)
-
-```c
-// Objects/dictobject.c
-
-/* Consumes a reference to the keys object */
-static PyObject *
-new_dict(PyDictKeysObject *keys, PyObject **values)
-{
-    PyDictObject *mp;
-    assert(keys != NULL);
-    if (numfree) {　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 判断缓冲池是否有
-        mp = free_list[--numfree];
-        assert (mp != NULL);
-        assert (Py_TYPE(mp) == &PyDict_Type);　
-        _Py_NewReference((PyObject *)mp);　　　　　　　　　　　　　　// 使用缓冲池对象　　　　
-    }
-    else {
-        mp = PyObject_GC_New(PyDictObject, &PyDict_Type);　　　　// 缓冲池没有则申请新的对象并初始化
-        if (mp == NULL) {
-            DK_DECREF(keys);
-            free_values(values);
-            return NULL;
-        }
-    }
-    mp->ma_keys = keys;
-    mp->ma_values = values;
-    mp->ma_used = 0;　　　　　　　　　　　　　　　　　　　　　　　　　　　// 设置ma_used为0
-    mp->ma_version_tag = DICT_NEXT_VERSION();
-    assert(_PyDict_CheckConsistency(mp));
-    return (PyObject *)mp;
-}
-```
-
-new_dict 就是根据 keys，values 设置到从缓冲池或者新生成一个 dict 对象，最后返回。至此，dict 的创建工作已经完成。
+![新建空字典](dict-create.svg)
 
 ## 字典的插入与查找
 
-通过字节码的指令 STORE_SUBSCR 可知，该命令就是讲'1'作为 key, '2'作为 value 插入到 d 中，此时查看该执行函数；
+再看赋值语句的字节码：
 
-`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L1561)
-
-```c
-// Python/ceval.c
-switch (opcode) {
-    ...
-
-    TARGET(STORE_SUBSCR) {
-        PyObject *sub = TOP();                 // 第一个值为key
-        PyObject *container = SECOND();        // 该为字典对象
-        PyObject *v = THIRD();                 // 该为value
-        int err;
-        STACKADJ(-3);
-        /* container[sub] = v */
-        err = PyObject_SetItem(container, sub, v);  // 调用该方法设置值
-        Py_DECREF(v);
-        Py_DECREF(container);
-        Py_DECREF(sub);
-        if (err != 0)
-            goto error;
-        DISPATCH();
-    }
-}
+```python
+d["1"] = "2"
 ```
 
-此时，从栈中取出相关参数，并将这些值传入 PyObject_SetItem 函数进行处理设置值；
-
-`源文件：`[Objects/abstract.c](https://github.com/python/cpython/blob/v3.7.0/Objects/abstract.c#L186)
-
-```c
-// Objects/abstract.c
-int
-PyObject_SetItem(PyObject *o, PyObject *key, PyObject *value)
-{
-    PyMappingMethods *m;
-
-    if (o == NULL || key == NULL || value == NULL) {　　　　　　　　　　　// 检查是否为空如果任一为空则报错
-        null_error();
-        return -1;
-    }
-    m = o->ob_type->tp_as_mapping;　　　　　　　　　　　　　　　　　　　　　　// 获取类型的tp_as_mapping方法集　　　　　
-    if (m && m->mp_ass_subscript)　　　　　　　　　　　　　　　　　　　　　　　// 如果有设置该类型
-        return m->mp_ass_subscript(o, key, value);                    // 调用该mp_ass_subscript方法
-
-    if (o->ob_type->tp_as_sequence) {                                 // 获取作为队列的操作集
-        if (PyIndex_Check(key)) {　　　　　　　　　　　　　　　　　　　　　　　// 检查key是否是索引
-            Py_ssize_t key_value;
-            key_value = PyNumber_AsSsize_t(key, PyExc_IndexError);　
-            if (key_value == -1 && PyErr_Occurred())
-                return -1;
-            return PySequence_SetItem(o, key_value, value);　　　　　　　// 调用索引插入
-        }
-        else if (o->ob_type->tp_as_sequence->sq_ass_item) {
-            type_error("sequence index must be "
-                       "integer, not '%.200s'", key);
-            return -1;
-        }
-    }
-
-    type_error("'%.200s' object does not support item assignment", o);　　　// 则该类型对象不支持设置
-    return -1;
-}
+```text
+STORE_SUBSCR      # d["1"] = "2"
 ```
 
-其中就调用了字典的 tp_as_mapping 的方法集，并调用了该方法集的 mp_ass_subscript 方法；此时我们分析一下，dict 的 tp_as_mapping 的方法集。此时就调用了 tp_as_mapping 的 mp_ass_subscript 方法，此时就是调用 dict 的 dict_ass_sub 方法；
+`STORE_SUBSCR` 的调用链是：`PyObject_SetItem` → 取出字典类型的 `tp_as_mapping->mp_ass_subscript`（即 `dict_ass_sub`）→ 根据有无 value 分流到删除或设置：
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L2040)
+`源文件：`[Objects/abstract.c](https://github.com/python/cpython/blob/v3.7.0/Objects/abstract.c#L188) · [Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L2042)
 
 ```c
 // Objects/dictobject.c
@@ -418,305 +173,150 @@ static int
 dict_ass_sub(PyDictObject *mp, PyObject *v, PyObject *w)
 {
     if (w == NULL)
-        return PyDict_DelItem((PyObject *)mp, v);
+        return PyDict_DelItem((PyObject *)mp, v);   // d[k] 被 del → 删除
     else
-        return PyDict_SetItem((PyObject *)mp, v, w);
+        return PyDict_SetItem((PyObject *)mp, v, w);// d[k] = w → 设置
 }
 ```
 
-可知，删除一个 key 就是 PyDict_DelItem,设置一个 key 就是 PyDict_SetItem；
+`PyDict_SetItem` 先算出 key 的哈希（字符串 key 直接读缓存好的 hash，否则调用 key 类型的 `tp_hash`），再交给 `insertdict` 真正落库：
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1433)
+`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L1434)
 
 ```c
 // Objects/dictobject.c
 int
 PyDict_SetItem(PyObject *op, PyObject *key, PyObject *value)
 {
-    PyDictObject *mp;
-    Py_hash_t hash;
-    if (!PyDict_Check(op)) {　　　　　　　　　　　 // 检查是否是字典类型
-        PyErr_BadInternalCall();
-        return -1;
-    }
-    assert(key);
-    assert(value);
-    mp = (PyDictObject *)op;
+    ......
     if (!PyUnicode_CheckExact(key) ||
-        (hash = ((PyASCIIObject *) key)->hash) == -1)　　// 检查传入的key是否hash为-1
+        (hash = ((PyASCIIObject *) key)->hash) == -1)
     {
-        hash = PyObject_Hash(key);                      // 生成hash调用key对应的tp_hash方法，在本例中传入的是str类型，则调用str类型的tp_hash方法
-        if (hash == -1)
-            return -1;
+        hash = PyObject_Hash(key);          // 计算哈希：调用 key 的 tp_hash
+        if (hash == -1) return -1;
     }
-
-    /* insertdict() handles any resizing that might be necessary */
-    return insertdict(mp, key, hash, value);          // 生成hash调用key对应的tp_hash方法
+    return insertdict(mp, key, hash, value);
 }
-
 ```
 
-insertdict 方法就是将生成的方法，插入到字典中去；
+`insertdict` 是插入的核心。它先用 `dk_lookup` 查这个 key 在不在表里，再据此决定是「更新已有值」还是「占用一个新槽」：
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L987)
+`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L994)
 
 ```c
 // Objects/dictobject.c
 static int
 insertdict(PyDictObject *mp, PyObject *key, Py_hash_t hash, PyObject *value)
 {
-    PyObject *old_value;
-    PyDictKeyEntry *ep;
-
-    Py_INCREF(key);
-    Py_INCREF(value);
-    if (mp->ma_values != NULL && !PyUnicode_CheckExact(key)) {
-        if (insertion_resize(mp) < 0)                     // 重新设置mp的大小  如果ma_values有值
-            goto Fail;
-    }
-
-    Py_ssize_t ix = mp->ma_keys->dk_lookup(mp, key, hash, &old_value);　　　　 // 调用查找方法
-    if (ix == DKIX_ERROR)
-        goto Fail;
-
-    assert(PyUnicode_CheckExact(key) || mp->ma_keys->dk_lookup == lookdict);
-    MAINTAIN_TRACKING(mp, key, value);                                        // 检查mp key values是否需要加入垃圾回收
-
-    /* When insertion order is different from shared key, we can't share
-     * the key anymore.  Convert this instance to combine table.
-     */
-    if (_PyDict_HasSplitTable(mp) &&
-        ((ix >= 0 && old_value == NULL && mp->ma_used != ix) ||
-         (ix == DKIX_EMPTY && mp->ma_used != mp->ma_keys->dk_nentries))) {　　// 检查是否是分离表，如果没查找到旧值并且
-        if (insertion_resize(mp) < 0)　　　　　　　　　　　　　　　　　　　　　　　　　// 重新设置该字典大小
-            goto Fail;
-        ix = DKIX_EMPTY;
-    }
-
-    if (ix == DKIX_EMPTY) {
-        /* Insert into new slot. */
-        assert(old_value == NULL);
-        if (mp->ma_keys->dk_usable <= 0) {　　　　　　　　　　　　　　　　　　　　　　// 如果可用的值小于０
-            /* Need to resize. */
-            if (insertion_resize(mp) < 0)　　　　　　　　　　　　　　　　　　　　　　　// 需要重新扩展字典大小
-                goto Fail;
+    ......
+    Py_ssize_t ix = mp->ma_keys->dk_lookup(mp, key, hash, &old_value);  // 先查找
+    ......
+    if (ix == DKIX_EMPTY) {                  // 没找到 → 这是一个新 key
+        if (mp->ma_keys->dk_usable <= 0) {   // 可用槽不足，先扩容
+            if (insertion_resize(mp) < 0) goto Fail;
         }
-        Py_ssize_t hashpos = find_empty_slot(mp->ma_keys, hash);　　　　　　　　　// 查找一个可用的hash位置
-        ep = &DK_ENTRIES(mp->ma_keys)[mp->ma_keys->dk_nentries];　　　　　　　　　// 获取存取的地址
-        dk_set_index(mp->ma_keys, hashpos, mp->ma_keys->dk_nentries);　　　　　　// 设置该值
-        ep->me_key = key;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 保存key
-        ep->me_hash = hash;                                                   // 保存计算得出的hash值
-        if (mp->ma_values) {　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 如果mp的ma_values有值
-            assert (mp->ma_values[mp->ma_keys->dk_nentries] == NULL);
-            mp->ma_values[mp->ma_keys->dk_nentries] = value;　　　　　　　　　　　// 设置该key对应的value
-        }
-        else {
-            ep->me_value = value;                                             // 直接讲value设置到entry上面
-        }
-        mp->ma_used++;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 // 使用个数加１
-        mp->ma_version_tag = DICT_NEXT_VERSION();　　
-        mp->ma_keys->dk_usable--;　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 可用减１
-        mp->ma_keys->dk_nentries++;
-        assert(mp->ma_keys->dk_usable >= 0);
-        assert(_PyDict_CheckConsistency(mp));
+        Py_ssize_t hashpos = find_empty_slot(mp->ma_keys, hash);  // 找一个空索引槽
+        ep = &DK_ENTRIES(mp->ma_keys)[mp->ma_keys->dk_nentries];  // 在 entries 末尾追加
+        dk_set_index(mp->ma_keys, hashpos, mp->ma_keys->dk_nentries); // 索引槽 → 记录下标
+        ep->me_key = key;                    // 写入 key
+        ep->me_hash = hash;                  // 写入哈希
+        ep->me_value = value;                // 写入 value（combined 表）
+        mp->ma_used++;
+        mp->ma_keys->dk_usable--;
+        mp->ma_keys->dk_nentries++;          // entries 又多了一条
         return 0;
     }
-
-    if (_PyDict_HasSplitTable(mp)) {                                         // 如果是分离的
-        mp->ma_values[ix] = value;                                           // 直接设置ma_values对应的ix到values中
-        if (old_value == NULL) {
-            /* pending state */
-            assert(ix == mp->ma_used);
-            mp->ma_used++;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 使用加１
-        }
-    }
-    else {
-        assert(old_value != NULL);
-        DK_ENTRIES(mp->ma_keys)[ix].me_value = value;
-    }
-
-    mp->ma_version_tag = DICT_NEXT_VERSION();
-    Py_XDECREF(old_value); /* which **CAN** re-enter (see issue #22653) */
-    assert(_PyDict_CheckConsistency(mp));
-    Py_DECREF(key);
-    return 0;
-
-Fail:
-    Py_DECREF(value);
-    Py_DECREF(key);
-    return -1;
+    ......                                    // 找到了 → 更新旧 value
+    DK_ENTRIES(mp->ma_keys)[ix].me_value = value;
+    ......
 }
 ```
 
-首先会调用相关的查找方法，去查找待搜索的值是否已经存在字典中，如果当前字典数据已经满了则会按照增长大小的函数生成一个新的字典，并把旧数据设置到新的字典中，当找到的字典匹配时则返回。
+注意新 key 的写入方式，正好印证了前面的设计：记录总是**追加到 `dk_entries` 末尾**（保持插入顺序），同时把它的下标登记进哈希定位到的那个**索引槽**。
 
-其中 dk_lookup 对应的方法，在初始化之后对应的是 lookdict_unicode_nodummy；
+![插入示意](dict-insert.svg)
 
-`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L813)
+那「按哈希定位、处理冲突」具体怎么做？看默认的查找函数 `lookdict_unicode_nodummy`：
+
+`源文件：`[Objects/dictobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/dictobject.c#L816)
 
 ```c
 // Objects/dictobject.c
-
-/* Faster version of lookdict_unicode when it is known that no <dummy> keys
- * will be present. */
 static Py_ssize_t _Py_HOT_FUNCTION
 lookdict_unicode_nodummy(PyDictObject *mp, PyObject *key,
                          Py_hash_t hash, PyObject **value_addr)
 {
-    assert(mp->ma_values == NULL);
-    /* Make sure this function doesn't have to handle non-unicode keys,
-       including subclasses of str; e.g., one reason to subclass
-       unicodes is to override __eq__, and for speed we don't cater to
-       that here. */
-    if (!PyUnicode_CheckExact(key)) {　　　　　　　　　　　　　　　　　　　　　// 检查如果不是ｕｎicode则直接调用lookdict方法查找
-        mp->ma_keys->dk_lookup = lookdict;
-        return lookdict(mp, key, hash, value_addr);
-    }
-
-    PyDictKeyEntry *ep0 = DK_ENTRIES(mp->ma_keys);　　　　　　　　　　　　　// 获取keys的首个元素地址
-    size_t mask = DK_MASK(mp->ma_keys);　　　　　　　　　　　　　　　　　　　　// 获取大小
+    ......
+    size_t mask = DK_MASK(mp->ma_keys);
     size_t perturb = (size_t)hash;
-    size_t i = (size_t)hash & mask;　　　　　　　　　　　　　　　　　　　　　　　// 获取生成的最终的值　　　　　　　　　　　　　　　　　
+    size_t i = (size_t)hash & mask;          // 初始槽位 = hash & (size-1)
 
     for (;;) {
-        Py_ssize_t ix = dk_get_index(mp->ma_keys, i);                // 便利ma_keys　ｋey列表
-        assert (ix != DKIX_DUMMY);　　　　　　　　　　　　　　　　　　　　　// 判断不能为空
-        if (ix == DKIX_EMPTY) {                                     // 如果为空则证明找到一个可以使用的
-            *value_addr = NULL;　　　　　　　　　　　　　　　　　　　　　　　// 讲key对应的value设置为空
-            return DKIX_EMPTY;　　　　　　　　　　　　　　　　　　　　　　　 // 返回
+        Py_ssize_t ix = dk_get_index(mp->ma_keys, i);   // 取索引槽的值
+        if (ix == DKIX_EMPTY) {              // 空槽 → 表里没有这个 key
+            *value_addr = NULL;
+            return DKIX_EMPTY;
         }
-        PyDictKeyEntry *ep = &ep0[ix];           　　　　　　　　　　　　// 获取该位置元素值
-        assert(ep->me_key != NULL);
-        assert(PyUnicode_CheckExact(ep->me_key));
-        if (ep->me_key == key ||
-            (ep->me_hash == hash && unicode_eq(ep->me_key, key))) {　　// 如果key相同 ｈａｓｈ值也相同
-            *value_addr = ep->me_value;　　　　　　　　　　　　　　　　　　　 // 将该值赋值
+        PyDictKeyEntry *ep = &ep0[ix];
+        if (ep->me_key == key ||             // 命中：同一对象，或哈希相同且值相等
+            (ep->me_hash == hash && unicode_eq(ep->me_key, key))) {
+            *value_addr = ep->me_value;
             return ix;
         }
-        perturb >>= PERTURB_SHIFT;　　　　　　　　　　　　　　　　　　　　　　// 偏移
-        i = mask & (i*5 + perturb + 1);　　　　　　　　　　　　　　　　　　　// 获取下一个位置
-    }
-    Py_UNREACHABLE();
-}
-```
-
-该函数的主要工作就是查找，字典中是否有空余的值，或者如果找到了满足 hash 值与 key 相同的就将 value 设置为找到的值（这也是字典查找的核心逻辑）。至此，字典的插入的大致流程已经分析完毕。
-
-## Python 字典的操作测试
-
-现在我们动手观看一下具体的操作实例，首先声明，该例子仅供调试使用，目前调试的字典的 key 与 value 都是 float 类型并且不能 del 或者 pop 其中的 key。操作字典如下所示；
-
-```python
-ｄ = {20000:2}
-d[1] = 2
-d[3] = 2
-```
-
-首先，讲如下代码插入到 dictobject.c 的 1060 行；
-
-```c
-// 测试代码
-PyObject* key1 = PyLong_FromLong(20000);
-Py_hash_t hash1 = PyObject_Hash(key1);
-PyObject* old_value1;
-Py_ssize_t ix1 = mp->ma_keys->dk_lookup(mp, key1, hash1, &old_value1);
-if (ix1 == 0){
-    PyLongObject* give;
-    give = (PyLongObject* )key1;
-    printf("found value : %ld\n", give->ob_digit[0]);
-    PyDictKeyEntry *ep01 = DK_ENTRIES(mp->ma_keys);
-    int i, count;
-    count = mp->ma_used;
-    int size_count, j;
-    size_count = mp->ma_keys->dk_size;
-    printf("%s ", mp->ma_keys->dk_indices);
-    int8_t *indices = (int8_t*)(mp->ma_keys->dk_indices);
-    printf("indices index values :");
-    for (j=0; j<size_count;j++){
-        printf("%d  ",(char) indices[j]);
-    }
-    printf("\n");
-    for (i=0; i<count;i++){
-        give = (PyLongObject* )ep01->me_key;
-        printf("size : %d ", mp->ma_keys->dk_size);
-        printf("found value while 　key : %ld   ", give->ob_digit[0]);
-        give = (PyLongObject* )ep01->me_value;
-        printf("value  : %ld\n", give->ob_digit[0]);
-        ep01++;
+        perturb >>= PERTURB_SHIFT;           // 没命中，按扰动探测下一个槽
+        i = mask & (i*5 + perturb + 1);
     }
 }
 ```
 
-然后编译运行；
+逻辑是经典的**开放寻址**：
+
+1. 用 `hash & (size - 1)` 取初始槽位（因 `size` 是 2 的幂，等价于对 `size` 取模）；
+2. 槽位为空 → key 不存在；槽位非空但 key 不匹配 → 发生**哈希冲突**，按 `i = (i*5 + perturb + 1) & mask` 探测下一个槽，并把 `perturb`（初值为完整哈希）逐步右移 `PERTURB_SHIFT`（=5）位混入，让探测序列既能快速跳开、又能逐渐覆盖整张表；
+3. 直到命中相同的 key，或撞上空槽为止。
+
+![查找与探测](dict-lookup.svg)
+
+`PyDict_SetItem` 复用了同一套查找：找到就更新 value，没找到（撞空槽）就在那个位置安家。查找和插入共享这套寻址，这正是字典平均 O(1) 的来源。
+
+## 动手观测紧凑字典
+
+光看代码不够直观，我们可以改源码把哈希表的内部状态打印出来。在 `insertdict` 里加几行，打印 `dk_indices`（索引数组）和 `dk_entries`（键值记录），[重新编译](../../preface/unix-linux-build/)后操作一个字典（key 用整数，因为整数的哈希就是它自身，方便心算槽位）：
 
 ```python
-Python 3.7.3 (default, May 22 2019, 16:17:57)
-[GCC 7.3.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> d = {20000:2}
-found value : 20000
- indices index values :0  -1  -1  -1  -1  -1  -1  -1
-size : 8 found value while 　key : 20000   value  : 2
+>>> d = {20000: 2}
+ indices : 0  -1  -1  -1  -1  -1  -1  -1          # size 8
+ entries : key 20000  value 2
 ```
 
-其中为什么初始化的时候输入 20000，是根据代码找到相关的 key 值，因为字典也被 python 自身实现的结构中引用了多次，所以我们就设置了一个特殊值来跟踪我们想要的字典；当 d 初始化的时候，就输出如上所示内容；我们接下来继续操作；
+`20000 & 7 == 0`，所以 key 20000 落在 0 号索引槽，槽里存的 `0` 表示它是 entries 中的第 0 条。继续插入：
 
 ```python
->>> d = {20000:2}
-found value : 20000
- indices index values :0  -1  -1  -1  -1  -1  -1  -1
-size : 8 found value while 　key : 20000   value  : 2
->>> d[2] = 3
-found value : 20000
- indices index values :0  -1  1  -1  -1  -1  -1  -1
-size : 8 found value while 　key : 20000   value  : 2
-size : 8 found value while 　key : 2   value  : 3
->>> d[3] = 4
-found value : 20000
- indices index values :0  -1  1  2  -1  -1  -1  -1
-size : 8 found value while 　key : 20000   value  : 2
-size : 8 found value while 　key : 2   value  : 3
-size : 8 found value while 　key : 3   value  : 4
->>> d[5] = 6
-found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  -1
-size : 8 found value while 　key : 20000   value  : 2
-size : 8 found value while 　key : 2   value  : 3
-size : 8 found value while 　key : 3   value  : 4
-size : 8 found value while 　key : 5   value  : 6
->>> d[7] = 8
-found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4
-size : 8 found value while 　key : 20000   value  : 2
-size : 8 found value while 　key : 2   value  : 3
-size : 8 found value while 　key : 3   value  : 4
-size : 8 found value while 　key : 5   value  : 6
-size : 8 found value while 　key : 7   value  : 8
+>>> d[2] = 3       # 2 & 7 = 2
+ indices : 0  -1  1  -1  -1  -1  -1  -1
+>>> d[3] = 4       # 3 & 7 = 3
+ indices : 0  -1  1  2  -1  -1  -1  -1
+>>> d[5] = 6       # 5 & 7 = 5
+ indices : 0  -1  1  2  -1  3  -1  -1
+>>> d[7] = 8       # 7 & 7 = 7
+ indices : 0  -1  1  2  -1  3  -1  4
 ```
 
-此后我们一直添加值进 d，从输出信息可知，index 就是记录了 PyDictKeyEntry 的索引值，-1 就表示该处未使用。
-当我们继续向 d 中添加内容时；
+可以清楚看到：**索引数组是稀疏的**（`-1` 是空槽），里面存的只是「这是第几条记录」；**记录本身则按插入顺序紧凑排在 entries 里**。当装入第 6 个键值对时（此时 size=8，可用上限 `8 × 2/3 ≈ 5`），表超过 2/3 负载，于是自动扩容：
 
 ```python
->>> d[9] = 10
-found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4  -1  5  -1  -1  -1  -1  -1  -1
-size : 16 found value while 　key : 20000   value  : 2
-size : 16 found value while 　key : 2   value  : 3
-size : 16 found value while 　key : 3   value  : 4
-size : 16 found value while 　key : 5   value  : 6
-size : 16 found value while 　key : 7   value  : 8
-size : 16 found value while 　key : 9   value  : 10
->>> d[10] = 11
-found value : 20000
- indices index values :0  -1  1  2  -1  3  -1  4  -1  5  6  -1  -1  -1  -1  -1
-size : 16 found value while 　key : 20000   value  : 2
-size : 16 found value while 　key : 2   value  : 3
-size : 16 found value while 　key : 3   value  : 4
-size : 16 found value while 　key : 5   value  : 6
-size : 16 found value while 　key : 7   value  : 8
-size : 16 found value while 　key : 9   value  : 10
-size : 16 found value while 　key : 10   value  : 11
+>>> d[9] = 10      # 触发扩容
+ indices : 0  -1  1  2  -1  3  -1  4  -1  5  -1  -1  -1  -1  -1  -1   # size 8 → 16
+ entries : 20000→2, 2→3, 3→4, 5→6, 7→8, 9→10                        # 顺序保持不变
 ```
 
-从输出内容可知，字典的大小随之改变了，这也说明了 python 字典的最佳大小容量限定在 1/2 到 2/3 之间，如果超过这个阈值则字典就会自动扩容，扩容的策略大家可详细查看源码。
+`dk_size` 从 8 变成 16，索引数组随之扩大、所有 key 按新 mask 重新定位，但 **entries 里的插入顺序原封不动**。这就是字典「容量翻倍扩容」和「遍历有序」在内部的真实样子。
+
+---
+
+小结一下字典的实现要点：
+
+- 字典是一张**哈希表**，平均 O(1) 存取；
+- 3.6 起采用**紧凑字典**：稀疏的 `dk_indices` 只存「位置」，紧凑的 `dk_entries` 按插入顺序存「哈希 + key + value」——前者带来内存节省，后者带来**遍历有序**；
+- 默认是 **combined 表**，实例 `__dict__` 用共享 keys 的 **split 表**省内存；
+- 冲突用**开放寻址 + 扰动探测**解决，负载达到 **2/3** 即扩容（容量保持 2 的幂、按需翻倍）。

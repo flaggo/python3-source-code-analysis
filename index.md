@@ -18,10 +18,10 @@
 - [ ] Python 内建对象
     - [x] Python 对象初探
     - [x] Python 整数对象
-    - [ ] Python 字符串 对象
-    - [x] Python List 对象
-    - [x] Python Dict 对象
-    - [x] Python Set 对象
+    - [ ] Python 字符串对象
+    - [x] Python 列表对象
+    - [x] Python 字典对象
+    - [x] Python 集合对象
     - [ ] 实现简版 Python
 - [ ] Python 虚拟机
     - [ ] Python 编译结果

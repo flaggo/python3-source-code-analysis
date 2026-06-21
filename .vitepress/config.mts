@@ -50,9 +50,9 @@ export default defineConfig({
           { text: 'Python 对象初探', link: '/objects/object/' },
           { text: 'Python 整数对象', link: '/objects/long-object/' },
           { text: 'Python 字符串对象', link: '/objects/str-object/' },
-          { text: 'Python List 对象', link: '/objects/list-object/' },
-          { text: 'Python Dict 对象', link: '/objects/dict-object/' },
-          { text: 'Python Set 对象', link: '/objects/set-object/' },
+          { text: 'Python 列表对象', link: '/objects/list-object/' },
+          { text: 'Python 字典对象', link: '/objects/dict-object/' },
+          { text: 'Python 集合对象', link: '/objects/set-object/' },
           { text: '实现简版 Python', link: '/objects/simple-interpreter/' }
         ]
       },

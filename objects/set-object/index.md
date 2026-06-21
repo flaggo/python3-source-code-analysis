@@ -1,587 +1,253 @@
-# python 集合
+# Python 集合对象
 
-set 是无序且不重复的集合，是可变的，通常用来从列表中删除重复项以及计算数学运算，如交集、并集、差分和对称差分等集合操作。set 支持 x in set, len(set),和 for x in set。作为一个无序的集合，set 不记录元素位置或者插入点。因此，sets 不支持 indexing, 或其它类序列的操作。
+`set` 是无序、不重复的集合。我们用它去重、做成员判断，以及交集、并集、差集这类数学运算：
 
-## python 集合概述
+```python
+>>> s = {1, 2, 2, 3}     # 自动去重
+>>> s
+{1, 2, 3}
+>>> 2 in s               # 成员判断，平均 O(1)
+True
+>>> {1, 2, 3} & {2, 3, 4}   # 交集
+{2, 3}
+```
 
-在 set 中，对应的 set 的值的存储是通过结构 setentry 来保存数据值的；
+「去重」和「O(1) 成员判断」这两件事，都指向同一个底层结构——**哈希表**。`set` 和 `dict` 是近亲：`dict` 存「键 → 值」，`set` 则只存「键」、没有值。理解了上一章的字典，这一章会轻松很多；我们重点看它和 `dict` 不一样的地方。
 
-`源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L26)
+## 数据结构
+
+`set` 里的每个槽位是一个 `setentry`，只存键和它的哈希：
+
+`源文件：`[Include/setobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/setobject.h#L26)
 
 ```c
+// Include/setobject.h
 typedef struct {
     PyObject *key;
     Py_hash_t hash;             /* Cached hash code of the key */
 } setentry;
 ```
 
-key 就是保存的数据，hash 就是保存的数据的 hash，便于查找，set 也是基于 hash 表来实现。对应的 setentry 所对应的 set 的数据结构如下；
+集合对象本体是 `PySetObject`：
 
-`源文件：`[include/setobject.h](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Include/setobject.h#L42)
+`源文件：`[Include/setobject.h](https://github.com/python/cpython/blob/v3.7.0/Include/setobject.h#L42)
 
 ```c
+// Include/setobject.h
 typedef struct {
     PyObject_HEAD
-
-    Py_ssize_t fill;            /* Number active and dummy entries*/     // 包括已经使用的entry与空entry值的总和
-    Py_ssize_t used;            /* Number active entries */              // 已经使用可用的总量
-
-    /* The table contains mask + 1 slots, and that's a power of 2.
-     * We store the mask instead of the size because the mask is more
-     * frequently needed.
-     */
-    Py_ssize_t mask;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 与hash求和的mask
-
-    /* The table points to a fixed-size smalltable for small tables
-     * or to additional malloc'ed memory for bigger tables.
-     * The table pointer is never NULL which saves us from repeated
-     * runtime null-tests.
-     */
-    setentry *table;                                                    // 保存数据的数组数组指针
-    Py_hash_t hash;             /* Only used by frozenset objects */
-    Py_ssize_t finger;          /* Search finger for pop() */
-
-    setentry smalltable[PySet_MINSIZE];                                 // 保存数据的数组　默认初始化为8个元素，通过table指向
-    PyObject *weakreflist;      /* List of weak references */
+    Py_ssize_t fill;            // 活跃 + 已删除(dummy) 的槽位总数
+    Py_ssize_t used;            // 活跃槽位数，即 len(s)
+    Py_ssize_t mask;            // 哈希表槽位数 - 1（槽位数是 2 的幂）
+    setentry *table;            // 指向存放数据的数组
+    Py_hash_t hash;             // 仅 frozenset 使用
+    Py_ssize_t finger;          // pop() 的搜索游标
+    setentry smalltable[PySet_MINSIZE];  // 内置的小数组，默认 8 个槽位
+    PyObject *weakreflist;
 } PySetObject;
 ```
 
-一个 set 就对应一个 PySetObject 类型数据，set 会根据保存的元素自动调整大小。相关的内存布局如下；
+有几个字段值得留意，它们正是 `set` 的设计特点：
+
+- **`smalltable` 与 `table`**：小集合直接用内置的 `smalltable`（8 个槽位），`table` 指针指向它；元素变多、需要更大的表时，才另行 `malloc` 一块内存并让 `table` 改指过去。这样小集合连一次额外内存申请都省了。`table` 永远非空，省去了大量判空。
+- **`mask`**：存的是「槽位数 - 1」而非槽位数。因为槽位数是 2 的幂，`hash & mask` 就等于「对槽位数取模」，用得最频繁，所以直接缓存掩码。
+- **`fill` 与 `used`**：`used` 是当前真正的元素个数（`len(s)`）；`fill` 还额外算上**已删除但尚未清理的墓碑（dummy）**。为什么删除要留墓碑？下面讲删除时再说。
+
+一个 set 的内存布局如下：
 
 ![内存图片](set.svg)
 
-## python 集合(set)示例
+## 集合的创建
 
-示例脚本如下：
+从字节码看，`{1, 2}` 这样的字面量由 `BUILD_SET` 指令创建，它调用 `PySet_New`，最终走到 `make_new_set` 完成初始化：
 
-```python
-set_a = {1,2}　
-set_a.add(3)
-set_a.add(4)
-set_a.remove(1)
-set_a.update({3,})
-set_a.union({1,5})
-```
-
-通过 python 反汇编获取该脚本的字节码；
-
-```
-python -m dis set_test.py
-```
-
-输出的字节码如下所示；
-
-```shell
-  1           0 LOAD_CONST               0 (1)
-              3 LOAD_CONST               1 (2)
-              6 BUILD_SET                2
-              9 STORE_NAME               0 (set_a)
-
-  2          12 LOAD_NAME                0 (set_a)
-             15 LOAD_ATTR                1 (add)
-             18 LOAD_CONST               2 (3)
-             21 CALL_FUNCTION            1
-             24 POP_TOP
-
-  3          25 LOAD_NAME                0 (set_a)
-             28 LOAD_ATTR                1 (add)
-             31 LOAD_CONST               3 (4)
-             34 CALL_FUNCTION            1
-             37 POP_TOP
-
-  4          38 LOAD_NAME                0 (set_a)
-             41 LOAD_ATTR                2 (remove)
-             44 LOAD_CONST               0 (1)
-             47 CALL_FUNCTION            1
-             50 POP_TOP
-
-  5          51 LOAD_NAME                0 (set_a)
-             54 LOAD_ATTR                3 (update)
-             57 LOAD_CONST               2 (3)
-             60 BUILD_SET                1
-             63 CALL_FUNCTION            1
-             66 POP_TOP
-
-  6          67 LOAD_NAME                0 (set_a)
-             70 LOAD_ATTR                4 (union)
-             73 LOAD_CONST               0 (1)
-             76 LOAD_CONST               4 (5)
-             79 BUILD_SET                2
-             82 CALL_FUNCTION            1
-             85 POP_TOP
-             86 LOAD_CONST               5 (None)
-             89 RETURN_VALUE
-```
-
-通过该字节码指令可知，创建 set 调用了 BUILD_SET 指令，初始化完成之后，就调用 set 的 add 方法添加元素，调用 remove 删除元素,调用 update 来更新集合，通过 union 来合并集合。接下来就详细分析一下相关的操作流程。
-
-## set 的创建与初始化
-
-查找 BUILD_SET 的虚拟机执行函数如下；
-
-`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Python/ceval.c#L2318)
+`源文件：`[Python/ceval.c](https://github.com/python/cpython/blob/v3.7.0/Python/ceval.c#L2318) · [Objects/setobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/setobject.c#L1052)
 
 ```c
-// Python/ceval.c
-
-    TARGET(BUILD_SET) {
-        PyObject *set = PySet_New(NULL);             // 新建并初始化一个set
-        int err = 0;
-        int i;
-        if (set == NULL)
-            goto error;
-        for (i = oparg; i > 0; i--) {                // 将传入初始化的参数传入
-            PyObject *item = PEEK(i);
-            if (err == 0)
-                err = PySet_Add(set, item);          // 并依次对set进行添加操作
-            Py_DECREF(item);
-        }
-        STACKADJ(-oparg);　　　　　　　　　　　　　　　   // 移动弹栈
-        if (err != 0) {
-            Py_DECREF(set);
-            goto error;
-        }
-        PUSH(set);　　　　　　　　　　　　　　　　　　　　　// 讲set压栈
-        DISPATCH();　　　　　　　　　　　　　　　　　　　　// 执行下一条指令
-    }
-
-```
-
-此时继续查看 PySet_New 函数的执行流程；
-
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2286)
-
-```c
-PyObject *
-PySet_New(PyObject *iterable)
-{
-    return make_new_set(&PySet_Type, iterable);
-}
-
-...
-
-
+// Objects/setobject.c
 static PyObject *
 make_new_set(PyTypeObject *type, PyObject *iterable)
 {
-    PySetObject *so;
-
-    so = (PySetObject *)type->tp_alloc(type, 0);            // 申请该元素的内存
-    if (so == NULL)                                        // 内存申请失败则返回为空
-        return NULL;
-
-    so->fill = 0;                                           // 初始化的时候都为０
+    PySetObject *so = (PySetObject *)type->tp_alloc(type, 0);
+    ......
+    so->fill = 0;
     so->used = 0;
-    so->mask = PySet_MINSIZE - 1;                           // PySet_MINSIZE默认我８，mask为７
-    so->table = so->smalltable;                             // 将保存数据的头指针指向table
-    so->hash = -1;                                          // 设置hash值为-1
-    so->finger = 0;
-    so->weakreflist = NULL;
-
-    if (iterable != NULL) {                                 // 如果有迭代器
-        if (set_update_internal(so, iterable)) {            // 将内容更新到so中
-            Py_DECREF(so);
-            return NULL;
-        }
+    so->mask = PySet_MINSIZE - 1;   // PySet_MINSIZE = 8，故 mask = 7
+    so->table = so->smalltable;     // table 先指向内置的小数组
+    so->hash = -1;
+    ......
+    if (iterable != NULL) {         // {1, 2} 的 1、2 由此逐个加入
+        if (set_update_internal(so, iterable)) { ... }
     }
-
-    return (PyObject *)so;                                  // 返回初始化完成的set
+    return (PyObject *)so;
 }
 ```
 
-从 PySet_New 的执行流程可知，字典的初始化过程就是初始化相关数据结构。
+初始的 `mask = 7`（8 个槽位），`table` 指向内置的 `smalltable`。创建本身只是把这些字段摆好，真正的内容由后续的添加操作填入。
 
-## set 的插入
+## 集合的插入
 
-在本例的初始化过程中，由于传入了初始值 1,2，所以会在执行字节码指令的时候，执行 PySet_Add，该函数的本质与 set_a.add(3)本质都调用了更底层 set_add_key 函数；
+`s.add(x)` 走 `PySet_Add` → `set_add_key`（算出 key 的哈希）→ `set_add_entry`（真正插入）。核心在 `set_add_entry`：
 
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L2338)
-
-```c
-
-int
-PySet_Add(PyObject *anyset, PyObject *key)
-{
-    if (!PySet_Check(anyset) &&
-        (!PyFrozenSet_Check(anyset) || Py_REFCNT(anyset) != 1)) {
-        PyErr_BadInternalCall();
-        return -1;
-    }
-    return set_add_key((PySetObject *)anyset, key);  // 向字典中添加key;
-}
-```
-
-继续查看 set_add_key 函数的执行过程；
-
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L419)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/setobject.c#L137)
 
 ```c
-static int
-set_add_key(PySetObject *so, PyObject *key)
-{
-    Py_hash_t hash;
-
-    if (!PyUnicode_CheckExact(key) ||
-        (hash = ((PyASCIIObject *) key)->hash) == -1) {
-        hash = PyObject_Hash(key);                  // 获取传入值的hash值
-        if (hash == -1)                             // 如果不能hash则返回-1
-            return -1;
-    }
-    return set_add_entry(so, key, hash);            // 计算完成后添加值
-}
-```
-
-该函数主要就是检查传入的 key 是否能够被 hash，如果能够被 hash 则直接返回，如果能被 hash 则继续调用 set_add_entry 函数将值加入到 set 中；
-
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L136)
-
-```c
-
+// Objects/setobject.c
 static int
 set_add_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 {
-    setentry *table;
-    setentry *freeslot;
-    setentry *entry;
-    size_t perturb;
-    size_t mask;
-    size_t i;                       /* Unsigned for defined overflow behavior */
-    size_t j;
-    int cmp;
-
-    /* Pre-increment is necessary to prevent arbitrary code in the rich
-       comparison from deallocating the key just before the insertion. */
-    Py_INCREF(key);                                                             // 提高key的引用计数
-
+    ......
   restart:
-
-    mask = so->mask;　                                                          // 获取so->mask
-    i = (size_t)hash & mask;　                                                  // 通过传入的hash与mask求索引下标
-
-    entry = &so->table[i];　                                                 　　// 获取索引对应的值
-    if (entry->key == NULL)                                                     // 如果获取索引的值没有被使用则直接跳转到found_unused处执行
+    mask = so->mask;
+    i = (size_t)hash & mask;          // 初始槽位
+    entry = &so->table[i];
+    if (entry->key == NULL)           // 槽位空 → 直接占用
         goto found_unused;
 
-    freeslot = NULL;
-    perturb = hash;　　　                                                        // perturb设置为当前hash值
-　
+    perturb = hash;
     while (1) {
-        if (entry->hash == hash) {                                              // 如果当前hash值相等
-            PyObject *startkey = entry->key;　　　　　　　　　　　　　　　　　　　　　　// 获取当前key
-            /* startkey cannot be a dummy because the dummy hash field is -1 */
-            assert(startkey != dummy);                                          // 检查key是否为dummy
-            if (startkey == key)                                                // 如果找到的值与传入需要设置的值相同则跳转到found_active处执行
-                goto found_active;
-            if (PyUnicode_CheckExact(startkey)
-                && PyUnicode_CheckExact(key)
-                && _PyUnicode_EQ(startkey, key))                                // 如果是unicode,通过类型转换检查两个key的内容是否相同，如果不相同则跳转到found_active处
-                goto found_active;
-            table = so->table;                                                  // 如果没有找到，则获取当前table的头部节点
-            Py_INCREF(startkey);
-            cmp = PyObject_RichCompareBool(startkey, key, Py_EQ);　　　　　　　　　 // 如果是其他类型的对象则调用比较方法去比较两个key是否相同
-            Py_DECREF(startkey);
-            if (cmp > 0)                                          /* likely */   // 如果找到则跳转到found_active
-                goto found_active;
-            if (cmp < 0)
-                goto comparison_error;                                          // 如果小于０，则是两个类型对比失败
-            /* Continuing the search from the current entry only makes
-               sense if the table and entry are unchanged; otherwise,
-               we have to restart from the beginning */
-            if (table != so->table || entry->key != startkey)                     // 如果set改变了则重新开始查找
-                goto restart;
-            mask = so->mask;                 /* help avoid a register spill */　　　
+        if (entry->hash == hash) {    // 哈希相同，进一步比较 key 是否真的相等
+            ...                       // key 相等 → found_active（已存在，什么都不做）
         }
         else if (entry->hash == -1)
-            freeslot = entry;　　　                                                // 如果不能hash 则设置freeslot
+            freeslot = entry;         // 记下一个可复用的墓碑位置
 
-        if (i + LINEAR_PROBES <= mask) {　　　　　　　　　　　　　　                   // 检查当前索引值加上 ９小于当前mask
-            for (j = 0 ; j < LINEAR_PROBES ; j++) {                               // 循环９次
-                entry++;                                                    　　　 // 向下一个位置
-                if (entry->hash == 0 && entry->key == NULL)　　　　　　　　　　　　　　// 如果找到当前hash为空或者key为空的则跳转到found_unused_or_dummy处执行
+        // 先在邻近的 LINEAR_PROBES 个槽位里线性探测（对 CPU 缓存友好）
+        if (i + LINEAR_PROBES <= mask) {
+            for (j = 0 ; j < LINEAR_PROBES ; j++) {
+                entry++;
+                if (entry->hash == 0 && entry->key == NULL)
                     goto found_unused_or_dummy;
-                if (entry->hash == hash) {　　                                     // 如果找到的hash值相同
-                    PyObject *startkey = entry->key;                              // 获取该值
-                    assert(startkey != dummy);                                    // 检查是否为dummy
-                    if (startkey == key)                                          // 如果key相同则跳转到found_active处执行
-                        goto found_active;
-                    if (PyUnicode_CheckExact(startkey)
-                        && PyUnicode_CheckExact(key)
-                        && _PyUnicode_EQ(startkey, key))                          // 检查是否为unicode，并比较如果不相同则跳转到found_active
-                        goto found_active;
-                    table = so->table;                                            // 调用key本身的方法比较
-                    Py_INCREF(startkey);
-                    cmp = PyObject_RichCompareBool(startkey, key, Py_EQ);
-                    Py_DECREF(startkey);
-                    if (cmp > 0)
-                        goto found_active;
-                    if (cmp < 0)
-                        goto comparison_error;
-                    if (table != so->table || entry->key != startkey)
-                        goto restart;
-                    mask = so->mask;
-                }
-                else if (entry->hash == -1)
-                    freeslot = entry;
+                if (entry->hash == hash) { ... }   // 同样比较 key
             }
         }
-
-        perturb >>= PERTURB_SHIFT;                                               // 如果没有找到则获取下一个索引值
-        i = (i * 5 + 1 + perturb) & mask;                                        // 右移５位　加上　索引值*5 加１与mask求余获取下一个索引值
-
-        entry = &so->table[i];                                                   // 获取下一个元素
-        if (entry->key == NULL)　　　　　　　　　　　　　　                           // 如果找到为空则直接跳转到found_unused_or_dummy处
+        // 邻近都没空位，用扰动公式跳到下一处继续找
+        perturb >>= PERTURB_SHIFT;
+        i = (i * 5 + 1 + perturb) & mask;
+        entry = &so->table[i];
+        if (entry->key == NULL)
             goto found_unused_or_dummy;
     }
 
-  found_unused_or_dummy:
-    if (freeslot == NULL)　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 检查freeslot是否为空如果为空则跳转到found_unused处执行即找到了dummy位置
-        goto found_unused;
-    so->used++;　　　　　　　　　　　　　　　　　　　　　　                             // 使用数加１
-    freeslot->key = key;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 // 设置key与hash值
-    freeslot->hash = hash;
-    return 0;
-
   found_unused:
-    so->fill++;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 使用总数加１
-    so->used++;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 使用总数加１　
-    entry->key = key;　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 // 设置key与hash值
+    so->fill++;
+    so->used++;
+    entry->key = key;
     entry->hash = hash;
-    if ((size_t)so->fill*5 < mask*3)　　　　　　　　　　　　　　　　　　　　　　　　　　　// 检查已经使用的值是否是总数的3/5
+    if ((size_t)so->fill*5 < mask*3)   // 负载未达 3/5，结束
         return 0;
-    return set_table_resize(so, so->used>50000 ? so->used*2 : so->used*4);　　　 // 如果已使用的总数大于3/5则重新调整table，如果set使用的总数超过了50000则扩展为以前的２倍否则就是四倍
-
-  found_active:
-    Py_DECREF(key);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 如果找到了该值　则什么也不做
-    return 0;
-
-  comparison_error:
-    Py_DECREF(key);　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　// 如果比较失败则返回-1
-    return -1;
+    // 负载达到 3/5，扩容：元素数 > 50000 扩为 2 倍，否则 4 倍
+    return set_table_resize(so, so->used>50000 ? so->used*2 : so->used*4);
+  ......
 }
 ```
 
-此时基本的流程就是通过传入的 hash 值，如果计算出的索引值，没有值，则直接将该值存入对应的 entry 中，如果相同则不插入，如果索引对应的值且值不同，则遍历从该索引往后９个位置的值，依次找到有空余位置的值，并将该值设置进去。如果设置该值之后使用的数量占总的申请数量超过了 3/5 则重新扩充 set，扩充的原则就是如果当前的 set->used>50000 就进行两倍扩充否则就进行四倍扩充。
+插入逻辑同样是**开放寻址**，但探测策略和 `dict` 有个明显区别——它先做一段**线性探测**：
 
-插入的概述如下,默认 s 初始化为空；
+1. 用 `hash & mask` 取初始槽位，空就直接放；
+2. 若发生冲突，先在**紧邻其后的 `LINEAR_PROBES`（= 9）个槽位**里顺序找空位。连续内存上的线性扫描对 CPU 缓存非常友好，多数冲突在这一步就解决了；
+3. 这一小段仍没找到，才用扰动公式 `i = (i*5 + 1 + perturb) & mask` 跳到下一处，重复上面的过程，直到找到空槽或墓碑。
 
-```python
-s.add(1)   // index = 1 & 7 = 1
-```
+来看一个具体过程。设 `s` 为空，依次加入 1、2、9（槽位数 8，`mask = 7`）：
+
+`s.add(1)`：`1 & 7 = 1`，槽位 1 为空，直接放入。
 
 ![插入1](set-insert-one.svg)
 
-```python
-s.add(2) // index = 2 & 7 = 2
-```
+`s.add(2)`：`2 & 7 = 2`，槽位 2 为空，直接放入。
 
 ![插入2](set-insert-two.svg)
 
-```python
-s.add(7)  // index = 9 & 7 = 1
-```
+`s.add(9)`：`9 & 7 = 1`，但槽位 1 已被 1 占用——发生**哈希冲突**。这里 `i + LINEAR_PROBES = 1 + 9 > mask`，跳过线性探测，直接走扰动公式：`perturb = 9 >> 5 = 0`，`i = (1×5 + 1 + 0) & 7 = 6`，于是 9 落到槽位 6。
 
 ![插入9](set-insert-nine.svg)
 
-大致的 set 的插入过程执行完毕。
+每成功插入一个新元素，就检查负载：当 `fill × 5 >= mask × 3`（约占满 **3/5**）时触发扩容，按当前元素数 `used` 是否超过 50000 决定扩为 **2 倍还是 4 倍**——小集合 4 倍激进扩容以减少后续冲突，大集合 2 倍稳健扩容以控制内存。
 
-## set 的删除
+## 集合的删除
 
-set 的删除操作主要集中在 set_remove()函数上，如下示例；
+`s.remove(x)` 走 `set_remove` → `set_discard_key` → `set_discard_entry`：
 
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L1921)
-
-```c
-
-static PyObject *
-set_remove(PySetObject *so, PyObject *key)
-{
-    PyObject *tmpkey;
-    int rv;
-
-    rv = set_discard_key(so, key);                              // 将该key设置为dummy
-    if (rv < 0) {
-        if (!PySet_Check(key) || !PyErr_ExceptionMatches(PyExc_TypeError))  // 检查是否为set类型
-            return NULL;
-        PyErr_Clear();
-        tmpkey = make_new_set(&PyFrozenSet_Type, key);　　　　　　　　　　　　　// 对该值重新初始化为forzenset
-        if (tmpkey == NULL)
-            return NULL;
-        rv = set_discard_key(so, tmpkey);　　　　　　　　　　　　　　　　　　　　　// 设置该key为空
-        Py_DECREF(tmpkey);
-        if (rv < 0)
-            return NULL;
-    }
-
-    if (rv == DISCARD_NOTFOUND) {                               // 如果没有找到则报错
-        _PyErr_SetKeyError(key);
-        return NULL;
-    }
-    Py_RETURN_NONE;
-}
-```
-
-此时就会调用 set_discard_key 方法来讲对应的 entry 设置为 dummy；set_discard_key 方法如下；
-
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L447)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/setobject.c#L401)
 
 ```c
-
-static int
-set_discard_key(PySetObject *so, PyObject *key)
-{
-    Py_hash_t hash;
-
-    if (!PyUnicode_CheckExact(key) ||
-        (hash = ((PyASCIIObject *) key)->hash) == -1) {
-        hash = PyObject_Hash(key);                        　// 检查是否可用hash如果可用则调用set_discard_entry方法
-        if (hash == -1)
-            return -1;
-    }
-    return set_discard_entry(so, key, hash);
-}
-```
-
-该函数主要就是做了检查 key 是否可用 hash 的检查，此时如果可用 hash 则调用 set_discard_entry 方法；
-
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L400)
-
-```c
-
+// Objects/setobject.c
 static int
 set_discard_entry(PySetObject *so, PyObject *key, Py_hash_t hash)
 {
-    setentry *entry;
-    PyObject *old_key;
-
-    entry = set_lookkey(so, key, hash);　　　　　　// 查找该值 set_lookkey该方法与插入的逻辑类似大家可自行查看
-    if (entry == NULL)　　　　　　　　　　　　　　　　 // 如果没有找到则返回－１
-        return -1;
+    setentry *entry = set_lookkey(so, key, hash);   // 查找（逻辑与插入探测一致）
+    ......
     if (entry->key == NULL)
-        return DISCARD_NOTFOUND;　　　　　　　　　　　// 找到entry而key为空则返回notfound
-    old_key = entry->key;                        // 找到正常值则讲该值对应的entry设置为dummy
-    entry->key = dummy;
-    entry->hash = -1;                             // hash值为-1
-    so->used--;                                   // 使用数量减１　但是fill数量未变
-    Py_DECREF(old_key);　　　　　　　　　　　　　　　　　// 减少该对象引用
-    return DISCARD_FOUND;　　　　　　　　　　　　　　　　// 返回返现
+        return DISCARD_NOTFOUND;                    // 没找到
+    old_key = entry->key;
+    entry->key = dummy;                             // 关键：标记为墓碑，而非清空
+    entry->hash = -1;
+    so->used--;                                     // used 减 1，fill 不变
+    Py_DECREF(old_key);
+    return DISCARD_FOUND;
 }
 ```
 
-此时就是查找该值，如果找到该值并将该值设置为 dummy，并且将 used 值减１，此处没有减去 fill 的数量，从此处可知，fill 包括所有曾经申请过的数量。
+注意删除并**不是把槽位清空**，而是把它标记成一个特殊的**墓碑 `dummy`**（同时 `used--`，但 `fill` 不变）。
 
-## set 的 resize
+为什么要留墓碑？这是开放寻址哈希表的关键细节：查找一个 key 时，要沿着探测序列一路找，**遇到真正的空槽才能断定「不存在」**。如果删除时直接把槽位清空，就会在探测链中间凿出一个「空洞」，导致原本排在它后面、因冲突才落到更远处的 key 再也找不到。用墓碑占位，探测时把它当作「此处曾有元素，继续往后找」，就保住了探测链的完整。这也是 `fill`（含墓碑）和 `used`（不含墓碑）要分开记的原因。
 
-set 的 resize 主要依靠 set_table_reseize 函数来实现；
+![删除示意](set-remove.svg)
 
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L302)
+## 集合的扩容
+
+墓碑会越积越多、拖慢查找，那它们什么时候清理？答案是**扩容时一并清掉**。扩容由 `set_table_resize` 完成：
+
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/setobject.c#L303)
 
 ```c
+// Objects/setobject.c
 static int
 set_table_resize(PySetObject *so, Py_ssize_t minused)
 {
-    setentry *oldtable, *newtable, *entry;
-    Py_ssize_t oldmask = so->mask;                                            // 设置旧的mask
-    size_t newmask;
-    int is_oldtable_malloced;
-    setentry small_copy[PySet_MINSIZE];                                       // 最小的拷贝数组
-
-    assert(minused >= 0);
-
-    /* Find the smallest table size > minused. */
-    /* XXX speed-up with intrinsics */
+    ......
     size_t newsize = PySet_MINSIZE;
     while (newsize <= (size_t)minused) {
-        newsize <<= 1; // The largest possible value is PY_SSIZE_T_MAX + 1.　　// 查找位于minused最大的PySet_MINSIZE的n次方的值
+        newsize <<= 1;                 // 找到大于 minused 的最小 2 的幂
     }
+    ......
+    newtable = PyMem_NEW(setentry, newsize);   // 申请新表
+    memset(newtable, 0, sizeof(setentry) * newsize);
+    so->mask = newsize - 1;
+    so->table = newtable;
 
-    /* Get space for a new table. */
-    oldtable = so->table;　　　　　　　　　　　　　　　　　　          // 先获取旧的table
-    assert(oldtable != NULL);
-    is_oldtable_malloced = oldtable != so->smalltable;
-
-    if (newsize == PySet_MINSIZE) {　　　　　　　　　　　　　　　　　　// 如果获取的新大小与PySet_MINSIZE的大小相同
-        /* A large table is shrinking, or we can't get any smaller. */
-        newtable = so->smalltable;　　　　　　　　　　　　　　　　　　// 获取新table的地址
-        if (newtable == oldtable) {　　　　　　　　　　　　　　　　　// 如果相同
-            if (so->fill == so->used) {　　　　　　　　　　　　　　// 如果使用的相同则什么都不做
-                /* No dummies, so no point doing anything. */
-                return 0;
-            }
-            /* We're not going to resize it, but rebuild the
-               table anyway to purge old dummy entries.
-               Subtle:  This is *necessary* if fill==size,
-               as set_lookkey needs at least one virgin slot to
-               terminate failing searches.  If fill < size, it's
-               merely desirable, as dummies slow searches. */
-            assert(so->fill > so->used);
-            memcpy(small_copy, oldtable, sizeof(small_copy));　// 将数据拷贝到set_lookkey中
-            oldtable = small_copy;　　　　　　　　　　　　　　　　　　
+    so->fill = so->used;               // 墓碑被丢弃，fill 重新等于 used
+    for (entry = oldtable; entry <= oldtable + oldmask; entry++) {
+        if (entry->key != NULL && entry->key != dummy) {   // 只搬运活跃元素
+            set_insert_clean(newtable, newmask, entry->key, entry->hash);
         }
     }
-    else {
-        newtable = PyMem_NEW(setentry, newsize);                 // 新申请内存
-        if (newtable == NULL) {　　　　　　　　　　　　　　　　　　　　　// 如果为空则申请内存失败报错
-            PyErr_NoMemory();
-            return -1;
-        }
-    }
-
-    /* Make the set empty, using the new table. */
-    assert(newtable != oldtable);                                // 检查新申请的与就table不同
-    memset(newtable, 0, sizeof(setentry) * newsize);　　　　　　　　//　新申请的内存置空
-    so->mask = newsize - 1;                                     // 设置新的size
-    so->table = newtable;                                       // 重置table指向新table
-
-    /* Copy the data over; this is refcount-neutral for active entries;
-       dummy entries aren't copied over, of course */
-    newmask = (size_t)so->mask;                                  // 获取新的mask
-    if (so->fill == so->used) {                                  // 如果使用的与曾经使用的数量相同
-        for (entry = oldtable; entry <= oldtable + oldmask; entry++) {
-            if (entry->key != NULL) {
-                set_insert_clean(newtable, newmask, entry->key, entry->hash);　　// 如果值不为空则插入到新的table中
-            }
-        }
-    } else {
-        so->fill = so->used;　　　　　　　　　　　　　　　　　　　　　　　　// 如果不相同则重置fill为used的值
-        for (entry = oldtable; entry <= oldtable + oldmask; entry++) {
-            if (entry->key != NULL && entry->key != dummy) {　　　　　// 检查如果不为dummy并且key不为空的情况下
-                set_insert_clean(newtable, newmask, entry->key, entry->hash);　　// 重新插入该列表该值
-            }
-        }
-    }
-
-    if (is_oldtable_malloced)　　　　　　　　　　　　　　　　　　　　　　　// 如果两个表相同则删除旧table
-        PyMem_DEL(oldtable);
-    return 0;                                                      // 返回０
+    ......
 }
-
 ```
 
-主要是检查是否 table 相同并且需要重新 resize 的值，然后判断是否 fill 与 used 相同，如果相同则全部插入，如果不同，则遍历旧 table 讲不为空并且不为 dummy 的值插入到新表中；
+扩容时申请一张更大的新表，然后**只把活跃的元素重新插入**，墓碑则直接丢弃——于是 `fill` 重新等于 `used`，表也「焕然一新」。重新插入用的是 `set_insert_clean`：因为新表里不可能有重复 key，它省去了所有比较，只需找空槽，所以很快：
 
-`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/1bf9cc509326bc42cd8cb1650eb9bf64550d817e/Objects/setobject.c#L267)
+`源文件：`[Objects/setobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/setobject.c#L268)
 
 ```c
+// Objects/setobject.c
 static void
 set_insert_clean(setentry *table, size_t mask, PyObject *key, Py_hash_t hash)
 {
-    setentry *entry;
     size_t perturb = hash;
-    size_t i = (size_t)hash & mask;　　　　　　　　        // 计算索引
-    size_t j;
-
+    size_t i = (size_t)hash & mask;
+    ......
     while (1) {
-        entry = &table[i];                              // 获取当前entry
-        if (entry->key == NULL)                         // 如果为空则跳转值found_null设置key与hash
-            goto found_null;
-        if (i + LINEAR_PROBES <= mask) {                // 如果没有找到空值则通过该索引偏移9位去查找空余位置
+        entry = &table[i];
+        if (entry->key == NULL) goto found_null;   // 只找空槽，无需比较
+        if (i + LINEAR_PROBES <= mask) {           // 同样先线性探测
             for (j = 0; j < LINEAR_PROBES; j++) {
                 entry++;
-                if (entry->key == NULL)                 // 如果为空则跳转到found_null
-                    goto found_null;
+                if (entry->key == NULL) goto found_null;
             }
         }
-        perturb >>= PERTURB_SHIFT;                      // 计算下一个索引值继续寻找
+        perturb >>= PERTURB_SHIFT;                 // 再用扰动公式
         i = (i * 5 + 1 + perturb) & mask;
     }
   found_null:
@@ -590,4 +256,14 @@ set_insert_clean(setentry *table, size_t mask, PyObject *key, Py_hash_t hash)
 }
 ```
 
-set 的 resize 的操作基本如上所述。
+![扩容示意](set-resize.svg)
+
+---
+
+小结一下 `set` 的实现要点，以及它与 `dict` 的异同：
+
+- `set` 同样是**哈希表**，但每个槽位 `setentry` 只有 key 和 hash、**没有 value**；
+- 小集合用内置的 `smalltable`（8 槽）省内存，`mask = 槽位数 - 1` 让取模变成位运算；
+- 冲突处理用**线性探测（LINEAR_PROBES = 9，缓存友好）+ 扰动探测**的组合，这是它与 `dict` 寻址方式的主要区别；
+- 删除采用**墓碑 dummy** 占位以保持探测链完整，因此用 `fill`（含墓碑）和 `used`（不含）分别计数；
+- 负载达 **3/5** 即扩容（元素数以 5 万为界，分别扩 2 倍 / 4 倍），扩容时只搬运活跃元素，**顺带清除所有墓碑**。

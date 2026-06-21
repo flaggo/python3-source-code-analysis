@@ -44,19 +44,25 @@
 
 <!-- ===== root ===== -->
 <rect x="20" y="264" width="110" height="52" rx="12" fill="url(#gRoot)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
-<text x="75" y="296" text-anchor="middle" class="root" fill="#33322E">object</text>
+<text x="75" y="285" text-anchor="middle" class="root" fill="#33322E">对象</text>
+<text x="75" y="302" text-anchor="middle" font-size="10" fill="#33322E" opacity="0.6">object</text>
 
 <!-- ===== category nodes ===== -->
 <rect x="240" y="33"  width="150" height="44" rx="10" fill="url(#gFund)" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
-<text x="315" y="60"  text-anchor="middle" class="ct" fill="#28415F">Fundamental</text>
+<text x="315" y="51" text-anchor="middle" class="ct" fill="#28415F">基础对象</text>
+<text x="315" y="66" text-anchor="middle" font-size="10" fill="#28415F" opacity="0.7">Fundamental</text>
 <rect x="240" y="128" width="150" height="44" rx="10" fill="url(#gNum)" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
-<text x="315" y="155" text-anchor="middle" class="ct" fill="#0A463A">Numeric</text>
+<text x="315" y="146" text-anchor="middle" class="ct" fill="#0A463A">数值对象</text>
+<text x="315" y="161" text-anchor="middle" font-size="10" fill="#0A463A" opacity="0.7">Numeric</text>
 <rect x="240" y="268" width="150" height="44" rx="10" fill="url(#gSeq)" stroke="#E8CB94" stroke-width="1" filter="url(#sh)"/>
-<text x="315" y="295" text-anchor="middle" class="ct" fill="#5C3C08">Sequence</text>
+<text x="315" y="286" text-anchor="middle" class="ct" fill="#5C3C08">序列对象</text>
+<text x="315" y="301" text-anchor="middle" font-size="10" fill="#5C3C08" opacity="0.7">Sequence</text>
 <rect x="240" y="368" width="150" height="44" rx="10" fill="url(#gMap)" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
-<text x="315" y="395" text-anchor="middle" class="ct" fill="#2E2972">Mapping</text>
+<text x="315" y="386" text-anchor="middle" class="ct" fill="#2E2972">映射对象</text>
+<text x="315" y="401" text-anchor="middle" font-size="10" fill="#2E2972" opacity="0.7">Mapping</text>
 <rect x="240" y="468" width="150" height="44" rx="10" fill="url(#gInt)" stroke="#E0C6C6" stroke-width="1" filter="url(#sh)"/>
-<text x="315" y="495" text-anchor="middle" class="ct" fill="#5C3030">Internal</text>
+<text x="315" y="486" text-anchor="middle" class="ct" fill="#5C3030">内部对象</text>
+<text x="315" y="501" text-anchor="middle" font-size="10" fill="#5C3030" opacity="0.7">Internal</text>
 
 <!-- ===== leaf nodes ===== -->
 <g class="leaf">

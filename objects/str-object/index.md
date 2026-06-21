@@ -1,1 +1,1 @@
-# 实现简版 Python
+# Python 字符串对象

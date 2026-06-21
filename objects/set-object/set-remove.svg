@@ -1,0 +1,38 @@
+<svg width="100%" viewBox="0 0 580 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>集合删除 remove 示意（dummy 墓碑）</title>
+<desc>承接插入示例，集合为 {1,2,9}（分别在槽位 1、2、6）。执行 remove(2)：并不清空槽位 2，而是把它标记为 dummy 墓碑，used 减一、fill 不变。保留墓碑是为了不在开放寻址的探测链中间留下空洞，否则会漏查后面因冲突落到更远处的元素（如槽位 6 的 9）。</desc>
+<defs>
+  <style>
+    .h{font-size:14px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11px;}
+    .val{font-size:13px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:10px;}
+    .cap{font-size:11.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="580" height="270" fill="#FBFAF6"/>
+<text x="290" y="34" text-anchor="middle" class="h" fill="#2E2972">remove(2)</text>
+
+<!-- before -->
+<text x="62" y="96" text-anchor="end" class="lab" fill="#7B7A72">调用前</text>
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="98" y="64">0</text><text x="146" y="64">1</text><text x="194" y="64">2</text><text x="242" y="64">3</text><text x="290" y="64">4</text><text x="338" y="64">5</text><text x="386" y="64">6</text><text x="434" y="64">7</text></g>
+<rect x="74" y="74" width="384" height="40" rx="8" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1.1" filter="url(#sh)"/>
+<rect x="123" y="75" width="46" height="38" fill="#E4F2EB"/><rect x="171" y="75" width="46" height="38" fill="#E4F2EB"/><rect x="363" y="75" width="46" height="38" fill="#E4F2EB"/>
+<g stroke="#EEE9F6"><line x1="122" y1="74" x2="122" y2="114"/><line x1="170" y1="74" x2="170" y2="114"/><line x1="218" y1="74" x2="218" y2="114"/><line x1="266" y1="74" x2="266" y2="114"/><line x1="314" y1="74" x2="314" y2="114"/><line x1="362" y1="74" x2="362" y2="114"/><line x1="410" y1="74" x2="410" y2="114"/></g>
+<g class="val" fill="#0A463A" font-weight="700" text-anchor="middle"><text x="146" y="99">1</text><text x="194" y="99">2</text><text x="386" y="99">9</text></g>
+<text x="478" y="99" class="lab" fill="#7B7A72">fill=3 used=3</text>
+
+<!-- after -->
+<text x="62" y="186" text-anchor="end" class="lab" fill="#7B7A72">调用后</text>
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="98" y="154">0</text><text x="146" y="154">1</text><text x="194" y="154">2</text><text x="242" y="154">3</text><text x="290" y="154">4</text><text x="338" y="154">5</text><text x="386" y="154">6</text><text x="434" y="154">7</text></g>
+<rect x="74" y="164" width="384" height="40" rx="8" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1.1" filter="url(#sh)"/>
+<rect x="123" y="165" width="46" height="38" fill="#E4F2EB"/><rect x="171" y="165" width="46" height="38" fill="#F7EAEA"/><rect x="363" y="165" width="46" height="38" fill="#E4F2EB"/>
+<g stroke="#EEE9F6"><line x1="122" y1="164" x2="122" y2="204"/><line x1="170" y1="164" x2="170" y2="204"/><line x1="218" y1="164" x2="218" y2="204"/><line x1="266" y1="164" x2="266" y2="204"/><line x1="314" y1="164" x2="314" y2="204"/><line x1="362" y1="164" x2="362" y2="204"/><line x1="410" y1="164" x2="410" y2="204"/></g>
+<g class="val" fill="#0A463A" font-weight="700" text-anchor="middle"><text x="146" y="189">1</text><text x="386" y="189">9</text></g>
+<text x="194" y="189" text-anchor="middle" font-size="10" fill="#5C3030" font-weight="700">dummy</text>
+<text x="478" y="189" class="lab" fill="#7B7A72">fill=3 used=2</text>
+
+<text x="290" y="244" text-anchor="middle" class="cap" fill="#9A988F">删除不清空槽位，而是写入 dummy 墓碑：used 减一、fill 不变，以保持探测链不断</text>
+</svg>

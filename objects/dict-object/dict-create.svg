@@ -1,0 +1,32 @@
+<svg width="100%" viewBox="0 0 600 210" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>新建空字典的初始状态</title>
+<desc>执行 d = {} 后，dk_size = 8 的索引数组全部填成 -1（DKIX_EMPTY，表示空槽），dk_entries 暂无任何记录，最多可用条目数 dk_usable = USABLE_FRACTION(8) = 5。</desc>
+<defs>
+  <style>
+    .h{font-size:13px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11.5px;}
+    .val{font-size:12.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:10px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="600" height="210" fill="#FBFAF6"/>
+<text x="300" y="34" text-anchor="middle" class="h" fill="#5C3C08">d = {}</text>
+
+<!-- dk_indices -->
+<text x="60" y="64" class="lab" fill="#7B7A72">dk_indices（dk_size = 8，全为 -1）</text>
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="82" y="78">0</text><text x="126" y="78">1</text><text x="170" y="78">2</text><text x="214" y="78">3</text><text x="258" y="78">4</text><text x="302" y="78">5</text><text x="346" y="78">6</text><text x="390" y="78">7</text></g>
+<rect x="60" y="84" width="352" height="34" rx="7" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.1" filter="url(#sh)"/>
+<g stroke="#F0DEBB"><line x1="104" y1="84" x2="104" y2="118"/><line x1="148" y1="84" x2="148" y2="118"/><line x1="192" y1="84" x2="192" y2="118"/><line x1="236" y1="84" x2="236" y2="118"/><line x1="280" y1="84" x2="280" y2="118"/><line x1="324" y1="84" x2="324" y2="118"/><line x1="368" y1="84" x2="368" y2="118"/></g>
+<g class="val" fill="#B98C46" text-anchor="middle"><text x="82" y="106">-1</text><text x="126" y="106">-1</text><text x="170" y="106">-1</text><text x="214" y="106">-1</text><text x="258" y="106">-1</text><text x="302" y="106">-1</text><text x="346" y="106">-1</text><text x="390" y="106">-1</text></g>
+
+<!-- dk_entries -->
+<text x="60" y="148" class="lab" fill="#7B7A72">dk_entries（dk_usable = 5，当前 0 条）</text>
+<rect x="60" y="156" width="220" height="30" rx="7" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.1" filter="url(#sh)"/>
+<g stroke="#D9ECE3"><line x1="104" y1="156" x2="104" y2="186"/><line x1="148" y1="156" x2="148" y2="186"/><line x1="192" y1="156" x2="192" y2="186"/><line x1="236" y1="156" x2="236" y2="186"/></g>
+<g class="idx" fill="#B8B5AC" text-anchor="middle"><text x="82" y="175">空</text><text x="126" y="175">空</text><text x="170" y="175">空</text><text x="214" y="175">空</text><text x="258" y="175">空</text></g>
+
+<text x="470" y="172" class="cap" fill="#9A988F">ma_used = 0</text>
+</svg>
