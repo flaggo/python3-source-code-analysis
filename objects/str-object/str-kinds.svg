@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>PEP 393 灵活字符串表示：1 / 2 / 4 字节/字符</title>
+<desc>Python 按字符串里最宽的字符，统一选择每个字符的存储宽度：全 ASCII/Latin-1 用 1 字节，含 BMP 字符用 2 字节，含星位（U+10000 以上）字符则整串用 4 字节。所以 "a😀b" 里本可用 1 字节的 a、b 也按 4 字节存。定宽存储让按下标取字符是 O(1)。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .lab{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .ch{font-size:14px;font-weight:700;}
+    .rt{font-size:11px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="620" height="280" fill="#FBFAF6"/>
+<text x="310" y="30" text-anchor="middle" class="ti" fill="#5C3C08">PEP 393：按最宽字符，统一选择每字符的存储宽度</text>
+
+<!-- row 1: ASCII 1 byte -->
+<text x="150" y="74" text-anchor="end" class="lab" fill="#46453F">"abc"</text>
+<rect x="160" y="56" width="72" height="34" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#C9852B" stroke-width="1.2"><line x1="184" y1="56" x2="184" y2="90"/><line x1="208" y1="56" x2="208" y2="90"/></g>
+<g class="ch" fill="#5C3C08" text-anchor="middle"><text x="172" y="79">a</text><text x="196" y="79">b</text><text x="220" y="79">c</text></g>
+<text x="250" y="71" class="rt" fill="#8A6212">1 字节/字符（Latin-1）</text>
+<text x="250" y="85" class="rt" fill="#B8B5AC">每格 = 1 字节</text>
+
+<!-- row 2: BMP 2 bytes -->
+<text x="150" y="138" text-anchor="end" class="lab" fill="#46453F">"中文"</text>
+<rect x="160" y="120" width="96" height="34" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="208" y1="120" x2="208" y2="154" stroke="#C9852B" stroke-width="1.4"/>
+<g stroke="#EAD2A0" stroke-width="1"><line x1="184" y1="120" x2="184" y2="154"/><line x1="232" y1="120" x2="232" y2="154"/></g>
+<g class="ch" fill="#5C3C08" text-anchor="middle"><text x="184" y="143">中</text><text x="232" y="143">文</text></g>
+<text x="274" y="135" class="rt" fill="#8A6212">2 字节/字符（UCS-2）</text>
+<text x="274" y="149" class="rt" fill="#B8B5AC">细线 = 字节，粗线 = 字符</text>
+
+<!-- row 3: astral 4 bytes -->
+<text x="150" y="202" text-anchor="end" class="lab" fill="#46453F">"a😀b"</text>
+<rect x="160" y="184" width="288" height="34" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#C9852B" stroke-width="1.4"><line x1="256" y1="184" x2="256" y2="218"/><line x1="352" y1="184" x2="352" y2="218"/></g>
+<g stroke="#EAD2A0" stroke-width="1"><line x1="184" y1="184" x2="184" y2="218"/><line x1="208" y1="184" x2="208" y2="218"/><line x1="232" y1="184" x2="232" y2="218"/><line x1="280" y1="184" x2="280" y2="218"/><line x1="304" y1="184" x2="304" y2="218"/><line x1="328" y1="184" x2="328" y2="218"/><line x1="376" y1="184" x2="376" y2="218"/><line x1="400" y1="184" x2="400" y2="218"/><line x1="424" y1="184" x2="424" y2="218"/></g>
+<g class="ch" fill="#5C3C08" text-anchor="middle"><text x="208" y="207">a</text><text x="304" y="207">😀</text><text x="400" y="207">b</text></g>
+<text x="466" y="199" class="rt" fill="#8A6212">4 字节/字符（UCS-4）</text>
+<text x="466" y="213" class="rt" fill="#B8B5AC">a、b 本可 1 字节</text>
+
+<text x="310" y="258" text-anchor="middle" class="cap" fill="#9A988F">一个星位字符 😀 就让整串都升到 4 字节；定宽存储让按下标取字符是 O(1)</text>
+</svg>

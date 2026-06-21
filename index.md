@@ -18,7 +18,7 @@
 - [ ] Python 内建对象
     - [x] Python 对象初探
     - [x] Python 整数对象
-    - [ ] Python 字符串对象
+    - [x] Python 字符串对象
     - [x] Python 列表对象
     - [x] Python 字典对象
     - [x] Python 集合对象
