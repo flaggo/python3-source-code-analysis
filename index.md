@@ -23,7 +23,6 @@
     - [x] Python 元组对象
     - [x] Python 字典对象
     - [x] Python 集合对象
-    - [ ] 实现简版 Python
 - [ ] Python 虚拟机
     - [ ] Python 编译结果
     - [ ] Python 虚拟机框架

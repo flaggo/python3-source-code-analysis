@@ -17,6 +17,5 @@
 - [Python 元组对象](objects/tuple-object/index.md)
 - [Python Dict 对象](objects/dict-object/index.md)
 - [Python Set 对象](objects/set-object/index.md)
-- [实现简版 Python](objects/simple-interpreter/index.md)
 
 ## 第 3 部分：Python 虚拟机

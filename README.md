@@ -62,7 +62,6 @@ npm run preview
     - [x] Python List 对象
     - [x] Python Dict 对象
     - [x] Python Set 对象
-    - [ ] 实现简版 Python
 - [ ] Python 虚拟机
     - [ ] Python 编译结果
     - [ ] Python 虚拟机框架
