@@ -1,0 +1,39 @@
+<svg width="100%" viewBox="0 0 560 230" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>元组的字典序比较</title>
+<desc>元组比较按字典序：从头逐个元素比，找到第一个不相等的位置就由它定胜负。比较 (1,2,3) 与 (1,3)：第 0 位 1 等于 1 继续，第 1 位 2 小于 3，立即判定 (1,2,3) 小于 (1,3)，后面的元素不再看。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .v{font-size:14px;font-weight:700;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .idx{font-size:10px;}
+    .mk{font-size:13px;font-weight:700;}
+    .cap{font-size:11.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="560" height="230" fill="#FBFAF6"/>
+<text x="280" y="30" text-anchor="middle" class="ti" fill="#5C3C08">(1, 2, 3)　&lt;　(1, 3) ？　按字典序逐位比较</text>
+
+<g class="idx" fill="#9A988F" text-anchor="middle"><text x="200" y="56">0</text><text x="290" y="56">1</text><text x="380" y="56">2</text></g>
+
+<!-- tuple A -->
+<text x="150" y="89" text-anchor="end" class="v" fill="#5C3C08">(1,2,3)</text>
+<rect x="164" y="66" width="270" height="36" rx="7" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#EAD2A0"><line x1="254" y1="66" x2="254" y2="102"/><line x1="344" y1="66" x2="344" y2="102"/></g>
+<g class="v" fill="#5C3C08" text-anchor="middle"><text x="209" y="91">1</text><text x="299" y="91">2</text><text x="389" y="91">3</text></g>
+
+<!-- tuple B -->
+<text x="150" y="151" text-anchor="end" class="v" fill="#5C3C08">(1,3)</text>
+<rect x="164" y="128" width="180" height="36" rx="7" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<line x1="254" y1="128" x2="254" y2="164" stroke="#EAD2A0"/>
+<g class="v" fill="#5C3C08" text-anchor="middle"><text x="209" y="153">1</text><text x="299" y="153">3</text></g>
+
+<!-- markers -->
+<text x="209" y="120" text-anchor="middle" class="mk" fill="#9A988F">=</text>
+<rect x="278" y="60" width="42" height="110" rx="7" fill="none" stroke="#1E8B6F" stroke-width="1.6" stroke-dasharray="5 3"/>
+<text x="299" y="120" text-anchor="middle" class="mk" fill="#1E8B6F">2&lt;3</text>
+<text x="389" y="120" text-anchor="middle" class="cap" fill="#C0BDB4">不再看</text>
+
+<text x="280" y="200" text-anchor="middle" class="cap" fill="#1E8B6F">第 1 位首次不等：2 &lt; 3 → 立即判定 (1,2,3) &lt; (1,3) 为 True</text>
+</svg>

@@ -14,6 +14,7 @@
 - [Python 整数对象](objects/long-object/index.md)
 - [Python 字符串 对象](objects/string-object/index.md)
 - [Python List 对象](objects/list-object/index.md)
+- [Python 元组对象](objects/tuple-object/index.md)
 - [Python Dict 对象](objects/dict-object/index.md)
 - [Python Set 对象](objects/set-object/index.md)
 - [实现简版 Python](objects/simple-interpreter/index.md)

@@ -20,6 +20,7 @@
     - [x] Python 整数对象
     - [x] Python 字符串对象
     - [x] Python 列表对象
+    - [x] Python 元组对象
     - [x] Python 字典对象
     - [x] Python 集合对象
     - [ ] 实现简版 Python

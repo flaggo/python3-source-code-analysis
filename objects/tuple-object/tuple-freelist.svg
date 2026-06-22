@@ -1,0 +1,56 @@
+<svg width="100%" viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>元组的 free list：按长度分桶缓存复用</title>
+<desc>CPython 为元组维护一组按长度分桶的 free list：长度 0 的空元组是单例，长度 1 到 19 各有一个桶，每个桶最多缓存 2000 个被释放的元组对象。创建 PyTuple_New(n) 时优先从 free_list[n] 取一个复用，元组销毁时放回对应的桶；长度 ≥ 20 的元组不缓存。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .ix{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .bx{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="620" height="300" fill="#FBFAF6"/>
+<text x="310" y="30" text-anchor="middle" class="ti" fill="#5C3C08">元组的 free list：按长度分桶，创建复用、销毁回收</text>
+
+<!-- buckets -->
+<g class="ix" fill="#46453F" text-anchor="end">
+  <text x="150" y="74">free_list[0]</text>
+  <text x="150" y="112">free_list[1]</text>
+  <text x="150" y="150">free_list[2]</text>
+  <text x="150" y="226">free_list[19]</text>
+</g>
+
+<!-- size 0: singleton -->
+<rect x="164" y="58" width="56" height="26" rx="6" fill="#FAEFD9" stroke="#E8CB94" stroke-width="1"/>
+<text x="192" y="75" text-anchor="middle" class="bx" fill="#5C3C08">( )</text>
+<text x="234" y="75" class="lab" fill="#9A988F">空元组 · 单例</text>
+
+<!-- size 1 -->
+<g>
+  <rect x="164" y="96" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <rect x="214" y="96" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <rect x="264" y="96" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <g class="bx" fill="#8A6212" text-anchor="middle"><text x="187" y="113">空闲</text><text x="237" y="113">空闲</text><text x="287" y="113">空闲</text></g>
+  <text x="322" y="113" class="lab" fill="#9A988F">… 每桶最多 2000 个</text>
+</g>
+<!-- size 2 -->
+<g>
+  <rect x="164" y="134" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <rect x="214" y="134" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <rect x="264" y="134" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <g class="bx" fill="#8A6212" text-anchor="middle"><text x="187" y="151">空闲</text><text x="237" y="151">空闲</text><text x="287" y="151">空闲</text></g>
+</g>
+<text x="237" y="184" text-anchor="middle" class="ix" fill="#B8B5AC">⋮</text>
+<!-- size 19 -->
+<g>
+  <rect x="164" y="210" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <rect x="214" y="210" width="46" height="26" rx="6" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1"/>
+  <g class="bx" fill="#8A6212" text-anchor="middle"><text x="187" y="227">空闲</text><text x="237" y="227">空闲</text></g>
+</g>
+
+<text x="310" y="268" text-anchor="middle" class="cap" fill="#9A988F">PyTuple_New(n)：先从 free_list[n] 取一个复用；元组销毁：放回 free_list[n]</text>
+<text x="310" y="288" text-anchor="middle" class="cap" fill="#9A988F">长度 ≥ 20 的元组不进 free list</text>
+</svg>

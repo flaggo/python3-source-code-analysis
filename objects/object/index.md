@@ -352,6 +352,8 @@ PyTypeObject PyLong_Type = {
 
 于是，当你写下 `a + b` 且 `a` 是整数时，解释器最终会顺着 `a->ob_type->tp_as_number->nb_add` 找到 `long_add` 并调用它。`tp_as_sequence`、`tp_as_mapping` 的套路完全一样，分别对应序列和映射的操作，这里不再展开。
 
+![对象的行为：协议族](obj-protocols.svg)
+
 ## 对象的多态
 
 把上面的机制再抽象一层，就能理解 CPython 是怎样实现**多态**的。
@@ -400,6 +402,8 @@ PyTypeObject PyUnicode_Type = {
 ```
 
 同一行 `object->ob_type->tp_hash(object)`，对整数和字符串却走进了不同的实现——这就是 CPython 用 C 语言「手工」实现的多态。
+
+![对象的多态](obj-polymorphism.svg)
 
 ## 引用计数
 
@@ -452,6 +456,8 @@ PyTypeObject PyUnicode_Type = {
 ```
 
 `sys.getrefcount` 的返回值总比「真实」引用数多 1，因为把对象作为参数传进函数这一动作本身，就临时多产生了一次引用。
+
+![引用计数与销毁](obj-refcount.svg)
 
 需要强调的是：引用计数归零，**不一定**马上 `free` 掉内存。频繁向操作系统申请、释放内存会显著拖慢 Python，因此 CPython 大量使用**内存对象池**技术——对象「销毁」时，其占用的空间往往被归还给对象池而非真正释放，下次创建同类对象时可以直接复用。小整数、短字符串等都受益于这类优化，具体策略我们会在各对象章节里逐一剖析。
 

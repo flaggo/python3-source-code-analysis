@@ -229,6 +229,8 @@ unicode_modifiable(PyObject *unicode)
 
 它是 **Boyer-Moore / Horspool 的混合算法**：预处理模式串，匹配失败时根据「坏字符」一次性**跳过**一大段、而不是逐位回退；并用一个 **Bloom 过滤器**（位掩码）快速判断某个字符是否出现在模式串里，进一步加速跳跃。单字符查找则直接走 `memchr` 快路径。平均下来，查找远快于「逐位比对」的朴素做法。
 
+![跳跃式查找](str-find.svg)
+
 ```python
 >>> "hello world".find("world")
 6

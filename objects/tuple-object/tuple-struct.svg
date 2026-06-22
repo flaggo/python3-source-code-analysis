@@ -1,0 +1,41 @@
+<svg width="100%" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>元组与列表的内存布局对比</title>
+<desc>元组 PyTupleObject 把元素指针 ob_item 内联在对象自身里，整个元组就是一块连续内存、长度固定；列表 PyListObject 的 ob_item 是一个指针，指向另一块可增长的数组，再加 allocated 记录容量，所以是两块内存。两者数组里存的都是指向元素的 PyObject* 指针。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .lab{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .fd{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="700" height="320" fill="#FBFAF6"/>
+
+<!-- tuple: one block -->
+<text x="120" y="84" text-anchor="end" class="lab" fill="#5C3C08">tuple (1,2,3)</text>
+<rect x="130" y="62" width="322" height="40" rx="7" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<rect x="297" y="63" width="154" height="38" fill="#FBF1DE"/>
+<g stroke="#EAD2A0"><line x1="226" y1="62" x2="226" y2="102"/><line x1="296" y1="62" x2="296" y2="102"/><line x1="348" y1="62" x2="348" y2="102"/><line x1="400" y1="62" x2="400" y2="102"/></g>
+<g class="fd" fill="#5C3C08" text-anchor="middle"><text x="178" y="86">对象头</text><text x="261" y="86">ob_size=3</text><text x="322" y="86">→1</text><text x="374" y="86">→2</text><text x="426" y="86">→3</text></g>
+<path d="M130,112 H452" fill="none" stroke="#C0BDB4" stroke-width="1.2"/>
+<text x="291" y="128" text-anchor="middle" class="cap" fill="#9A988F">一块连续内存：对象头 + 内联指针数组（定长）</text>
+
+<!-- list: two blocks -->
+<text x="120" y="202" text-anchor="end" class="lab" fill="#28415F">list [1,2,3]</text>
+<rect x="130" y="180" width="322" height="40" rx="7" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#DCE6F2"><line x1="226" y1="180" x2="226" y2="220"/><line x1="296" y1="180" x2="296" y2="220"/><line x1="374" y1="180" x2="374" y2="220"/></g>
+<g class="fd" fill="#28415F" text-anchor="middle"><text x="178" y="204">对象头</text><text x="261" y="204">ob_size=3</text><text x="335" y="204">*ob_item ●</text><text x="413" y="204">allocated=4</text></g>
+
+<!-- list separate array -->
+<path d="M335,220 C335,236 300,238 300,250" fill="none" stroke="#8E8B80" stroke-width="1.7" marker-end="url(#ah)"/>
+<rect x="196" y="252" width="208" height="38" rx="7" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.2" filter="url(#sh)"/>
+<g stroke="#DCE6F2"><line x1="248" y1="252" x2="248" y2="290"/><line x1="300" y1="252" x2="300" y2="290"/><line x1="352" y1="252" x2="352" y2="290"/></g>
+<g class="fd" fill="#28415F" text-anchor="middle"><text x="222" y="276">→1</text><text x="274" y="276">→2</text><text x="326" y="276">→3</text></g>
+<text x="378" y="276" text-anchor="middle" class="fd" fill="#B8B5AC">空</text>
+<text x="420" y="276" class="cap" fill="#9A988F">另一块：可增长的指针数组</text>
+
+<text x="350" y="312" text-anchor="middle" class="cap" fill="#9A988F">元组把元素指针放在对象内部（一块、定长）；列表指向另一块可增长的数组（两块）</text>
+</svg>

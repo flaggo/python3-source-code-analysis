@@ -90,6 +90,8 @@ PyList_New(Py_ssize_t size)
 
 注意这里复用的只是 `PyListObject` 这个「壳」（对象头那部分），存放元素的 `ob_item` 数组仍按需另行申请。
 
+![列表的创建与缓冲池](list-create.svg)
+
 ## 列表的下标存取
 
 下标访问之所以快，是因为它直接落到 `ob_item[i]`，没有任何查找：

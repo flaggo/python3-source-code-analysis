@@ -160,6 +160,8 @@ static PyLongObject small_ints[NSMALLNEGINTS + NSMALLPOSINTS];
 
 所以默认的小整数范围是 **[-5, 257)**，也就是 -5 到 256。256 落在池内，于是 `a` 和 `b` 拿到的是同一个对象；257 在池外，每次都是新建，自然就不是同一个了。
 
+![小整数对象池](int-smallpool.svg)
+
 需要时如何从池中取？看 `get_small_int` 和配套的宏 `CHECK_SMALL_INT`：
 
 `源文件：`[Objects/longobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/longobject.c#L49)
@@ -253,6 +255,8 @@ long_new_impl(PyTypeObject *type, PyObject *x, PyObject *obase)
 ```
 
 对应到 Python 里就是 `int()`、`int(x)`、`int("10", 8)` 这几种用法：无参返回 0；只给一个对象就按其类型转换；再给一个进制，就把字符串/字节串按该进制解析。
+
+![整数创建的分派](int-create.svg)
 
 ## 整数的数值操作
 
