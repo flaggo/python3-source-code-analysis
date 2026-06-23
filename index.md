@@ -15,7 +15,7 @@
     - [x] Windows 环境下编译 Python
     - [x] UNIX/Linux 环境下编译 Python
     - [x] 修改 Python 源码
-- [ ] Python 内建对象
+- [x] Python 内建对象
     - [x] Python 对象初探
     - [x] Python 整数对象
     - [x] Python 浮点数对象
@@ -26,6 +26,7 @@
     - [x] Python 字典对象
     - [x] Python 集合对象
     - [x] Python 布尔与 None 对象
+    - [x] Python 类型对象与自定义类
 - [ ] Python 虚拟机
     - [ ] Python 编译结果
     - [ ] Python 虚拟机框架

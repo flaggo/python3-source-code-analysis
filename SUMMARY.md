@@ -20,5 +20,6 @@
 - [Python Dict 对象](objects/dict-object/index.md)
 - [Python Set 对象](objects/set-object/index.md)
 - [Python 布尔与 None 对象](objects/bool-none-object/index.md)
+- [Python 类型对象与自定义类](objects/type-object/index.md)
 
 ## 第 3 部分：Python 虚拟机
