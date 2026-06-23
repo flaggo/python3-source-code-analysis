@@ -4,14 +4,17 @@
 
 ## 实例的创建：`MyClass()` 背后
 
-当你写下 `MyClass()`，调用的其实是类型对象的 `tp_call`（即 `type_call`）。它分两步：先 `tp_new` 分配出一个新对象，再 `tp_init` 初始化它——正对应 Python 里的 `__new__` 和 `__init__`：
+当你写下 `MyClass()`，看似在「调用类」，其实调用的是类型对象的 `tp_call`（即 `type_call`）——因为类本身也是对象，对它加括号就是调用它。`type_call` 把「造一个实例」拆成两步：先 `tp_new` 分配出一个新对象，再 `tp_init` 初始化它——正对应 Python 里的 `__new__` 和 `__init__`：
 
 `源文件：`[Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L911)
 
 ```c
-// Objects/typeobject.c —— type_call
+// Objects/typeobject.c —— type_call（精简）
 obj = type->tp_new(type, args, kwds);    // ① __new__：分配并返回新对象
 ......
+/* 若 __new__ 返回的不是本类（或子类）的实例，就不调用 __init__ */
+if (!PyType_IsSubtype(Py_TYPE(obj), type))
+    return obj;
 type = Py_TYPE(obj);
 if (type->tp_init != NULL) {
     int res = type->tp_init(obj, args, kwds);   // ② __init__：初始化
@@ -21,6 +24,8 @@ return obj;
 ```
 
 ![实例创建流程](instance-creation.svg)
+
+为什么要分成两步？因为这两步的职责完全不同：`__new__` 是**静态方法**，第一个参数是类 `cls`，负责「无中生有造出对象」并把它返回；`__init__` 是普通方法，第一个参数是已经造好的 `self`，负责「往对象里填属性」，不返回任何东西。日常我们几乎只重写 `__init__`，只有少数场景（不可变类型、单例、继承自 `int`/`str`/`tuple` 等）才需要插手 `__new__`。
 
 ```python
 >>> class T:
@@ -32,17 +37,26 @@ __new__ 分配
 __init__ 初始化
 ```
 
-`__new__` 负责「造出对象」（少见地需要重写，比如不可变类型、单例），`__init__` 负责「填好属性」（最常重写的那个）。
+源码里那行 `PyType_IsSubtype` 守卫值得留意：**如果 `__new__` 返回的不是本类的实例，`__init__` 就会被跳过**——给「别的类的对象」做本类的初始化没有意义。这能解释一个乍看奇怪的现象：
+
+```python
+>>> class Weird:
+...     def __new__(cls):   return 42       # 故意返回一个 int
+...     def __init__(self): print("我不会被调用")
+...
+>>> Weird()                                 # __init__ 被跳过，直接得到 42
+42
+```
 
 ## 类的创建：`class` 语句背后
 
-那「类」本身又是怎么来的？`class` 语句会被编译器翻译成对内建函数 `__build_class__` 的调用：先执行类体得到一个命名空间字典，再调用**元类**（默认就是 `type`），以 `type(名字, 基类元组, 命名空间)` 创建出类型对象。
+那「类」本身又是怎么来的？`class` 语句会被编译器翻译成对内建函数 `__build_class__` 的调用：先执行类体（那一段缩进的代码）得到一个命名空间字典，再调用**元类**（默认就是 `type`），以 `type(名字, 基类元组, 命名空间)` 创建出类型对象。
 
 `源文件：`[Python/bltinmodule.c](https://github.com/python/cpython/blob/v3.7.0/Python/bltinmodule.c#L128) · [Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L2346)（`type_new`）
 
 ![类创建流程](class-creation.svg)
 
-这意味着：**类就是 `type` 的实例**。你甚至可以绕过 `class` 语句，直接用 `type()` 三参数形式手动造一个类：
+这意味着：**类就是 `type` 的实例**。我们平时「定义类」其实是「用 `type` 造一个对象」，只不过这个对象比较特殊——它又能被用来造别的对象（实例）。理解了这层，你甚至可以绕过 `class` 语句，直接用 `type()` 三参数形式手动造一个类：
 
 ```python
 >>> C = type('C', (object,), {'x': 1})   # 等价于 class C: x = 1
@@ -52,11 +66,11 @@ __init__ 初始化
 (True, True)
 ```
 
-`class` 语句只是这件事的语法糖。理解了「类是 type 造出来的对象」，元类、`__init_subclass__` 这些高级特性就有了根基。
+`class` 语句只是这件事的语法糖：它帮你执行类体、收集命名空间、挑选元类、再调用元类。把这条链记住，后面的元类、`__init_subclass__` 这些高级特性就都有了根基。
 
 ## 属性查找：实例、类与描述符
 
-`obj.attr` 看似简单，背后却有一套**严格的优先级**。它由 `_PyObject_GenericGetAttrWithDict`（即 `object.__getattribute__`）实现：
+`obj.attr` 看似简单，背后却有一套**严格的优先级**。它由 `_PyObject_GenericGetAttrWithDict`（也就是默认的 `object.__getattribute__`）实现：
 
 `源文件：`[Objects/object.c](https://github.com/python/cpython/blob/v3.7.0/Objects/object.c#L1161)
 
@@ -81,6 +95,8 @@ if (descr != NULL) return descr;                     // ③ 普通类属性
 ...                                                  // ④ 都没有 → AttributeError
 ```
 
+第一步的 `_PyType_Lookup` 负责「在类型的 MRO 里找这个名字」。它内部带一个**全局方法缓存**（`method_cache`，按类的版本号 `tp_version_tag` + 名字做键），所以同一个方法被反复访问时不必每次都重走一遍 MRO；一旦类被修改，版本号失效，缓存自动作废。这是 CPython 让属性访问保持飞快的关键优化之一。
+
 把这个顺序记牢，几乎所有「属性从哪来」的疑惑都能解开：
 
 ![属性查找顺序](attr-lookup.svg)
@@ -100,9 +116,47 @@ if (descr != NULL) return descr;                     // ③ 普通类属性
 '来自 property'
 ```
 
+## `__getattribute__` 与 `__getattr__`：常规与兜底
+
+上面那套优先级是 `__getattribute__` 干的活——**每次** `obj.attr` 都会先走它。很多人会把它和 `__getattr__` 搞混，其实两者分工清楚：
+
+- `__getattribute__`：属性访问的**总入口**，每次都执行，里面就是上节那套「描述符 / 实例字典 / 类属性」的查找。
+- `__getattr__`：**兜底钩子**，只有当 `__getattribute__` 没找到、抛出 `AttributeError` 时才被调用。常规属性访问根本不会触发它。
+
+源码里这个「先常规、失败才兜底」的逻辑写得很直白：
+
+`源文件：`[Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L6410)（`slot_tp_getattr_hook`）
+
+```c
+// Objects/typeobject.c —— slot_tp_getattr_hook（精简）
+res = PyObject_GenericGetAttr(self, name);          // 先走常规查找
+if (res == NULL && PyErr_ExceptionMatches(PyExc_AttributeError)) {
+    PyErr_Clear();
+    res = call_attribute(self, getattr, name);      // 失败且是 AttributeError → 才调 __getattr__
+}
+return res;
+```
+
+![__getattribute__ 与 __getattr__ 的关系](getattr-hook.svg)
+
+```python
+>>> class D:
+...     def __getattr__(self, name):
+...         return f"兜底:{name}"
+...
+>>> d = D()
+>>> d.x = 1
+>>> d.x          # 实例字典里有 → 常规查找就命中，不进 __getattr__
+1
+>>> d.y          # 找不到 → 抛 AttributeError → 才触发 __getattr__
+'兜底:y'
+```
+
+正因为 `__getattr__` 只在「缺失时」触发，它很适合做惰性属性、属性代理、转发；而想拦截**所有**访问（包括已存在的属性）则要重写 `__getattribute__`——但那要小心，一不留神就无限递归。
+
 ## MRO 与多继承：C3 线性化
 
-上面反复出现「在类型的 MRO 里找」。**MRO（Method Resolution Order，方法解析顺序）**就是把一个类的所有祖先排成一条线，属性查找沿这条线依次进行。多继承下，这条线由 **C3 线性化**算法算出，保证顺序既符合继承关系、又无歧义：
+上面反复出现「在类型的 MRO 里找」。**MRO（Method Resolution Order，方法解析顺序）**就是把一个类的所有祖先排成一条线，属性查找沿这条线依次进行。单继承时这条线一目了然，就是「自己 → 父 → 祖父 → … → object」；多继承时则由 **C3 线性化**算法算出，保证顺序既尊重继承关系（子类排在父类前）、又无歧义：
 
 `源文件：`[Objects/typeobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/typeobject.c#L1750)（`mro_implementation`）
 
@@ -117,16 +171,16 @@ if (descr != NULL) return descr;                     // ③ 普通类属性
 ['D', 'B', 'Cc', 'A', 'object']
 ```
 
-`super()` 也正是沿着 MRO 找「下一个」类的方法，所以多继承下 `super()` 的行为要看 MRO 而非简单的「父类」。
+注意 `A` 排在 `B`、`Cc` 之后而不是紧跟 `D`——C3 保证「所有子类都出现在它的父类之前」，所以共同祖先 `A` 必须等 `B` 和 `Cc` 都列完才轮到。`super()` 也正是沿着 MRO 找「下一个」类的方法，所以多继承下 `super()` 找到的未必是「直接父类」，而是 MRO 里排在当前类后面的那一个——这也是协作式多继承（cooperative multiple inheritance）能跑通的基础。
 
 ## 描述符：方法、property 背后的机制
 
-前面多次提到「描述符」。一个对象只要实现了 `__get__`，就是**描述符**；按是否还实现 `__set__`/`__delete__`，分为：
+前面多次提到「描述符」，现在正式讲清。一个对象只要实现了 `__get__`，就是**描述符**；按是否还实现 `__set__`/`__delete__`，分为两类，区别只在属性查找里的优先级：
 
-- **数据描述符**：有 `__set__`（或 `__delete__`）。如 `property`。优先级高于实例字典。
-- **非数据描述符**：只有 `__get__`。如**普通函数**。优先级低于实例字典。
+- **数据描述符**：实现了 `__set__`（或 `__delete__`）。如 `property`。**优先级高于实例字典**。
+- **非数据描述符**：只有 `__get__`。如**普通函数**。**优先级低于实例字典**。
 
-最重要的一个事实：**类里定义的函数就是非数据描述符**。当你在实例上访问 `p.m`，触发函数的 `__get__`（`func_descr_get`），它返回一个把函数和实例绑在一起的**绑定方法**——`self` 就是这么来的：
+最重要的一个事实：**类里 `def` 出来的函数，就是非数据描述符**。当你在实例上访问 `p.m`，触发函数的 `__get__`（`func_descr_get`），它返回一个把函数和实例绑在一起的**绑定方法**——`self` 就是这么凭空冒出来的：
 
 `源文件：`[Objects/funcobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/funcobject.c#L583)
 
@@ -156,11 +210,42 @@ func_descr_get(PyObject *func, PyObject *obj, PyObject *type)
 <class 'function'>
 ```
 
-`@property`、`@classmethod`、`@staticmethod` 全都是描述符的应用——它们只是实现了不同的 `__get__`/`__set__`，从而改变属性访问的行为。
+`@classmethod` 和 `@staticmethod` 也是描述符，只是各自的 `__get__` 绑定的对象不同——这正好把「方法的三种形态」串成一条线：
+
+`源文件：`[Objects/funcobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/funcobject.c#L687)（`cm_descr_get`） · [funcobject.c](https://github.com/python/cpython/blob/v3.7.0/Objects/funcobject.c#L869)（`sm_descr_get`）
+
+```c
+// classmethod 的 __get__：绑定到「类」，于是第一个参数是 cls
+return PyMethod_New(cm->cm_callable, type);
+// staticmethod 的 __get__：原样返回函数，谁也不绑
+Py_INCREF(sm->sm_callable);
+return sm->sm_callable;
+```
+
+![三种方法的绑定](method-kinds.svg)
+
+```python
+>>> class C:
+...     def m(self): pass
+...     @classmethod
+...     def cm(cls): pass
+...     @staticmethod
+...     def sm(): pass
+...
+>>> c = C()
+>>> c.m.__self__ is c       # 普通函数 → 绑定到实例
+True
+>>> c.cm.__self__ is C      # classmethod → 绑定到类
+True
+>>> type(c.sm).__name__     # staticmethod → 就是原函数，谁也不绑
+'function'
+```
+
+一句话收束：`property`、`classmethod`、`staticmethod` 都不是什么语言魔法，只是实现了不同 `__get__`/`__set__` 的描述符。看懂了描述符，这些装饰器就再无神秘可言。
 
 ## `__slots__`：去掉实例字典
 
-默认情况下，每个实例都带一个 `__dict__`（实例字典）来存属性，灵活但占内存。如果一个类的属性是固定的，可以用 `__slots__` 声明它们——这样实例就**不再有 `__dict__`**，属性直接存在对象的固定槽位里，省内存（对应 `tp_dictoffset` 为 0）：
+默认情况下，每个实例都带一个 `__dict__`（实例字典）来存属性——非常灵活（随时能加新属性），但每个实例都多背一个字典，量大时很占内存。如果一个类的属性是固定的几个，可以用 `__slots__` 把它们声明出来，让实例**不再有 `__dict__`**，属性改为存在对象里预留好的固定槽位中：
 
 ```python
 >>> class S:
@@ -169,13 +254,22 @@ func_descr_get(PyObject *func, PyObject *obj, PyObject *type)
 >>> s = S(); s.a = 1
 >>> hasattr(s, '__dict__')      # 没有实例字典了
 False
->>> s.b = 2                     # 也不能再随意加新属性
+>>> s.b = 2                     # 也不能再随意加未声明的属性
 Traceback (most recent call last):
   ...
 AttributeError: 'S' object has no attribute 'b'
 ```
 
-大量小对象（如几百万个固定字段的记录）用 `__slots__` 能显著省内存。代价是失去了动态加属性的灵活性。
+它的底层机制依然是描述符：`__slots__` 里的每个名字，都会在类上生成一个**成员描述符**（`member_descriptor`，一个数据描述符），`__get__`/`__set__` 直接读写对象里那个固定偏移处的槽位；同时类的 `tp_dictoffset` 被设为 0，表示「实例没有字典」：
+
+```python
+>>> type(S.a).__name__      # 每个 slot 是一个成员描述符
+'member_descriptor'
+>>> S.__dictoffset__        # 0：实例不带 __dict__
+0
+```
+
+大量小对象（如几百万条固定字段的记录）用 `__slots__` 能显著省内存，访问也略快。代价是失去了「随时加属性」的灵活性，且多继承时有一些限制。
 
 ## 元类：类的类
 
@@ -186,14 +280,29 @@ AttributeError: 'S' object has no attribute 'b'
 (<class 'type'>, <class 'type'>, <class 'type'>)
 ```
 
-自定义元类（继承 `type`、重写 `__new__`/`__init__`）可以在「类被创建时」插手——做属性校验、自动注册、改写类体等。这是框架（如 ORM、序列化库）常用的高级手段。日常开发未必需要，但理解了「类也是对象、由元类创建」，这扇门就向你打开了。
+自定义元类（继承 `type`、重写 `__new__`/`__init__`）可以在「类被创建的那一刻」插手——校验属性、自动注册子类、改写类体、注入方法等。下面这个最小例子，就在每个用它的类上自动加了一个属性：
+
+```python
+>>> class Meta(type):
+...     def __new__(mcs, name, bases, ns):
+...         ns['greeting'] = 'hi'                    # 往类的命名空间里塞东西
+...         return super().__new__(mcs, name, bases, ns)
+...
+>>> class App(metaclass=Meta):
+...     pass
+...
+>>> App.greeting, type(App) is Meta
+('hi', True)
+```
+
+这正是许多框架（ORM 把类字段映射成表列、序列化库自动登记类型）背后的手法。日常开发未必用得上，但理解了「类也是对象、由元类创建」，这扇门就向你打开了。
 
 ---
 
 小结一下类型机制：
 
-- `MyClass()` 由 `type_call` 驱动：先 `tp_new`（`__new__`，分配）再 `tp_init`（`__init__`，初始化）；
+- `MyClass()` 由 `type_call` 驱动：先 `tp_new`（`__new__`，分配）再 `tp_init`（`__init__`，初始化）；若 `__new__` 返回的不是本类实例，`__init__` 会被跳过；
 - `class` 语句是语法糖，最终调用元类 `type(名字, 基类, 命名空间)` 造出类型对象——**类是 `type` 的实例**；
-- `obj.attr` 的查找有严格优先级：**数据描述符 > 实例 `__dict__` > 非数据描述符/类属性 > AttributeError**，沿类型的 **MRO**（C3 线性化）进行；
-- **描述符**是这套机制的核心：函数作为非数据描述符，在实例上访问时绑定 `self`；`property`/`classmethod` 等都是描述符；
-- `__slots__` 去掉实例字典以省内存；**元类**控制类的创建，是「类也是对象」的自然延伸。
+- `obj.attr` 的查找有严格优先级：**数据描述符 > 实例 `__dict__` > 非数据描述符/类属性 > AttributeError**，沿类型的 **MRO**（C3 线性化）进行，并有方法缓存加速；`__getattribute__` 每次都走，`__getattr__` 只在找不到时兜底；
+- **描述符**是这套机制的核心：函数（非数据描述符）在实例上访问时绑定 `self`，`classmethod` 绑定类、`staticmethod` 谁也不绑；`property` 是数据描述符；`__slots__` 用成员描述符替掉实例字典以省内存；
+- **元类**控制类的创建，是「类也是对象」的自然延伸。

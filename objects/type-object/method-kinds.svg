@@ -1,0 +1,65 @@
+<svg width="100%" viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>三种方法都是描述符，区别在 __get__ 绑定谁</title>
+<desc>普通函数、classmethod、staticmethod 都是类里定义的描述符，区别只在各自 __get__ 的行为：普通函数在实例上访问时绑定实例（self），classmethod 绑定类（cls），staticmethod 不绑定任何东西、原样返回函数。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .b{font-size:11.5px;font-weight:600;}
+    .c{font-size:11px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .s{font-size:10.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="700" height="250" fill="#FBFAF6"/>
+<text x="350" y="28" text-anchor="middle" class="ti" fill="#2E2972">三种方法都是描述符，区别在 __get__ 绑定谁</text>
+
+<!-- column headers -->
+<text x="120" y="58" text-anchor="middle" class="b" fill="#46453F">类里定义</text>
+<text x="350" y="58" text-anchor="middle" class="b" fill="#46453F">__get__ 行为</text>
+<text x="588" y="58" text-anchor="middle" class="b" fill="#46453F">在实例上访问 c.f 得到</text>
+
+<!-- row 1: function -->
+<rect x="36" y="70" width="168" height="44" rx="9" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
+<text x="120" y="89" text-anchor="middle" class="c" fill="#33322E">def m(self)</text>
+<text x="120" y="105" text-anchor="middle" class="s" fill="#7B7A72">普通函数（非数据描述符）</text>
+<path d="M204,92 H262" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="264" y="70" width="172" height="44" rx="9" fill="url(#gG)" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
+<text x="350" y="89" text-anchor="middle" class="b" fill="#0A463A">绑定实例</text>
+<text x="350" y="105" text-anchor="middle" class="s" fill="#0C5945">PyMethod_New(func, 实例)</text>
+<path d="M436,92 H494" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="496" y="70" width="180" height="44" rx="9" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1.1" filter="url(#sh)"/>
+<text x="586" y="89" text-anchor="middle" class="b" fill="#0A463A">绑定方法，self = 实例</text>
+<text x="586" y="105" text-anchor="middle" class="c" fill="#0C5945">__self__ 是该实例</text>
+
+<!-- row 2: classmethod -->
+<rect x="36" y="124" width="168" height="44" rx="9" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
+<text x="120" y="143" text-anchor="middle" class="c" fill="#33322E">@classmethod</text>
+<text x="120" y="159" text-anchor="middle" class="s" fill="#7B7A72">cm(cls)</text>
+<path d="M204,146 H262" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="264" y="124" width="172" height="44" rx="9" fill="url(#gP)" stroke="#CCC7F1" stroke-width="1" filter="url(#sh)"/>
+<text x="350" y="143" text-anchor="middle" class="b" fill="#2E2972">绑定类</text>
+<text x="350" y="159" text-anchor="middle" class="s" fill="#4A4396">PyMethod_New(func, 类)</text>
+<path d="M436,146 H494" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="496" y="124" width="180" height="44" rx="9" fill="#FFFFFF" stroke="#CCC7F1" stroke-width="1.1" filter="url(#sh)"/>
+<text x="586" y="143" text-anchor="middle" class="b" fill="#2E2972">绑定方法，cls = 类</text>
+<text x="586" y="159" text-anchor="middle" class="c" fill="#4A4396">__self__ 是类本身</text>
+
+<!-- row 3: staticmethod -->
+<rect x="36" y="178" width="168" height="44" rx="9" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
+<text x="120" y="197" text-anchor="middle" class="c" fill="#33322E">@staticmethod</text>
+<text x="120" y="213" text-anchor="middle" class="s" fill="#7B7A72">sm()</text>
+<path d="M204,200 H262" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="264" y="178" width="172" height="44" rx="9" fill="url(#gB)" stroke="#C3D2E8" stroke-width="1" filter="url(#sh)"/>
+<text x="350" y="197" text-anchor="middle" class="b" fill="#28415F">不绑定</text>
+<text x="350" y="213" text-anchor="middle" class="s" fill="#4A5E80">原样返回函数</text>
+<path d="M436,200 H494" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<rect x="496" y="178" width="180" height="44" rx="9" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<text x="586" y="197" text-anchor="middle" class="b" fill="#28415F">就是原函数</text>
+<text x="586" y="213" text-anchor="middle" class="c" fill="#4A5E80">没有 self / cls</text>
+</svg>
