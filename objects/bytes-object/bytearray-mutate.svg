@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>bytearray 的原地修改与追加</title>
+<desc>bytearray 可变：ba[0]=65 直接在 ob_bytes 缓冲里把第 0 个字节改成 A；ba.append(33) 把字节追加到预留的空位（!）。ob_alloc 预留的空位让 append 摊还 O(1)，空间不足时按和列表相同的公式过分配。</desc>
+<defs>
+  <style>
+    .h{font-size:13px;font-weight:600;}
+    .op{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .v{font-size:13px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:11.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+</defs>
+
+<rect x="0" y="0" width="620" height="220" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="h" fill="#28415F">bytearray 可变：在 ob_bytes 缓冲里原地改 / 追加</text>
+
+<!-- row 1 -->
+<text x="150" y="64" text-anchor="end" class="op" fill="#46453F">bytearray(b'abc')</text>
+<rect x="162" y="46" width="252" height="34" rx="7" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<g stroke="#DCE6F2"><line x1="198" y1="46" x2="198" y2="80"/><line x1="234" y1="46" x2="234" y2="80"/><line x1="270" y1="46" x2="270" y2="80"/><line x1="306" y1="46" x2="306" y2="80"/><line x1="342" y1="46" x2="342" y2="80"/><line x1="378" y1="46" x2="378" y2="80"/></g>
+<g class="v" fill="#28415F" text-anchor="middle"><text x="180" y="68">a</text><text x="216" y="68">b</text><text x="252" y="68">c</text></g>
+<g class="v" fill="#B8B5AC" text-anchor="middle"><text x="288" y="68">空</text><text x="324" y="68">空</text><text x="360" y="68">空</text><text x="396" y="68">空</text></g>
+
+<!-- row 2 -->
+<text x="150" y="124" text-anchor="end" class="op" fill="#46453F">ba[0] = 65</text>
+<rect x="162" y="106" width="252" height="34" rx="7" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<rect x="163" y="107" width="34" height="32" fill="#E4F2EB"/>
+<g stroke="#DCE6F2"><line x1="198" y1="106" x2="198" y2="140"/><line x1="234" y1="106" x2="234" y2="140"/><line x1="270" y1="106" x2="270" y2="140"/><line x1="306" y1="106" x2="306" y2="140"/><line x1="342" y1="106" x2="342" y2="140"/><line x1="378" y1="106" x2="378" y2="140"/></g>
+<text x="180" y="128" text-anchor="middle" class="v" fill="#0A463A" font-weight="700">A</text>
+<g class="v" fill="#28415F" text-anchor="middle"><text x="216" y="128">b</text><text x="252" y="128">c</text></g>
+<g class="v" fill="#B8B5AC" text-anchor="middle"><text x="288" y="128">空</text><text x="324" y="128">空</text><text x="360" y="128">空</text><text x="396" y="128">空</text></g>
+<text x="428" y="128" class="cap" fill="#0A463A">原地改第 0 个字节</text>
+
+<!-- row 3 -->
+<text x="150" y="184" text-anchor="end" class="op" fill="#46453F">ba.append(33)</text>
+<rect x="162" y="166" width="252" height="34" rx="7" fill="#FFFFFF" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<rect x="271" y="167" width="34" height="32" fill="#E4F2EB"/>
+<g stroke="#DCE6F2"><line x1="198" y1="166" x2="198" y2="200"/><line x1="234" y1="166" x2="234" y2="200"/><line x1="270" y1="166" x2="270" y2="200"/><line x1="306" y1="166" x2="306" y2="200"/><line x1="342" y1="166" x2="342" y2="200"/><line x1="378" y1="166" x2="378" y2="200"/></g>
+<g class="v" fill="#28415F" text-anchor="middle"><text x="180" y="188">A</text><text x="216" y="188">b</text><text x="252" y="188">c</text></g>
+<text x="288" y="188" text-anchor="middle" class="v" fill="#0A463A" font-weight="700">!</text>
+<g class="v" fill="#B8B5AC" text-anchor="middle"><text x="324" y="188">空</text><text x="360" y="188">空</text><text x="396" y="188">空</text></g>
+<text x="428" y="188" class="cap" fill="#0A463A">追加到预留空位</text>
+</svg>

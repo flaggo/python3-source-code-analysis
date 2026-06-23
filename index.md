@@ -20,6 +20,7 @@
     - [x] Python 整数对象
     - [x] Python 浮点数对象
     - [x] Python 字符串对象
+    - [x] Python bytes 与 bytearray 对象
     - [x] Python 列表对象
     - [x] Python 元组对象
     - [x] Python 字典对象

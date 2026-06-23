@@ -1,0 +1,31 @@
+<svg width="100%" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>bytes 的缓存：空串单例与单字节缓存</title>
+<desc>和小整数池同理，CPython 缓存了等价的小 bytes 对象：空 bytes b'' 是单例（nullstring），长度为 1 的 bytes（共 256 种）各缓存一个（characters[256]）。所以 bytes() is bytes()、bytes([97]) is bytes([97]) 都为 True。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .v{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11px;}
+    .cap{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="240" fill="#FBFAF6"/>
+<text x="320" y="30" text-anchor="middle" class="ti" fill="#5C3C08">bytes 的缓存：空串单例 + 单字节缓存</text>
+
+<!-- empty singleton -->
+<text x="60" y="74" class="lab" fill="#7B7A72">空 bytes 单例（nullstring）</text>
+<rect x="60" y="82" width="120" height="34" rx="8" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/>
+<text x="120" y="104" text-anchor="middle" class="v" fill="#33322E">b'' （唯一）</text>
+
+<!-- single-byte cache -->
+<text x="60" y="150" class="lab" fill="#7B7A72">单字节缓存 characters[256]（长度 1 的 bytes 各一个）</text>
+<rect x="60" y="158" width="500" height="34" rx="8" fill="#FFFFFF" stroke="#E8CB94" stroke-width="1.1" filter="url(#sh)"/>
+<g stroke="#EAD2A0"><line x1="125" y1="158" x2="125" y2="192"/><line x1="190" y1="158" x2="190" y2="192"/><line x1="255" y1="158" x2="255" y2="192"/><line x1="430" y1="158" x2="430" y2="192"/><line x1="495" y1="158" x2="495" y2="192"/></g>
+<g class="v" fill="#5C3C08" text-anchor="middle"><text x="92" y="180">b'\x00'</text><text x="157" y="180">b'\x01'</text><text x="222" y="180">b'\x02'</text><text x="342" y="180">⋯</text><text x="462" y="180">b'a'=97</text><text x="527" y="180">b'\xff'</text></g>
+
+<text x="320" y="222" text-anchor="middle" class="cap" fill="#9A988F">bytes() is bytes() → True　|　bytes([97]) is bytes([97]) → True　（与小整数池同理）</text>
+</svg>

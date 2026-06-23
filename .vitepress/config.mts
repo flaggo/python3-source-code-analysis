@@ -51,6 +51,7 @@ export default defineConfig({
           { text: 'Python 整数对象', link: '/objects/long-object/' },
           { text: 'Python 浮点数对象', link: '/objects/float-object/' },
           { text: 'Python 字符串对象', link: '/objects/str-object/' },
+          { text: 'Python bytes 与 bytearray 对象', link: '/objects/bytes-object/' },
           { text: 'Python 列表对象', link: '/objects/list-object/' },
           { text: 'Python 元组对象', link: '/objects/tuple-object/' },
           { text: 'Python 字典对象', link: '/objects/dict-object/' },
