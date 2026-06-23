@@ -1,0 +1,41 @@
+<svg width="100%" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>贯穿全书的「一个对象代替无数等价对象」模式</title>
+<desc>CPython 反复使用同一种省内存手法：用一个对象代替无数等价对象。包括小整数池 [-5,257)、字符串驻留（标识符）、空元组单例、浮点数 free list（最多 100）、以及 None/True/False 等内建单例。好处是省内存，并让 is 比较更快。</desc>
+<defs>
+  <style>
+    .hub{font-size:13px;font-weight:700;}
+    .leaf{font-size:11.5px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gHub" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="680" height="300" fill="#FBFAF6"/>
+
+<!-- spokes -->
+<g stroke="#D2CDC0" stroke-width="1.5">
+  <line x1="340" y1="150" x2="340" y2="56"/>
+  <line x1="340" y1="150" x2="150" y2="106"/>
+  <line x1="340" y1="150" x2="530" y2="106"/>
+  <line x1="340" y1="150" x2="150" y2="232"/>
+  <line x1="340" y1="150" x2="530" y2="232"/>
+</g>
+
+<!-- hub -->
+<rect x="248" y="120" width="184" height="62" rx="12" fill="url(#gHub)" stroke="#E8CB94" stroke-width="1.2" filter="url(#sh)"/>
+<text x="340" y="146" text-anchor="middle" class="hub" fill="#5C3C08">一个对象</text>
+<text x="340" y="166" text-anchor="middle" class="hub" fill="#5C3C08">代替无数等价对象</text>
+
+<!-- leaves -->
+<rect x="262" y="34" width="156" height="40" rx="9" fill="url(#gG)" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/><text x="340" y="59" text-anchor="middle" class="leaf" fill="#0A463A">小整数池 [-5, 257)</text>
+<rect x="60" y="86" width="170" height="40" rx="9" fill="url(#gA)" stroke="#E8CB94" stroke-width="1" filter="url(#sh)"/><text x="145" y="111" text-anchor="middle" class="leaf" fill="#5C3C08">字符串驻留（标识符）</text>
+<rect x="450" y="86" width="170" height="40" rx="9" fill="url(#gA)" stroke="#E8CB94" stroke-width="1" filter="url(#sh)"/><text x="535" y="111" text-anchor="middle" class="leaf" fill="#5C3C08">空元组 () 单例</text>
+<rect x="60" y="212" width="170" height="40" rx="9" fill="url(#gG)" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/><text x="145" y="237" text-anchor="middle" class="leaf" fill="#0A463A">浮点 free list（≤100）</text>
+<rect x="450" y="212" width="170" height="40" rx="9" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1" filter="url(#sh)"/><text x="535" y="237" text-anchor="middle" class="leaf" fill="#33322E">None / True / False 单例</text>
+
+<text x="340" y="288" text-anchor="middle" class="cap" fill="#9A988F">共同的好处：省内存，并让 is 比较更快</text>
+</svg>

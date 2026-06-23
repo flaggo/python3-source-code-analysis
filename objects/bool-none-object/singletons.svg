@@ -1,0 +1,48 @@
+<svg width="100%" viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>内建单例对象</title>
+<desc>None、True、False、Ellipsis、NotImplemented 都是全局唯一、永久存在的单例。无论多少处使用 None，拿到的都是同一个对象，所以用 is 判断（x is None）；None 永不被销毁，若引用计数归零会触发 Py_FatalError。</desc>
+<defs>
+  <style>
+    .ct{font-size:12.5px;font-weight:600;}
+    .v{font-size:13px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .sg{font-size:11.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:11px;}
+    .cap{font-size:11.5px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="620" height="240" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="ct" fill="#33322E">内建单例：全局各一个、永久存在</text>
+
+<!-- variables -->
+<g class="v" fill="#28415F">
+  <rect x="34" y="56" width="86" height="30" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="77" y="76" text-anchor="middle">a = None</text>
+  <rect x="34" y="100" width="86" height="30" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="77" y="120" text-anchor="middle">b = None</text>
+  <rect x="34" y="144" width="86" height="30" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="77" y="164" text-anchor="middle">c = None</text>
+</g>
+<g fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)">
+  <path d="M120,71 C170,71 180,104 214,110"/>
+  <path d="M120,115 H214"/>
+  <path d="M120,159 C170,159 180,126 214,120"/>
+</g>
+
+<!-- the one None -->
+<rect x="216" y="86" width="130" height="58" rx="10" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1.1" filter="url(#sh)"/>
+<text x="281" y="110" text-anchor="middle" class="v" fill="#33322E" font-weight="700">None</text>
+<text x="281" y="130" text-anchor="middle" class="lab" fill="#7B7A72">唯一对象</text>
+
+<!-- other singletons -->
+<text x="470" y="50" text-anchor="middle" class="lab" fill="#7B7A72">其它内建单例</text>
+<g class="sg" fill="#46453F">
+  <rect x="396" y="60" width="148" height="28" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/><text x="470" y="78" text-anchor="middle">True</text>
+  <rect x="396" y="94" width="148" height="28" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/><text x="470" y="112" text-anchor="middle">False</text>
+  <rect x="396" y="128" width="148" height="28" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/><text x="470" y="146" text-anchor="middle">Ellipsis  (...)</text>
+  <rect x="396" y="162" width="148" height="28" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/><text x="470" y="180" text-anchor="middle">NotImplemented</text>
+</g>
+
+<text x="310" y="220" text-anchor="middle" class="cap" fill="#9A988F">无论多少处使用，都是同一对象 → 用 is 判断（x is None）；永不被销毁</text>
+</svg>

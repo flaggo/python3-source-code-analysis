@@ -54,7 +54,8 @@ export default defineConfig({
           { text: 'Python 列表对象', link: '/objects/list-object/' },
           { text: 'Python 元组对象', link: '/objects/tuple-object/' },
           { text: 'Python 字典对象', link: '/objects/dict-object/' },
-          { text: 'Python 集合对象', link: '/objects/set-object/' }
+          { text: 'Python 集合对象', link: '/objects/set-object/' },
+          { text: 'Python 布尔与 None 对象', link: '/objects/bool-none-object/' }
         ]
       },
       {
