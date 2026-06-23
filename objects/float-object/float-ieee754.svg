@@ -1,0 +1,36 @@
+<svg width="100%" viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>IEEE 754 双精度与 0.1 的不精确</title>
+<desc>Python 的 float 是 IEEE 754 双精度浮点数，64 位由 1 位符号、11 位指数、52 位尾数组成。0.1 的二进制是无限循环小数，52 位尾数装不下，只能存最接近的值约 0.1000000000000000055，所以 0.1 + 0.2 得到 0.30000000000000004，不等于 0.3。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .seg{font-size:11.5px;font-weight:600;}
+    .v{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="660" height="240" fill="#FBFAF6"/>
+<text x="330" y="30" text-anchor="middle" class="ti" fill="#0A463A">IEEE 754 双精度（double，共 64 位）</text>
+
+<!-- bit field -->
+<rect x="60" y="48" width="50" height="42" rx="7" fill="url(#gB)" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<text x="85" y="66" text-anchor="middle" class="seg" fill="#28415F">符号</text>
+<text x="85" y="82" text-anchor="middle" class="v" fill="#28415F">1 位</text>
+<rect x="114" y="48" width="170" height="42" rx="7" fill="url(#gA)" stroke="#E8CB94" stroke-width="1.1" filter="url(#sh)"/>
+<text x="199" y="66" text-anchor="middle" class="seg" fill="#5C3C08">指数</text>
+<text x="199" y="82" text-anchor="middle" class="v" fill="#5C3C08">11 位</text>
+<rect x="288" y="48" width="312" height="42" rx="7" fill="url(#gG)" stroke="#A8DCC9" stroke-width="1.1" filter="url(#sh)"/>
+<text x="444" y="66" text-anchor="middle" class="seg" fill="#0A463A">尾数（小数部分）</text>
+<text x="444" y="82" text-anchor="middle" class="v" fill="#0A463A">52 位</text>
+
+<!-- explanation -->
+<text x="60" y="132" class="cap" fill="#46453F">0.1 的二进制是无限循环小数 <tspan class="v" fill="#5C3030">0.0001100110011…</tspan>，52 位尾数装不下</text>
+<text x="60" y="158" class="cap" fill="#46453F">→ 只能存最接近的值 <tspan class="v" fill="#5C3030">≈ 0.1000000000000000055…</tspan></text>
+<rect x="56" y="176" width="548" height="40" rx="9" fill="#F8EEEE" stroke="#E0C6C6" stroke-width="1" filter="url(#sh)"/>
+<text x="330" y="201" text-anchor="middle" class="v" fill="#5C3030">所以 0.1 + 0.2 = 0.30000000000000004 ≠ 0.3（就像十进制写不尽 1/3）</text>
+</svg>

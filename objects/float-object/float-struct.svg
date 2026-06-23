@@ -1,0 +1,33 @@
+<svg width="100%" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>PyFloatObject：定长对象</title>
+<desc>PyFloatObject 只在对象头之后放一个 C 的 double（ob_fval，8 字节），是定长对象——任何浮点数都占同样大小，getsizeof(0.0) 等于 getsizeof(1e308)。这与整数 PyLongObject 的变长（按位段增长）形成对照。</desc>
+<defs>
+  <style>
+    .ct{font-size:13px;font-weight:600;}
+    .fd{font-size:12px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .an{font-size:11px;}
+    .cap{font-size:12px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="600" height="220" fill="#FBFAF6"/>
+
+<!-- struct -->
+<rect x="50" y="40" width="230" height="130" rx="10" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
+<path d="M50,72 V50 Q50,40 60,40 H270 Q280,40 280,50 V72 Z" fill="url(#gG)"/>
+<text x="165" y="61" text-anchor="middle" class="ct" fill="#0A463A">PyFloatObject</text>
+<rect x="50" y="114" width="230" height="56" fill="#EAF6F0"/>
+<g stroke="#E4F0EA"><line x1="50" y1="100" x2="280" y2="100"/><line x1="50" y1="114" x2="280" y2="114"/></g>
+<g class="fd" fill="#0A463A"><text x="64" y="92">ob_refcnt</text><text x="64" y="120" font-size="11">*ob_type</text><text x="64" y="148">ob_fval</text></g>
+<text x="266" y="148" text-anchor="end" class="an" fill="#0C5945">double · 8 字节</text>
+
+<!-- note -->
+<rect x="316" y="58" width="240" height="44" rx="9" fill="#FFFFFF" stroke="#A8DCC9" stroke-width="1" filter="url(#sh)"/>
+<text x="436" y="78" text-anchor="middle" class="an" fill="#0A463A" font-weight="600">定长对象：大小恒定</text>
+<text x="436" y="94" text-anchor="middle" class="fd" fill="#0C5945" font-size="11">getsizeof(0.0) == getsizeof(1e308)</text>
+
+<text x="436" y="132" text-anchor="middle" class="cap" fill="#9A988F">对照整数 PyLongObject 是变长</text>
+<text x="436" y="150" text-anchor="middle" class="cap" fill="#9A988F">（按位段增长）；浮点数始终一个 double</text>
+</svg>

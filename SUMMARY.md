@@ -12,6 +12,7 @@
 
 - [Python 对象初探](objects/object/index.md)
 - [Python 整数对象](objects/long-object/index.md)
+- [Python 浮点数对象](objects/float-object/index.md)
 - [Python 字符串 对象](objects/string-object/index.md)
 - [Python List 对象](objects/list-object/index.md)
 - [Python 元组对象](objects/tuple-object/index.md)

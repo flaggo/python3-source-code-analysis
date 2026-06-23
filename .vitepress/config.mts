@@ -49,6 +49,7 @@ export default defineConfig({
         items: [
           { text: 'Python 对象初探', link: '/objects/object/' },
           { text: 'Python 整数对象', link: '/objects/long-object/' },
+          { text: 'Python 浮点数对象', link: '/objects/float-object/' },
           { text: 'Python 字符串对象', link: '/objects/str-object/' },
           { text: 'Python 列表对象', link: '/objects/list-object/' },
           { text: 'Python 元组对象', link: '/objects/tuple-object/' },
