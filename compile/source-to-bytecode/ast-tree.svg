@@ -1,0 +1,55 @@
+<svg width="100%" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>x = 1 + 2 的抽象语法树 AST</title>
+<desc>语法分析把 token 流组织成一棵抽象语法树。根是 Module，下面是一条 Assign 赋值语句：它的 targets 是名字 x（Store 上下文），value 是一个 BinOp 二元运算，BinOp 的 left 是常量 1、op 是加法 Add、right 是常量 2。树形结构清楚地表达了「把 1+2 的结果赋给 x」。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .n{font-size:12px;font-weight:600;}
+    .sub{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .edge{font-size:10px;font-style:italic;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="700" height="320" fill="#FBFAF6"/>
+<text x="350" y="28" text-anchor="middle" class="ti" fill="#28415F">x = 1 + 2 的抽象语法树（AST）</text>
+
+<!-- edges -->
+<g fill="none" stroke="#C0BDB4" stroke-width="1.5">
+  <path d="M350,72 V92"/>
+  <path d="M318,128 L214,168"/>
+  <path d="M382,128 L470,168"/>
+  <path d="M442,212 L372,250"/>
+  <path d="M470,212 V250"/>
+  <path d="M498,212 L568,250"/>
+</g>
+<g class="edge" fill="#9A988F">
+  <text x="246" y="150">targets</text>
+  <text x="446" y="150">value</text>
+  <text x="386" y="238">left</text>
+  <text x="478" y="238">op</text>
+  <text x="540" y="238">right</text>
+</g>
+
+<!-- nodes -->
+<g text-anchor="middle">
+  <!-- Module -->
+  <rect x="306" y="44" width="88" height="28" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="350" y="63" class="n" fill="#28415F">Module</text>
+  <!-- Assign -->
+  <rect x="306" y="94" width="88" height="34" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="350" y="115" class="n" fill="#28415F">Assign</text>
+  <!-- Name x -->
+  <rect x="150" y="170" width="128" height="42" rx="8" fill="url(#gP)" stroke="#CCC7F1"/><text x="214" y="188" class="n" fill="#2E2972">Name 'x'</text><text x="214" y="203" class="sub" fill="#6A63B0">ctx = Store</text>
+  <!-- BinOp -->
+  <rect x="420" y="170" width="100" height="42" rx="8" fill="url(#gB)" stroke="#C3D2E8"/><text x="470" y="188" class="n" fill="#28415F">BinOp</text><text x="470" y="203" class="sub" fill="#4A5E80">二元运算</text>
+  <!-- Constant 1 -->
+  <rect x="312" y="252" width="120" height="42" rx="8" fill="url(#gA)" stroke="#E8CB94"/><text x="372" y="270" class="n" fill="#5C3C08">Constant 1</text><text x="372" y="285" class="sub" fill="#8A6A1E">3.7 为 Num(n=1)</text>
+  <!-- Add -->
+  <rect x="446" y="256" width="48" height="34" rx="8" fill="url(#gN)" stroke="#D8D3C6"/><text x="470" y="277" class="n" fill="#33322E">Add</text>
+  <!-- Constant 2 -->
+  <rect x="508" y="252" width="120" height="42" rx="8" fill="url(#gA)" stroke="#E8CB94"/><text x="568" y="270" class="n" fill="#5C3C08">Constant 2</text><text x="568" y="285" class="sub" fill="#8A6A1E">3.7 为 Num(n=2)</text>
+</g>
+</svg>
