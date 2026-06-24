@@ -35,7 +35,7 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: '第 1 部分：序章',
+        text: '第 1 部分：准备',
         items: [
           { text: '前言', link: '/' },
           { text: 'Python 源代码的组织', link: '/preface/code-organization/' },
@@ -45,7 +45,7 @@ export default defineConfig({
         ]
       },
       {
-        text: '第 2 部分：Python 内建对象',
+        text: '第 2 部分：对象与类型系统',
         items: [
           { text: 'Python 对象初探', link: '/objects/object/' },
           { text: 'Python 整数对象', link: '/objects/long-object/' },
@@ -61,9 +61,27 @@ export default defineConfig({
         ]
       },
       {
-        text: '第 3 部分：Python 虚拟机',
+        text: '第 3 部分：编译',
         items: [
-          { text: '（编写中…）', link: '/' }
+          { text: '从源码到字节码（编写中…）', link: '/' }
+        ]
+      },
+      {
+        text: '第 4 部分：虚拟机',
+        items: [
+          { text: '字节码的执行（编写中…）', link: '/' }
+        ]
+      },
+      {
+        text: '第 5 部分：运行时',
+        items: [
+          { text: '初始化、模块与并发（编写中…）', link: '/' }
+        ]
+      },
+      {
+        text: '第 6 部分：内存管理',
+        items: [
+          { text: '分配与垃圾回收（编写中…）', link: '/' }
         ]
       }
     ],
