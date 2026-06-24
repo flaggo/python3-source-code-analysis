@@ -1,0 +1,54 @@
+<svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>求值栈执行 c = a + b（a=5, b=3）</title>
+<desc>Python 虚拟机是基于栈的。执行 c = a + b 时：LOAD_FAST a 把 5 压栈，LOAD_FAST b 把 3 压栈，BINARY_ADD 弹出两个值相加、把结果 8 压回栈顶，STORE_FAST c 弹出 8 存进变量 c，栈又空了。每条指令都只跟栈顶打交道，操作数不需要写明寄存器。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .ins{font-size:10.5px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .v{font-size:13px;font-weight:600;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .d{font-size:10px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="700" height="300" fill="#FBFAF6"/>
+<text x="350" y="26" text-anchor="middle" class="ti" fill="#0A463A">求值栈执行 c = a + b （设 a=5, b=3）</text>
+
+<!-- arrows between columns -->
+<g fill="none" stroke="#8E8B80" stroke-width="1.6" marker-end="url(#ah)">
+  <path d="M168,150 H192"/><path d="M338,150 H362"/><path d="M508,150 H532"/>
+</g>
+
+<!-- helper: each column base y=210 (stack bottom), cells 36 tall, width 70, x center varies -->
+<!-- col 1: after LOAD_FAST a -> [5] -->
+<text x="92" y="56" text-anchor="middle" class="ins" fill="#5C3C08">LOAD_FAST a</text>
+<rect x="52" y="200" width="80" height="80" rx="6" fill="#FFFFFF" stroke="#CFCABA"/>
+<rect x="56" y="240" width="72" height="36" rx="5" fill="url(#gG)" stroke="#A8DCC9"/><text x="92" y="264" text-anchor="middle" class="v" fill="#0A463A">5</text>
+<text x="92" y="294" text-anchor="middle" class="d" fill="#9A988F">压入 5</text>
+
+<!-- col 2: after LOAD_FAST b -> [5,3] -->
+<text x="262" y="56" text-anchor="middle" class="ins" fill="#5C3C08">LOAD_FAST b</text>
+<rect x="222" y="200" width="80" height="80" rx="6" fill="#FFFFFF" stroke="#CFCABA"/>
+<rect x="226" y="240" width="72" height="36" rx="5" fill="url(#gG)" stroke="#A8DCC9"/><text x="262" y="264" text-anchor="middle" class="v" fill="#0A463A">5</text>
+<rect x="226" y="202" width="72" height="36" rx="5" fill="url(#gG)" stroke="#A8DCC9"/><text x="262" y="226" text-anchor="middle" class="v" fill="#0A463A">3</text>
+<text x="262" y="294" text-anchor="middle" class="d" fill="#9A988F">再压入 3</text>
+
+<!-- col 3: after BINARY_ADD -> [8] -->
+<text x="432" y="56" text-anchor="middle" class="ins" fill="#5C3C08">BINARY_ADD</text>
+<rect x="392" y="200" width="80" height="80" rx="6" fill="#FFFFFF" stroke="#CFCABA"/>
+<rect x="396" y="240" width="72" height="36" rx="5" fill="url(#gG)" stroke="#A8DCC9"/><text x="432" y="264" text-anchor="middle" class="v" fill="#0A463A">8</text>
+<text x="432" y="294" text-anchor="middle" class="d" fill="#9A988F">弹 3、5，压回 8</text>
+
+<!-- col 4: after STORE_FAST c -> [] -->
+<text x="602" y="56" text-anchor="middle" class="ins" fill="#5C3C08">STORE_FAST c</text>
+<rect x="562" y="200" width="80" height="80" rx="6" fill="#FFFFFF" stroke="#CFCABA"/>
+<text x="602" y="245" text-anchor="middle" class="d" fill="#C2BEB2">（空）</text>
+<text x="602" y="294" text-anchor="middle" class="d" fill="#9A988F">弹 8 存进 c</text>
+
+<!-- 'c =' result note -->
+<rect x="556" y="108" width="92" height="30" rx="8" fill="#FFFFFF" stroke="#A8DCC9"/>
+<text x="602" y="128" text-anchor="middle" class="ins" fill="#0A463A">c = 8</text>
+<path d="M602,200 V140" fill="none" stroke="#A8DCC9" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#ah)"/>
+</svg>

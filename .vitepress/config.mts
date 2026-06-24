@@ -70,7 +70,8 @@ export default defineConfig({
       {
         text: '第 4 部分：虚拟机',
         items: [
-          { text: '字节码的执行（编写中…）', link: '/' }
+          { text: 'Python 虚拟机框架（帧对象与求值循环）', link: '/vm/frame-and-eval-loop/' },
+          { text: '一般表达式与名字空间（编写中…）', link: '/' }
         ]
       },
       {
