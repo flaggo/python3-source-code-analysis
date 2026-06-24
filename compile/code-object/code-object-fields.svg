@@ -1,0 +1,60 @@
+<svg width="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>PyCodeObject 的字段，按用途分三组</title>
+<desc>一个 code object 把编译产物打包在一起。它的字段大致分三组：基本信息（参数个数、局部变量数、求值栈深度、标志位、起始行号），执行素材（字节码 co_code，以及它按下标引用的常量表 co_consts、全局名表 co_names、局部名表 co_varnames、闭包相关的 co_freevars/co_cellvars），调试与标识（源文件名、对象名、行号映射表 co_lnotab）。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .h{font-size:11.5px;font-weight:600;}
+    .f{font-size:11px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .d{font-size:10px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FAEFD9"/><stop offset="1" stop-color="#F4E6C8"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="700" height="300" fill="#FBFAF6"/>
+<text x="350" y="28" text-anchor="middle" class="ti" fill="#2E2972">PyCodeObject：编译产物打成一个包</text>
+
+<!-- group 1: 基本信息 -->
+<rect x="20" y="46" width="210" height="232" rx="10" fill="url(#gB)" stroke="#C3D2E8" stroke-width="1.1" filter="url(#sh)"/>
+<text x="125" y="68" text-anchor="middle" class="h" fill="#28415F">基本信息</text>
+<g class="f" fill="#28415F">
+  <text x="36" y="92">co_argcount</text><text x="214" y="92" text-anchor="end" class="d" fill="#6B7E9E">参数个数</text>
+  <text x="36" y="114">co_kwonlyargcount</text>
+  <text x="36" y="136">co_nlocals</text><text x="214" y="136" text-anchor="end" class="d" fill="#6B7E9E">局部变量数</text>
+  <text x="36" y="158">co_stacksize</text><text x="214" y="158" text-anchor="end" class="d" fill="#6B7E9E">栈深度</text>
+  <text x="36" y="180">co_flags</text><text x="214" y="180" text-anchor="end" class="d" fill="#6B7E9E">标志位</text>
+  <text x="36" y="202">co_firstlineno</text><text x="214" y="202" text-anchor="end" class="d" fill="#6B7E9E">起始行</text>
+</g>
+<text x="125" y="248" text-anchor="middle" class="d" fill="#6B7E9E">虚拟机建栈帧、</text>
+<text x="125" y="263" text-anchor="middle" class="d" fill="#6B7E9E">绑定参数时要用</text>
+
+<!-- group 2: 执行素材 -->
+<rect x="244" y="46" width="212" height="232" rx="10" fill="url(#gA)" stroke="#E8CB94" stroke-width="1.1" filter="url(#sh)"/>
+<text x="350" y="68" text-anchor="middle" class="h" fill="#5C3C08">执行素材</text>
+<g class="f" fill="#5C3C08">
+  <text x="260" y="92">co_code</text><text x="440" y="92" text-anchor="end" class="d" fill="#8A6A1E">字节码</text>
+  <text x="260" y="114">co_consts</text><text x="440" y="114" text-anchor="end" class="d" fill="#8A6A1E">常量表</text>
+  <text x="260" y="136">co_names</text><text x="440" y="136" text-anchor="end" class="d" fill="#8A6A1E">全局名表</text>
+  <text x="260" y="158">co_varnames</text><text x="440" y="158" text-anchor="end" class="d" fill="#8A6A1E">局部名表</text>
+  <text x="260" y="180">co_freevars</text><text x="440" y="180" text-anchor="end" class="d" fill="#8A6A1E">自由变量</text>
+  <text x="260" y="202">co_cellvars</text><text x="440" y="202" text-anchor="end" class="d" fill="#8A6A1E">cell 变量</text>
+</g>
+<text x="350" y="248" text-anchor="middle" class="d" fill="#8A6A1E">字节码按「下标」</text>
+<text x="350" y="263" text-anchor="middle" class="d" fill="#8A6A1E">引用后面这些表</text>
+
+<!-- group 3: 调试标识 -->
+<rect x="470" y="46" width="210" height="232" rx="10" fill="url(#gN)" stroke="#D8D3C6" stroke-width="1.1" filter="url(#sh)"/>
+<text x="575" y="68" text-anchor="middle" class="h" fill="#46453F">调试与标识</text>
+<g class="f" fill="#46453F">
+  <text x="486" y="92">co_filename</text><text x="664" y="92" text-anchor="end" class="d" fill="#8A887E">源文件</text>
+  <text x="486" y="114">co_name</text><text x="664" y="114" text-anchor="end" class="d" fill="#8A887E">对象名</text>
+  <text x="486" y="136">co_lnotab</text><text x="664" y="136" text-anchor="end" class="d" fill="#8A887E">行号映射</text>
+</g>
+<text x="575" y="178" text-anchor="middle" class="d" fill="#8A887E">出错回溯（traceback）</text>
+<text x="575" y="193" text-anchor="middle" class="d" fill="#8A887E">和调试器靠它定位</text>
+<text x="575" y="208" text-anchor="middle" class="d" fill="#8A887E">「这条字节码对应</text>
+<text x="575" y="223" text-anchor="middle" class="d" fill="#8A887E">哪个文件、哪一行」</text>
+</svg>

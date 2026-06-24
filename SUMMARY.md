@@ -25,7 +25,7 @@
 ## 第 3 部分：编译
 
 - [从源码到字节码（编译过程）](compile/source-to-bytecode/index.md)
-- 编译的产物：code object 与 pyc
+- [编译的产物：code object 与 pyc](compile/code-object/index.md)
 
 ## 第 4 部分：虚拟机
 

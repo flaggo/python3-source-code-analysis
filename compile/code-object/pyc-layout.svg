@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 700 290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>.pyc 文件结构：16 字节头 + 序列化的 code object</title>
+<desc>3.7 的 pyc 文件由 16 字节头加上 marshal 序列化的 code object 组成。头的前 4 字节是 magic number（每个 Python 版本不同，用来拒收跨版本的 pyc），接着 4 字节是 PEP 552 的标志位。标志位为 0 时是「按时间戳」校验：后 8 字节存源文件的修改时间和大小；标志位最低位为 1 时是「按哈希」校验：后 8 字节存源文件内容的哈希。头之后就是被 marshal 序列化的 code object。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .f{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .lab{font-size:10px;}
+    .by{font-size:9.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="700" height="290" fill="#FBFAF6"/>
+<text x="350" y="28" text-anchor="middle" class="ti" fill="#2E2972">.pyc = 16 字节头 + marshal 序列化的 code object</text>
+
+<!-- header 4 cells (each 4 bytes) + body -->
+<g>
+  <rect x="30" y="50" width="120" height="48" rx="7" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/><text x="90" y="70" text-anchor="middle" class="h" fill="#2E2972">magic</text><text x="90" y="86" text-anchor="middle" class="by" fill="#6A63B0">4 字节</text>
+  <rect x="150" y="50" width="120" height="48" rx="7" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/><text x="210" y="70" text-anchor="middle" class="h" fill="#28415F">flags</text><text x="210" y="86" text-anchor="middle" class="by" fill="#6B7E9E">4 字节·PEP552</text>
+  <rect x="270" y="50" width="240" height="48" rx="7" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/><text x="390" y="72" text-anchor="middle" class="h" fill="#46453F">后 8 字节（含义随 flags 而定）</text><text x="390" y="88" text-anchor="middle" class="by" fill="#8A887E">见下方两种情形</text>
+  <rect x="510" y="50" width="160" height="48" rx="7" fill="url(#gG)" stroke="#A8DCC9" filter="url(#sh)"/><text x="590" y="70" text-anchor="middle" class="h" fill="#0A463A">code object</text><text x="590" y="86" text-anchor="middle" class="by" fill="#0C5945">marshal 序列化</text>
+</g>
+<text x="270" y="116" text-anchor="middle" class="lab" fill="#9A988F">┄┄┄ 16 字节头 ┄┄┄</text>
+<text x="590" y="116" text-anchor="middle" class="lab" fill="#9A988F">变长主体</text>
+
+<!-- two flag cases -->
+<text x="40" y="158" class="h" fill="#46453F">flags = 0 —— 按时间戳校验（默认）</text>
+<rect x="40" y="168" width="200" height="40" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/>
+<line x1="140" y1="168" x2="140" y2="208" stroke="#E2DED2"/>
+<text x="90" y="186" text-anchor="middle" class="f" fill="#46453F">mtime</text><text x="90" y="201" text-anchor="middle" class="by" fill="#8A887E">源文件修改时间</text>
+<text x="190" y="186" text-anchor="middle" class="f" fill="#46453F">size</text><text x="190" y="201" text-anchor="middle" class="by" fill="#8A887E">源文件大小</text>
+
+<text x="400" y="158" class="h" fill="#46453F">flags 最低位=1 —— 按哈希校验（PEP 552）</text>
+<rect x="400" y="168" width="200" height="40" rx="7" fill="#FFFFFF" stroke="#D8D3C6"/>
+<text x="500" y="186" text-anchor="middle" class="f" fill="#46453F">source_hash</text><text x="500" y="201" text-anchor="middle" class="by" fill="#8A887E">源文件内容哈希（8 字节）</text>
+
+<text x="350" y="246" text-anchor="middle" class="lab" fill="#9A988F">导入时先比对 magic（版本是否匹配），再按 flags 校验源文件是否变过；</text>
+<text x="350" y="262" text-anchor="middle" class="lab" fill="#9A988F">都通过就直接 marshal.loads 还原 code object，省去重新编译</text>
+</svg>

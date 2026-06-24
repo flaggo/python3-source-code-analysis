@@ -64,7 +64,7 @@ export default defineConfig({
         text: '第 3 部分：编译',
         items: [
           { text: '从源码到字节码（编译过程）', link: '/compile/source-to-bytecode/' },
-          { text: '编译的产物：code object 与 pyc（编写中…）', link: '/' }
+          { text: '编译的产物：code object 与 pyc', link: '/compile/code-object/' }
         ]
       },
       {
