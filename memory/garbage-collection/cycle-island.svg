@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>循环引用的孤岛</title>
+<desc>引用计数管不了循环引用。对象 a 引用 b、b 又引用 a 成环，del a、b 切断所有外部引用后，外界再也无法访问这两个对象，它们是垃圾。但引用计数无能为力：a 还被 b.ref 指着、b 还被 a.ref 指着，两者计数都是 1 永不归零，于是永远不会被回收，成了内存里访问不到又清不掉的孤岛。打开循环 GC 手动收一次，孤岛立刻被清除。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBEFE9"/><stop offset="1" stop-color="#F6E2D6"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C77A52" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ahx" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#B9B6AC" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="620" height="240" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="ti" fill="#2E2972">成环对象计数永不归零 → 清不掉的孤岛</text>
+
+<!-- outside world -->
+<rect x="40" y="92" width="120" height="50" rx="10" fill="url(#gN)" stroke="#D8D3C6"/>
+<text x="100" y="114" text-anchor="middle" class="h" fill="#9A988F">外部</text>
+<text x="100" y="132" text-anchor="middle" class="d" fill="#9A988F">del a, b 后无引用</text>
+<path d="M165,117 H250" fill="none" stroke="#B9B6AC" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#ahx)"/>
+<text x="208" y="106" text-anchor="middle" class="d" fill="#B9B6AC">已切断</text>
+
+<!-- a and b cycle -->
+<circle cx="330" cy="117" r="36" fill="url(#gR)" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="330" y="114" text-anchor="middle" class="h" fill="#9A4A2F">a</text>
+<text x="330" y="132" text-anchor="middle" class="d" fill="#9A4A2F">refcnt=1</text>
+<circle cx="470" cy="117" r="36" fill="url(#gR)" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="470" y="114" text-anchor="middle" class="h" fill="#9A4A2F">b</text>
+<text x="470" y="132" text-anchor="middle" class="d" fill="#9A4A2F">refcnt=1</text>
+
+<path d="M364,104 C400,90 400,90 436,104" fill="none" stroke="#C77A52" stroke-width="1.8" marker-end="url(#ahr)"/>
+<path d="M436,130 C400,144 400,144 364,130" fill="none" stroke="#C77A52" stroke-width="1.8" marker-end="url(#ahr)"/>
+<text x="400" y="84" text-anchor="middle" class="d" fill="#C77A52">a.ref → b</text>
+<text x="400" y="160" text-anchor="middle" class="d" fill="#C77A52">b.ref → a</text>
+
+<text x="310" y="206" text-anchor="middle" class="d" fill="#9A988F">外部已无引用，但互相指着对方 → 计数停在 1，引用计数回收不了</text>
+<text x="310" y="228" text-anchor="middle" class="d" fill="#9A988F">这正是循环 GC 的用武之地（gc.collect() 可清除）</text>
+</svg>

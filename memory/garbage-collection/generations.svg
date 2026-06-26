@@ -1,0 +1,49 @@
+<svg width="100%" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>三代与对象的升代</title>
+<desc>GC 把被追踪对象分三代，基于分代假说大多数对象朝生暮死。新对象在第 0 代，最年轻、回收最频繁，每当分配数减释放数累积超过 700 就触发一次第 0 代回收。熬过第 0 代回收的对象升入第 1 代，第 0 代回收满 10 次顺带回收一次第 1 代。同理第 1 代回收满 10 次触发一次涵盖全部三代的完整回收。第 2 代最老、最少回收。海量朝生暮死的新对象在廉价的第 0 代回收里就被清掉，少数长寿对象被请到高代越老越少被打扰。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="g0" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2F6B43" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="640" height="250" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">三代：年轻代扫得勤，老年代扫得疏</text>
+
+<rect x="36" y="60" width="170" height="120" rx="12" fill="url(#g0)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="121" y="84" text-anchor="middle" class="h" fill="#2F6B43">第 0 代</text>
+<text x="121" y="106" text-anchor="middle" class="d" fill="#3C5C46">新对象</text>
+<text x="121" y="130" text-anchor="middle" class="c" fill="#2F6B43">阈值 700</text>
+<text x="121" y="150" text-anchor="middle" class="d" fill="#6E8C74">回收最频繁</text>
+<text x="121" y="168" text-anchor="middle" class="d" fill="#9A988F">分配−释放 &gt; 700 触发</text>
+
+<rect x="236" y="60" width="170" height="120" rx="12" fill="url(#g1)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="321" y="84" text-anchor="middle" class="h" fill="#28415F">第 1 代</text>
+<text x="321" y="106" text-anchor="middle" class="d" fill="#46453F">熬过一次的</text>
+<text x="321" y="130" text-anchor="middle" class="c" fill="#28415F">阈值 10</text>
+<text x="321" y="150" text-anchor="middle" class="d" fill="#9A988F">第 0 代收 10 次</text>
+<text x="321" y="166" text-anchor="middle" class="d" fill="#9A988F">顺带收一次</text>
+
+<rect x="436" y="60" width="170" height="120" rx="12" fill="url(#g2)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="521" y="84" text-anchor="middle" class="h" fill="#2E2972">第 2 代</text>
+<text x="521" y="106" text-anchor="middle" class="d" fill="#46453F">长寿对象</text>
+<text x="521" y="130" text-anchor="middle" class="c" fill="#2E2972">阈值 10</text>
+<text x="521" y="150" text-anchor="middle" class="d" fill="#9A988F">最少回收</text>
+<text x="521" y="166" text-anchor="middle" class="d" fill="#9A988F">完整回收才涉及</text>
+
+<path d="M206,120 H234" fill="none" stroke="#2F6B43" stroke-width="1.7" marker-end="url(#ahg)"/>
+<path d="M406,120 H434" fill="none" stroke="#2F6B43" stroke-width="1.7" marker-end="url(#ahg)"/>
+<text x="220" y="110" text-anchor="middle" class="d" fill="#2F6B43">升代</text>
+<text x="420" y="110" text-anchor="middle" class="d" fill="#2F6B43">升代</text>
+
+<text x="320" y="212" text-anchor="middle" class="d" fill="#9A988F">分代假说：对象多朝生暮死 → 把开销集中在最可能产出垃圾的年轻代</text>
+<text x="320" y="232" text-anchor="middle" class="c" fill="#46453F">gc.get_threshold() == (700, 10, 10)</text>
+</svg>

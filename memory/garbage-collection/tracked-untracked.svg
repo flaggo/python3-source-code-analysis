@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>被追踪的容器 vs 不被追踪的原子对象</title>
+<desc>循环 GC 只盯着能成环的容器。list、dict、set、实例、tuple 这类能引用别的对象的容器，实现了 tp_traverse，会被 GC 追踪，内存里会在对象结构前面多挂一个 GC 头 PyGC_Head，含 gc_next、gc_prev、gc_refs。int、float、str 这类原子对象只装数据、不引用别的对象，不可能成环，不被追踪，一生只靠引用计数。gc_next 和 gc_prev 把被追踪对象串成双向链表，gc_refs 是 GC 工作时的私有计数。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="250" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">只有能成环的容器才被 GC 追踪</text>
+
+<!-- tracked -->
+<rect x="30" y="48" width="290" height="170" rx="12" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="175" y="70" text-anchor="middle" class="h" fill="#28415F">被追踪：容器（有 tp_traverse）</text>
+<text x="175" y="88" text-anchor="middle" class="d" fill="#9A988F">list · dict · set · 实例 · tuple</text>
+<!-- object with GC head -->
+<rect x="55" y="104" width="100" height="40" rx="7" fill="url(#gP)" stroke="#CCC7F1"/>
+<text x="105" y="120" text-anchor="middle" class="c" fill="#2E2972">PyGC_Head</text>
+<text x="105" y="135" text-anchor="middle" class="d" fill="#9A988F">挂在前面</text>
+<rect x="155" y="104" width="120" height="40" rx="7" fill="#FFF" stroke="#C3D2E8"/>
+<text x="215" y="128" text-anchor="middle" class="c" fill="#28415F">对象本体</text>
+<g class="c" fill="#2E2972">
+  <text x="55" y="170">gc_next / gc_prev</text><text x="300" y="170" text-anchor="end" class="d" fill="#9A988F">串成双向链表</text>
+  <text x="55" y="192">gc_refs</text><text x="300" y="192" text-anchor="end" class="d" fill="#9A988F">GC 私有计数</text>
+</g>
+
+<!-- untracked -->
+<rect x="350" y="48" width="260" height="170" rx="12" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="480" y="70" text-anchor="middle" class="h" fill="#33322E">不被追踪：原子对象</text>
+<text x="480" y="88" text-anchor="middle" class="d" fill="#9A988F">int · float · str · bytes</text>
+<rect x="400" y="104" width="160" height="40" rx="7" fill="#FFF" stroke="#D8D3C6"/>
+<text x="480" y="128" text-anchor="middle" class="c" fill="#33322E">对象本体（无 GC 头）</text>
+<text x="480" y="170" text-anchor="middle" class="d" fill="#9A988F">只装数据，不引用别人</text>
+<text x="480" y="192" text-anchor="middle" class="d" fill="#9A988F">不可能成环 → 一生只靠引用计数</text>
+</svg>
