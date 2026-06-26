@@ -71,7 +71,8 @@ export default defineConfig({
         text: '第 4 部分：虚拟机',
         items: [
           { text: 'Python 虚拟机框架（帧对象与求值循环）', link: '/vm/frame-and-eval-loop/' },
-          { text: '一般表达式与名字空间（编写中…）', link: '/' }
+          { text: '一般表达式与名字空间', link: '/vm/expressions-and-names/' },
+          { text: '控制流：跳转、循环与迭代器（编写中…）', link: '/' }
         ]
       },
       {
