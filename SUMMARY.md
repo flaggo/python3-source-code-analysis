@@ -38,7 +38,7 @@
 
 ## 第 5 部分：运行时
 
-- Python 运行环境初始化
+- [Python 运行环境初始化](runtime/initialization/index.md)
 - 模块与 import 机制
 - 多线程与 GIL
 

@@ -81,7 +81,8 @@ export default defineConfig({
       {
         text: '第 5 部分：运行时',
         items: [
-          { text: '初始化、模块与并发（编写中…）', link: '/' }
+          { text: 'Python 运行环境初始化', link: '/runtime/initialization/' },
+          { text: '模块与 import 机制（编写中…）', link: '/' }
         ]
       },
       {
