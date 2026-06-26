@@ -1,0 +1,49 @@
+<svg width="100%" viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>CPU 密集不加速，I/O 密集能重叠</title>
+<desc>两种任务的时间线对比。上半部分是 CPU 密集：两个线程抢同一根棒，只能轮流跑，总时间和顺序执行一样，没有加速。下半部分是 I/O 密集：线程在等 I/O 时放下棒，等待时间被另一个线程的执行重叠掉，于是真正提速。这解释了为什么 GIL 只挡住纯 Python 的 CPU 密集并行，对 I/O 密集毫无妨碍。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:9.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <linearGradient id="gGr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="270" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">同样两个线程，结果天差地别</text>
+
+<!-- CPU bound -->
+<text x="30" y="58" class="h" fill="#9A4A2F">CPU 密集：轮流跑，不加速</text>
+<text x="30" y="90" class="c" fill="#46453F">线程1</text>
+<text x="30" y="118" class="c" fill="#46453F">线程2</text>
+<!-- interleaved run blocks -->
+<g>
+  <rect x="80" y="78" width="60" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="200" y="78" width="60" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="320" y="78" width="60" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="440" y="78" width="60" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="140" y="106" width="60" height="18" rx="3" fill="#A9CDB1" stroke="#7FB08A"/>
+  <rect x="260" y="106" width="60" height="18" rx="3" fill="#A9CDB1" stroke="#7FB08A"/>
+  <rect x="380" y="106" width="60" height="18" rx="3" fill="#A9CDB1" stroke="#7FB08A"/>
+  <rect x="500" y="106" width="60" height="18" rx="3" fill="#A9CDB1" stroke="#7FB08A"/>
+</g>
+<line x1="80" y1="132" x2="560" y2="132" stroke="#C0BDB4"/>
+<text x="320" y="146" text-anchor="middle" class="d" fill="#9A988F">总时长 ≈ 顺序执行（棒只有一根，两线程拼接着跑）</text>
+
+<!-- IO bound -->
+<text x="30" y="180" class="h" fill="#2F6B43">I/O 密集：等待重叠，提速</text>
+<text x="30" y="212" class="c" fill="#46453F">线程1</text>
+<text x="30" y="240" class="c" fill="#46453F">线程2</text>
+<g>
+  <rect x="80" y="200" width="40" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="120" y="200" width="150" height="18" rx="3" fill="#E9E4D8" stroke="#CFC9B8"/>
+  <rect x="270" y="200" width="40" height="18" rx="3" fill="#7FB08A" stroke="#5E9270"/>
+  <rect x="120" y="228" width="40" height="18" rx="3" fill="#A9CDB1" stroke="#7FB08A"/>
+  <rect x="160" y="228" width="150" height="18" rx="3" fill="#E9E4D8" stroke="#CFC9B8"/>
+</g>
+<text x="195" y="213" text-anchor="middle" class="d" fill="#9A988F">等 I/O（已放下棒）</text>
+<line x1="80" y1="254" x2="330" y2="254" stroke="#C0BDB4"/>
+<text x="470" y="240" text-anchor="middle" class="d" fill="#9A988F">等 I/O 时让出棒 → 另一线程趁机跑 → 重叠提速</text>
+</svg>

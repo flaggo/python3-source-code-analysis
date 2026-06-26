@@ -83,7 +83,7 @@ export default defineConfig({
         items: [
           { text: 'Python 运行环境初始化', link: '/runtime/initialization/' },
           { text: '模块与 import 机制', link: '/runtime/import-system/' },
-          { text: '多线程与 GIL（编写中…）', link: '/' }
+          { text: '多线程与 GIL', link: '/runtime/gil/' }
         ]
       },
       {

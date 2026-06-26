@@ -40,7 +40,7 @@
 
 - [Python 运行环境初始化](runtime/initialization/index.md)
 - [模块与 import 机制](runtime/import-system/index.md)
-- 多线程与 GIL
+- [多线程与 GIL](runtime/gil/index.md)
 
 ## 第 6 部分：内存管理
 

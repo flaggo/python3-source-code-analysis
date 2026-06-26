@@ -1,0 +1,42 @@
+<svg width="100%" viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>为何需要 GIL：引用计数的竞态</title>
+<desc>GIL 存在的根本原因是保护非原子的引用计数。Py_INCREF 实质是读出 refcnt、加一、写回三步。如果两个线程同时对一个对象 INCREF，可能双双读到旧值 2、各自加一、都写回 3，两次加一只生效了一次，正确结果应是 4。计数错误后果灾难：少计数导致对象提前释放、之后访问悬空指针崩溃，多计数导致内存泄漏。GIL 让任意时刻只有一个线程跑字节码，引用计数天然安全，无需给每个对象加锁。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBEFE9"/><stop offset="1" stop-color="#F6E2D6"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="270" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">没有 GIL：两个线程一起 INCREF 会算错</text>
+<text x="320" y="46" text-anchor="middle" class="c" fill="#46453F">Py_INCREF = 读 refcnt → 加一 → 写回（非原子）</text>
+
+<!-- thread A -->
+<rect x="30" y="66" width="250" height="120" rx="11" fill="url(#gR)" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="155" y="88" text-anchor="middle" class="h" fill="#9A4A2F">线程 A</text>
+<g class="c" fill="#9A4A2F">
+  <text x="50" y="112">读 refcnt = 2</text>
+  <text x="50" y="138">加一 → 3</text>
+  <text x="50" y="164">写回 refcnt = 3</text>
+</g>
+
+<!-- thread B -->
+<rect x="360" y="66" width="250" height="120" rx="11" fill="url(#gR)" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="485" y="88" text-anchor="middle" class="h" fill="#9A4A2F">线程 B（同时）</text>
+<g class="c" fill="#9A4A2F">
+  <text x="380" y="112">读 refcnt = 2　← 也读到旧值</text>
+  <text x="380" y="138">加一 → 3</text>
+  <text x="380" y="164">写回 refcnt = 3</text>
+</g>
+
+<!-- result -->
+<rect x="170" y="206" width="300" height="44" rx="10" fill="#FFFFFF" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="320" y="226" text-anchor="middle" class="h" fill="#9A4A2F">结果 refcnt = 3，应为 4</text>
+<text x="320" y="242" text-anchor="middle" class="d" fill="#9A4A2F">少计数 → 提前释放、崩溃；多计数 → 泄漏</text>
+</svg>

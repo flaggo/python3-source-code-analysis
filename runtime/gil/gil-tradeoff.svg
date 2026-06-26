@@ -1,0 +1,46 @@
+<svg width="100%" viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>GIL 的取舍与出路</title>
+<desc>GIL 的代价很明确：纯 Python 的 CPU 密集任务无法靠多线程吃满多核。绕开它的常见办法：I/O 密集放心用 threading，GIL 在 I/O 时会让出；CPU 密集用 multiprocessing 开多进程，每个进程有自己的解释器和 GIL，真正并行；重计算下沉到会释放 GIL 的 C 扩展如 NumPy；更远的方向是 3.12 起的子解释器与 per-interpreter GIL。GIL 不是设计缺陷，而是用牺牲一种并行换来实现简单、单线程高效、与海量 C 扩展轻松互操作。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="240" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">受限场景：纯 Python 的 CPU 密集 —— 怎么绕</text>
+
+<rect x="24" y="56" width="150" height="100" rx="11" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="99" y="80" text-anchor="middle" class="h" fill="#2F6B43">I/O 密集</text>
+<text x="99" y="104" text-anchor="middle" class="c" fill="#2F6B43">threading</text>
+<text x="99" y="126" text-anchor="middle" class="d" fill="#3C5C46">I/O 时让棒</text>
+<text x="99" y="142" text-anchor="middle" class="d" fill="#3C5C46">天然能重叠</text>
+
+<rect x="190" y="56" width="150" height="100" rx="11" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="265" y="80" text-anchor="middle" class="h" fill="#28415F">CPU 密集</text>
+<text x="265" y="104" text-anchor="middle" class="c" fill="#28415F">multiprocessing</text>
+<text x="265" y="126" text-anchor="middle" class="d" fill="#46453F">多进程，各有 GIL</text>
+<text x="265" y="142" text-anchor="middle" class="d" fill="#46453F">真正并行</text>
+
+<rect x="356" y="56" width="150" height="100" rx="11" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="431" y="80" text-anchor="middle" class="h" fill="#28415F">重计算</text>
+<text x="431" y="104" text-anchor="middle" class="c" fill="#28415F">C 扩展</text>
+<text x="431" y="126" text-anchor="middle" class="d" fill="#46453F">NumPy 等释放 GIL</text>
+<text x="431" y="142" text-anchor="middle" class="d" fill="#46453F">多核算数</text>
+
+<rect x="522" y="56" width="96" height="100" rx="11" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="570" y="80" text-anchor="middle" class="h" fill="#2E2972">未来</text>
+<text x="570" y="104" text-anchor="middle" class="d" fill="#46453F">子解释器</text>
+<text x="570" y="122" text-anchor="middle" class="d" fill="#46453F">per-interp</text>
+<text x="570" y="138" text-anchor="middle" class="d" fill="#9A988F">3.12+</text>
+
+<text x="320" y="194" text-anchor="middle" class="d" fill="#9A988F">GIL 不是缺陷，是权衡：牺牲一种并行，换来实现简单、单线程高效、C 扩展易写</text>
+<text x="320" y="216" text-anchor="middle" class="d" fill="#9A988F">懂不懂 GIL，常是「为什么多线程没变快」与「该用线程还是进程」的分水岭</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg width="100%" viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>I/O 与 C 扩展主动让出 GIL</title>
+<desc>线程在做阻塞操作前会主动放下 GIL。CPython 的惯用法是一对宏 Py_BEGIN_ALLOW_THREADS 和 Py_END_ALLOW_THREADS，把可能阻塞的系统调用如读文件、等网络、sleep 夹在中间，进去前 drop_gil 放下棒，出来后 take_gil 拿回。于是一个线程等 I/O 时棒被别的线程拿去跑，I/O 等待被重叠掉。NumPy 这类 C 扩展做大块纯计算时也会释放 GIL，让多线程真正并行算数。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF0DD"/><stop offset="1" stop-color="#F6E5C2"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="230" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">阻塞前主动放下棒，别的线程趁机跑</text>
+
+<rect x="60" y="56" width="520" height="104" rx="12" fill="#FFFFFF" stroke="#BFD8C4" filter="url(#sh)"/>
+<g class="c">
+  <rect x="80" y="74" width="200" height="30" rx="6" fill="url(#gB)" stroke="#D8B86A"/><text x="180" y="93" text-anchor="middle" fill="#8A6D1F">Py_BEGIN_ALLOW_THREADS</text>
+  <text x="295" y="93" fill="#9A4A2F">↓ drop_gil 放下棒</text>
+  <rect x="80" y="110" width="200" height="30" rx="6" fill="url(#gN)" stroke="#D8D3C6"/><text x="180" y="129" text-anchor="middle" fill="#33322E">read() / sleep（阻塞）</text>
+  <text x="295" y="129" fill="#3C5C46">没占棒 → 别人能跑</text>
+</g>
+<rect x="80" y="146" width="200" height="0" />
+<text x="180" y="140" text-anchor="middle" class="c" fill="#8A6D1F"></text>
+
+<rect x="360" y="74" width="200" height="66" rx="8" fill="url(#gG)" stroke="#BFD8C4"/>
+<text x="460" y="100" text-anchor="middle" class="h" fill="#2F6B43">另一线程拿到棒</text>
+<text x="460" y="120" text-anchor="middle" class="d" fill="#3C5C46">在这段时间真正并行</text>
+
+<text x="320" y="186" text-anchor="middle" class="d" fill="#9A988F">I/O 密集线程、释放 GIL 的 C 扩展（NumPy 等）→ 真正利用多核</text>
+<text x="320" y="208" text-anchor="middle" class="d" fill="#9A988F">「GIL 让多线程没用」只对纯 Python 的 CPU 密集成立</text>
+</svg>

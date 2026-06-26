@@ -1,0 +1,44 @@
+<svg width="100%" viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>GIL 是一根执行权接力棒</title>
+<desc>GIL 本质是一把互斥锁，规则只有一条：一个线程必须先持有 GIL 才能执行字节码。于是 GIL 像一根接力棒，谁攥着它谁才能跑求值循环，其他线程只能排队等棒。多核机器上有多个线程，但因为只有一根棒，同一时刻仍只有一个线程在真正执行 Python 代码。图中线程 1 持棒运行，线程 2 和线程 3 在等待。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBF0DD"/><stop offset="1" stop-color="#F6E5C2"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="620" height="250" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="ti" fill="#2E2972">只有一根棒，谁攥着谁才能跑</text>
+
+<!-- the baton (GIL) -->
+<rect x="250" y="58" width="120" height="36" rx="18" fill="url(#gB)" stroke="#D8B86A" filter="url(#sh)"/>
+<text x="310" y="81" text-anchor="middle" class="h" fill="#8A6D1F">GIL（棒）</text>
+
+<!-- thread 1: running -->
+<rect x="40" y="120" width="160" height="90" rx="12" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="120" y="146" text-anchor="middle" class="h" fill="#2F6B43">线程 1</text>
+<text x="120" y="168" text-anchor="middle" class="c" fill="#2F6B43">持棒 · 执行字节码</text>
+<text x="120" y="190" text-anchor="middle" class="d" fill="#3C5C46">求值循环运行中</text>
+<path d="M280,94 C220,108 160,112 130,118" fill="none" stroke="#D8B86A" stroke-width="2.4" stroke-linecap="round"/>
+
+<!-- thread 2: waiting -->
+<rect x="230" y="120" width="160" height="90" rx="12" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="310" y="146" text-anchor="middle" class="h" fill="#9A988F">线程 2</text>
+<text x="310" y="168" text-anchor="middle" class="c" fill="#9A988F">等棒</text>
+<text x="310" y="190" text-anchor="middle" class="d" fill="#9A988F">阻塞，不执行</text>
+
+<!-- thread 3: waiting -->
+<rect x="420" y="120" width="160" height="90" rx="12" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="500" y="146" text-anchor="middle" class="h" fill="#9A988F">线程 3</text>
+<text x="500" y="168" text-anchor="middle" class="c" fill="#9A988F">等棒</text>
+<text x="500" y="190" text-anchor="middle" class="d" fill="#9A988F">阻塞，不执行</text>
+
+<text x="310" y="234" text-anchor="middle" class="d" fill="#9A988F">8 个线程也只有 1 根棒 —— 同一时刻只有 1 个线程在跑 Python 字节码</text>
+</svg>
