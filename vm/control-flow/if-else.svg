@@ -1,0 +1,51 @@
+<svg width="100%" viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>if / else 编译成条件跳转 POP_JUMP_IF_FALSE</title>
+<desc>if x > 0 ... else ... 被编译成：先算出条件压栈，POP_JUMP_IF_FALSE 弹出条件，为真则顺序落入 if 分支，为假则跳到 else 分支。if 分支执行完用 JUMP_FORWARD 跳过 else，避免两段都执行。条件分支的本质就是「按栈顶真假，决定要不要跳过一段指令」。</desc>
+<defs>
+  <style>
+    .ti{font-size:12.5px;font-weight:600;}
+    .c{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9F6F1"/><stop offset="1" stop-color="#DBF0E7"/></linearGradient>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F8EEEE"/><stop offset="1" stop-color="#F1E1E1"/></linearGradient>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#1E8B6F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#B07575" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="700" height="280" fill="#FBFAF6"/>
+<text x="350" y="26" text-anchor="middle" class="ti" fill="#28415F">if x &gt; 0: y=1  else: y=2</text>
+
+<!-- condition -->
+<rect x="270" y="46" width="160" height="48" rx="10" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="350" y="66" text-anchor="middle" class="h" fill="#33322E">算条件 x &gt; 0，压栈</text>
+<text x="350" y="83" text-anchor="middle" class="c" fill="#7B7A72">COMPARE_OP</text>
+
+<!-- POP_JUMP_IF_FALSE -->
+<rect x="255" y="110" width="190" height="44" rx="10" fill="#FFFFFF" stroke="#CFCABA" stroke-width="1.2" filter="url(#sh)"/>
+<text x="350" y="130" text-anchor="middle" class="c" fill="#46453F">POP_JUMP_IF_FALSE 8</text>
+<text x="350" y="146" text-anchor="middle" class="d" fill="#9A988F">弹出条件，决定走哪边</text>
+<path d="M350,94 V108" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<!-- true branch (left) -->
+<path d="M255,132 C160,132 130,150 130,176" fill="none" stroke="#1E8B6F" stroke-width="1.7" marker-end="url(#ahg)"/>
+<text x="150" y="150" class="d" fill="#0A463A">真 → 顺序落入</text>
+<rect x="46" y="180" width="170" height="48" rx="10" fill="url(#gG)" stroke="#A8DCC9" filter="url(#sh)"/>
+<text x="131" y="200" text-anchor="middle" class="h" fill="#0A463A">if 分支：y = 1</text>
+<text x="131" y="217" text-anchor="middle" class="c" fill="#0C5945">LOAD_CONST 1; STORE</text>
+
+<!-- false branch (right) -->
+<path d="M445,132 C560,132 590,150 590,176" fill="none" stroke="#B07575" stroke-width="1.7" marker-end="url(#ahr)"/>
+<text x="556" y="150" class="d" fill="#7A3B3B">假 → 跳到 8</text>
+<rect x="486" y="180" width="170" height="48" rx="10" fill="url(#gR)" stroke="#E0C6C6" filter="url(#sh)"/>
+<text x="571" y="200" text-anchor="middle" class="h" fill="#5C3030">else 分支：y = 2</text>
+<text x="571" y="217" text-anchor="middle" class="c" fill="#7A3B3B">LOAD_CONST 2; STORE</text>
+
+<!-- if branch jumps over else -->
+<path d="M216,196 C320,196 320,250 700,250" fill="none" stroke="#8E8B80" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+<text x="360" y="244" text-anchor="middle" class="d" fill="#9A988F">if 分支末尾 JUMP_FORWARD 跳过 else →</text>
+</svg>
