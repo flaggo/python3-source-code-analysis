@@ -209,6 +209,22 @@ while frames:
 
 ## 完整源码
 
-上面的片段都摘自同一个文件 `minivm.py`，也正是交互组件里实际运行的那份代码（单一事实来源）。完整列在这里：
+上面的片段都摘自同一个文件 `minivm.py`，也正是交互组件里实际运行的那份代码（单一事实来源）。它还带一个命令行入口，把文件下载下来即可**在本地直接运行**：
+
+```console
+$ python minivm.py              # 进入交互式 REPL，边敲边执行
+迷你 Python 虚拟机 · 交互式 REPL
+>>> 1 + 2 * 3
+7
+>>> def sq(n):
+...     return n * n
+...
+>>> print(sq(9))
+81
+
+$ python minivm.py demo.py      # 直接运行一个脚本文件
+```
+
+完整源码列在这里：
 
 <<< @/practice/mini-vm/minivm.py{python}

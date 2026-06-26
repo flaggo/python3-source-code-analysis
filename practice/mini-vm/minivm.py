@@ -289,8 +289,9 @@ def _compare(op, a, b):
             "==": a == b, "!=": a != b}[op]
 
 
-def run(module_code, record):
-    glob = {}
+def run(module_code, record, glob=None):
+    if glob is None:
+        glob = {}
     frames = [Frame(module_code, glob, glob, "module")]
     output = []
     steps = 0
@@ -377,6 +378,17 @@ def run(module_code, record):
             raise VMError("未知指令 %s" % op)
 
     record(frames, output, done=True)
+    return output
+
+
+def execute(src, glob=None):
+    """编译并执行一段源码，返回（输出文本, 全局名字空间）。
+
+    传入并复用同一个 glob，即可在多次调用间保留变量与函数定义——REPL 靠它实现。
+    """
+    module_code = compile_module(src)
+    out = run(module_code, lambda *a, **k: None, glob)
+    return "\n".join(out), glob
 
 
 # ============ 对外接口：带轨迹地跑一遍，返回 JSON ============
@@ -423,3 +435,71 @@ def run_trace(src):
                            "codes": codes, "trace": trace})
 
     return json.dumps({"ok": True, "codes": codes, "trace": trace})
+
+
+# ============ 命令行入口：直接运行文件，或进入交互式 REPL ============
+
+def _maybe_echo(src):
+    """REPL 小贴心：若输入是一句纯表达式（且不是 print 调用），自动回显它的值。"""
+    try:
+        tree = ast.parse(src)
+    except SyntaxError:
+        return src
+    if len(tree.body) == 1 and isinstance(tree.body[0], ast.Expr):
+        e = tree.body[0].value
+        is_print = (isinstance(e, ast.Call) and isinstance(e.func, ast.Name)
+                    and e.func.id == "print")
+        if not is_print:
+            return "print(" + src.strip() + ")"
+    return src
+
+
+def _run_text(src, glob):
+    try:
+        text, glob = execute(src, glob)
+    except (CompileError, SyntaxError) as e:
+        print("编译错误：%s" % e)
+    except VMError as e:
+        print("运行错误：%s" % e)
+    else:
+        if text:
+            print(text)
+    return glob
+
+
+def _run_file(path):
+    with open(path, encoding="utf-8") as fp:
+        _run_text(fp.read(), {})
+
+
+def _repl():
+    print("迷你 Python 虚拟机 · 交互式 REPL")
+    print("支持：赋值、算术 / 比较、if / while、def / return（含递归）、print")
+    print("块语句（def/if/while）输入完后敲一个空行执行；Ctrl-D / Ctrl-C 退出。\n")
+    glob = {}
+    while True:
+        try:
+            first = input(">>> ")
+            if first.strip() == "":
+                continue
+            lines = [first]
+            # 以冒号结尾说明是块（def/if/while…），继续读到空行为止
+            if first.rstrip().endswith(":"):
+                while True:
+                    cont = input("... ")
+                    if cont.strip() == "":
+                        break
+                    lines.append(cont)
+            src = "\n".join(lines)
+            glob = _run_text(_maybe_echo(src), glob)
+        except (EOFError, KeyboardInterrupt):
+            print("\n再见！")
+            break
+
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) > 1:
+        _run_file(sys.argv[1])
+    else:
+        _repl()

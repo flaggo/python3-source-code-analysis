@@ -16,6 +16,7 @@ const code = ref(EXAMPLES['递归阶乘'])
 const status = ref('idle')        // idle | loading | ready | error
 const statusMsg = ref('')
 const pyodide = shallowRef(null)
+const pyMod = shallowRef(null)
 const trace = shallowRef([])
 const codes = shallowRef({})
 const step = ref(0)
@@ -41,7 +42,7 @@ const revStack = computed(() => {
 })
 
 async function ensurePyodide() {
-  if (pyodide.value) return pyodide.value
+  if (pyMod.value) return pyMod.value
   status.value = 'loading'
   statusMsg.value = '正在加载 Python 运行环境（Pyodide，首次约数 MB，请稍候）…'
   if (!window.loadPyodide) {
@@ -56,21 +57,21 @@ async function ensurePyodide() {
   const py = await window.loadPyodide({
     indexURL: `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/`,
   })
-  py.runPython(TOY_SRC)             // 把「迷你虚拟机」本身注入运行环境
+  // 把「迷你虚拟机」写进文件系统，当模块 import（这样它的 __main__ REPL 不会被触发）
+  py.FS.writeFile('minivm_demo.py', TOY_SRC)
+  pyMod.value = py.pyimport('minivm_demo')
   pyodide.value = py
   status.value = 'ready'
   statusMsg.value = ''
-  return py
+  return pyMod.value
 }
 
 async function runCode() {
   stopAuto()
   errorMsg.value = ''
   try {
-    const py = await ensurePyodide()
-    const fn = py.globals.get('run_trace')
-    const out = fn(code.value)        // 在 WASM-Python 里编译并带轨迹执行
-    fn.destroy()
+    const mod = await ensurePyodide()
+    const out = mod.run_trace(code.value)   // 在 WASM-Python 里编译并带轨迹执行，返回 JSON 字符串
     const data = JSON.parse(out)
     codes.value = data.codes || {}
     trace.value = data.trace || []
