@@ -1,0 +1,50 @@
+<svg width="100%" viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>MAKE_FUNCTION 从求值栈组装函数对象</title>
+<desc>def 是一条会执行的语句。运行到它时，编译器已用前几条指令在求值栈上备好了随身道具：可选的默认值元组、kwdefaults 字典、注解字典、闭包 cell 元组，以及栈顶的 code object 和 qualname。MAKE_FUNCTION 弹出 code 和 qualname 造出 PyFunctionObject，再按 oparg 的四个标志位 0x01 默认值、0x02 kwdefaults、0x04 注解、0x08 闭包，依次弹栈装到函数对象上，最后把函数对象压回栈顶。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11.5px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="640" height="300" fill="#FBFAF6"/>
+<text x="320" y="28" text-anchor="middle" class="ti" fill="#2E2972">def → MAKE_FUNCTION 装配函数对象</text>
+
+<!-- value stack (left) -->
+<text x="120" y="58" text-anchor="middle" class="h" fill="#28415F">求值栈（编译器已备好）</text>
+<rect x="40" y="68" width="160" height="28" rx="5" fill="url(#gN)" stroke="#D8D3C6"/><text x="120" y="86" text-anchor="middle" class="c" fill="#33322E">qualname（栈顶）</text>
+<rect x="40" y="98" width="160" height="28" rx="5" fill="url(#gN)" stroke="#D8D3C6"/><text x="120" y="116" text-anchor="middle" class="c" fill="#33322E">code object</text>
+<rect x="40" y="128" width="160" height="28" rx="5" fill="url(#gB)" stroke="#C3D2E8"/><text x="120" y="146" text-anchor="middle" class="c" fill="#28415F">闭包 cell 元组 ?</text>
+<rect x="40" y="158" width="160" height="28" rx="5" fill="url(#gB)" stroke="#C3D2E8"/><text x="120" y="176" text-anchor="middle" class="c" fill="#28415F">注解 dict ?</text>
+<rect x="40" y="188" width="160" height="28" rx="5" fill="url(#gB)" stroke="#C3D2E8"/><text x="120" y="206" text-anchor="middle" class="c" fill="#28415F">kwdefaults ?</text>
+<rect x="40" y="218" width="160" height="28" rx="5" fill="url(#gB)" stroke="#C3D2E8"/><text x="120" y="236" text-anchor="middle" class="c" fill="#28415F">默认值元组 ?</text>
+<text x="120" y="262" text-anchor="middle" class="d" fill="#9A988F">蓝色按 oparg 标志位可选</text>
+
+<!-- arrow -->
+<path d="M210,150 H280" fill="none" stroke="#8E8B80" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="245" y="142" text-anchor="middle" class="c" fill="#46453F">MAKE_</text>
+<text x="245" y="156" text-anchor="middle" class="c" fill="#46453F">FUNCTION</text>
+
+<!-- function object (right) -->
+<rect x="300" y="72" width="300" height="172" rx="12" fill="#FFFFFF" stroke="#CCC7F1" filter="url(#sh)"/>
+<rect x="300" y="72" width="300" height="30" rx="12" fill="url(#gP)"/>
+<rect x="300" y="88" width="300" height="14" fill="url(#gP)"/>
+<text x="450" y="92" text-anchor="middle" class="h" fill="#2E2972">PyFunctionObject</text>
+<g class="c" fill="#2E2972">
+  <text x="318" y="128">func_code / func_globals</text>
+  <text x="318" y="156">func_closure</text><text x="582" y="156" text-anchor="end" class="d" fill="#9A988F">oparg &amp; 0x08</text>
+  <text x="318" y="180">func_annotations</text><text x="582" y="180" text-anchor="end" class="d" fill="#9A988F">oparg &amp; 0x04</text>
+  <text x="318" y="204">func_kwdefaults</text><text x="582" y="204" text-anchor="end" class="d" fill="#9A988F">oparg &amp; 0x02</text>
+  <text x="318" y="228">func_defaults</text><text x="582" y="228" text-anchor="end" class="d" fill="#9A988F">oparg &amp; 0x01</text>
+</g>
+
+<text x="320" y="286" text-anchor="middle" class="d" fill="#9A988F">弹栈逐项装配，最后把函数对象压回栈顶</text>
+</svg>

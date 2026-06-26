@@ -1,0 +1,46 @@
+<svg width="100%" viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>默认值在 def 时求值一次，调用间共享</title>
+<desc>默认值在 def 执行时求值一次，结果存进函数对象的 func_defaults 元组。之后每次调用只是从这个元组里取来填缺位，所有调用共享同一份默认值对象。若默认值是可变对象比如空列表，这个共享会显形：def append(x, lst=[]) 里的空列表只创建一个，存在 __defaults__ 里，append(1) 和 append(2) 修改的是同一个列表，于是结果累积成 [1, 2]。这就是可变默认值陷阱的根源。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBEFE9"/><stop offset="1" stop-color="#F6E2D6"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C77A52" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="640" height="270" fill="#FBFAF6"/>
+<text x="320" y="26" text-anchor="middle" class="ti" fill="#2E2972">默认值 def 时求值一次，被调用共享</text>
+<text x="320" y="46" text-anchor="middle" class="c" fill="#46453F">def append(x, lst=[]): lst.append(x); return lst</text>
+
+<!-- def time -->
+<rect x="40" y="66" width="180" height="50" rx="9" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="130" y="86" text-anchor="middle" class="h" fill="#2E2972">def 执行时</text>
+<text x="130" y="104" text-anchor="middle" class="d" fill="#46453F">[] 求值一次 → 存入</text>
+
+<!-- the one list -->
+<rect x="260" y="62" width="180" height="58" rx="10" fill="#FFFFFF" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="350" y="84" text-anchor="middle" class="c" fill="#9A4A2F">append.__defaults__</text>
+<text x="350" y="104" text-anchor="middle" class="c" fill="#9A4A2F">( [ ] ,)　← 唯一的列表</text>
+<path d="M220,91 H258" fill="none" stroke="#C77A52" stroke-width="1.6" marker-end="url(#ah)"/>
+
+<!-- two calls share it -->
+<rect x="60" y="160" width="150" height="44" rx="9" fill="url(#gB)" stroke="#C3D2E8"/>
+<text x="135" y="180" text-anchor="middle" class="c" fill="#28415F">append(1)</text>
+<text x="135" y="196" text-anchor="middle" class="d" fill="#46453F">→ [1]</text>
+<rect x="490" y="160" width="150" height="44" rx="9" fill="url(#gB)" stroke="#C3D2E8" transform="translate(-60 0)"/>
+<text x="505" y="180" text-anchor="middle" class="c" fill="#28415F">append(2)</text>
+<text x="505" y="196" text-anchor="middle" class="d" fill="#46453F">→ [1, 2]　累积！</text>
+
+<path d="M150,160 C170,140 280,128 320,120" fill="none" stroke="#C77A52" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+<path d="M500,160 C480,140 400,128 380,120" fill="none" stroke="#C77A52" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ah)"/>
+<text x="320" y="150" text-anchor="middle" class="d" fill="#9A988F">两次调用改的是同一个列表</text>
+
+<text x="320" y="240" text-anchor="middle" class="d" fill="#9A988F">默认值只在 def 时创建一次、挂在函数对象上 —— 可变默认值陷阱的根源</text>
+</svg>

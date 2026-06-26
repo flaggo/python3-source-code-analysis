@@ -74,7 +74,8 @@ export default defineConfig({
           { text: '一般表达式与名字空间', link: '/vm/expressions-and-names/' },
           { text: '控制流：跳转、循环与迭代器', link: '/vm/control-flow/' },
           { text: '异常机制：block 栈与栈展开', link: '/vm/exceptions/' },
-          { text: '函数机制：调用、参数与闭包（编写中…）', link: '/' }
+          { text: '函数机制：调用、参数与闭包', link: '/vm/functions/' },
+          { text: '生成器与协程（编写中…）', link: '/' }
         ]
       },
       {

@@ -33,7 +33,7 @@
 - [一般表达式与名字空间](vm/expressions-and-names/index.md)
 - [控制流：跳转、循环与迭代器](vm/control-flow/index.md)
 - [异常机制：block 栈与栈展开](vm/exceptions/index.md)
-- 函数机制：调用、参数与闭包
+- [函数机制：调用、参数与闭包](vm/functions/index.md)
 - 生成器与协程
 
 ## 第 5 部分：运行时
