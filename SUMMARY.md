@@ -32,7 +32,7 @@
 - [Python 虚拟机框架（帧对象与求值循环）](vm/frame-and-eval-loop/index.md)
 - [一般表达式与名字空间](vm/expressions-and-names/index.md)
 - [控制流：跳转、循环与迭代器](vm/control-flow/index.md)
-- 异常机制：block 栈与栈展开
+- [异常机制：block 栈与栈展开](vm/exceptions/index.md)
 - 函数机制：调用、参数与闭包
 - 生成器与协程
 

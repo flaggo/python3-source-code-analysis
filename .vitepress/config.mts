@@ -73,7 +73,8 @@ export default defineConfig({
           { text: 'Python 虚拟机框架（帧对象与求值循环）', link: '/vm/frame-and-eval-loop/' },
           { text: '一般表达式与名字空间', link: '/vm/expressions-and-names/' },
           { text: '控制流：跳转、循环与迭代器', link: '/vm/control-flow/' },
-          { text: '异常机制：block 栈与栈展开（编写中…）', link: '/' }
+          { text: '异常机制：block 栈与栈展开', link: '/vm/exceptions/' },
+          { text: '函数机制：调用、参数与闭包（编写中…）', link: '/' }
         ]
       },
       {
