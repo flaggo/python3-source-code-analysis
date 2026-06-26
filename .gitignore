@@ -21,3 +21,10 @@ _book
 
 # mac
 .DS_Store
+
+# python
+__pycache__/
+*.pyc
+
+# playwright mcp test artifacts
+.playwright-mcp/

@@ -92,6 +92,12 @@ export default defineConfig({
           { text: '内存分配与引用计数（pymalloc）', link: '/memory/allocation-refcount/' },
           { text: '循环垃圾回收（分代 GC）', link: '/memory/garbage-collection/' }
         ]
+      },
+      {
+        text: '第 7 部分：实战',
+        items: [
+          { text: '动手：用 Python 写一个迷你 Python 虚拟机', link: '/practice/mini-vm/' }
+        ]
       }
     ],
 

@@ -46,3 +46,7 @@
 
 - [内存分配与引用计数（pymalloc）](memory/allocation-refcount/index.md)
 - [循环垃圾回收（分代 GC）](memory/garbage-collection/index.md)
+
+## 第 7 部分：实战
+
+- [动手：用 Python 写一个迷你 Python 虚拟机](practice/mini-vm/index.md)

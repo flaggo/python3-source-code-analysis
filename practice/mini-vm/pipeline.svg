@@ -1,0 +1,50 @@
+<svg width="100%" viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>迷你虚拟机的流水线</title>
+<desc>迷你虚拟机走和 CPython 同构的路子。源码经 ast.parse 解析成 AST 抽象语法树，借用 Python 自带的 ast 模块；编译器遍历 AST 吐出自定义的玩具字节码；虚拟机用一个大循环加帧栈逐条执行指令、操作求值栈；最后产生 print 的输出。只有第一步借用了 ast，从 AST 往后的编译与执行全是自己写的。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:10.5px;font-weight:600;}
+    .d{font-size:9px;}
+    .c{font-size:9.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="660" height="200" fill="#FBFAF6"/>
+<text x="330" y="28" text-anchor="middle" class="ti" fill="#2E2972">源码 → AST → 玩具字节码 → 求值循环</text>
+
+<rect x="18" y="78" width="96" height="46" rx="9" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="66" y="98" text-anchor="middle" class="h" fill="#33322E">源码</text>
+<text x="66" y="114" text-anchor="middle" class="d" fill="#9A988F">a = 5 …</text>
+
+<rect x="148" y="78" width="96" height="46" rx="9" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="196" y="98" text-anchor="middle" class="h" fill="#28415F">AST</text>
+<text x="196" y="114" text-anchor="middle" class="d" fill="#9A988F">ast.parse（借用）</text>
+
+<rect x="278" y="78" width="104" height="46" rx="9" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="330" y="98" text-anchor="middle" class="h" fill="#2E2972">编译器</text>
+<text x="330" y="114" text-anchor="middle" class="d" fill="#9A988F">自己写</text>
+
+<rect x="416" y="78" width="110" height="46" rx="9" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="471" y="98" text-anchor="middle" class="h" fill="#33322E">玩具字节码</text>
+<text x="471" y="114" text-anchor="middle" class="d" fill="#9A988F">(op, arg) 序列</text>
+
+<rect x="560" y="70" width="86" height="62" rx="9" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="603" y="90" text-anchor="middle" class="h" fill="#2F6B43">虚拟机</text>
+<text x="603" y="106" text-anchor="middle" class="d" fill="#3C5C46">求值栈+帧栈</text>
+<text x="603" y="120" text-anchor="middle" class="d" fill="#6E8C74">→ 输出</text>
+
+<path d="M114,101 H146" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M244,101 H276" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M382,101 H414" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+<path d="M526,101 H558" fill="none" stroke="#8E8B80" stroke-width="1.5" marker-end="url(#ah)"/>
+
+<path d="M278,140 H526" fill="none" stroke="#C3D2E8" stroke-width="1.3" stroke-dasharray="4 3"/>
+<text x="402" y="162" text-anchor="middle" class="d" fill="#9A988F">这两环（编译 + 执行）是我们自己写的，也是前几部分的核心</text>
+</svg>
