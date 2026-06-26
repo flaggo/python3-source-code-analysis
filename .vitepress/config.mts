@@ -89,7 +89,8 @@ export default defineConfig({
       {
         text: '第 6 部分：内存管理',
         items: [
-          { text: '分配与垃圾回收（编写中…）', link: '/' }
+          { text: '内存分配与引用计数（pymalloc）', link: '/memory/allocation-refcount/' },
+          { text: '循环垃圾回收（分代 GC）（编写中…）', link: '/' }
         ]
       }
     ],

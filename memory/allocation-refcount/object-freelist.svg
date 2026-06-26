@@ -1,0 +1,46 @@
+<svg width="100%" viewBox="0 0 620 230" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>对象级 free list：同类型直接复用</title>
+<desc>比 pymalloc 更快的是干脆连分配器都不惊动。float、tuple、list、frame 等高频类型各自维护一个对象级 free list。一个 float 被销毁时，它的内存块不还给 pymalloc，而是挂进 float 专属的 free list；下次要新 float，直接从这条链表上摘一个来用。这层缓存绕过了算 size class、找 pool、取 block 的全部步骤，连同类型对象的初始化都省了一半。代价是每个类型要自己实现维护这份缓存，只有最高频的类型才值得。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBEFE9"/><stop offset="1" stop-color="#F6E2D6"/></linearGradient>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2F6B43" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ahr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#C77A52" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="620" height="230" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="ti" fill="#2E2972">float 的 free list：销毁即复用，绕过 pymalloc</text>
+
+<!-- free list -->
+<rect x="200" y="60" width="220" height="80" rx="12" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="310" y="84" text-anchor="middle" class="h" fill="#2F6B43">float free list</text>
+<g class="c">
+  <rect x="220" y="98" width="56" height="28" rx="6" fill="#FFF" stroke="#BFD8C4"/><text x="248" y="117" text-anchor="middle" fill="#2F6B43">空 float</text>
+  <rect x="284" y="98" width="56" height="28" rx="6" fill="#FFF" stroke="#BFD8C4"/><text x="312" y="117" text-anchor="middle" fill="#2F6B43">空 float</text>
+  <rect x="348" y="98" width="56" height="28" rx="6" fill="#FFF" stroke="#BFD8C4"/><text x="376" y="117" text-anchor="middle" fill="#2F6B43">空 float</text>
+</g>
+
+<!-- destroy: push -->
+<rect x="30" y="78" width="130" height="44" rx="9" fill="url(#gR)" stroke="#E8C9B5" filter="url(#sh)"/>
+<text x="95" y="98" text-anchor="middle" class="c" fill="#9A4A2F">销毁一个 float</text>
+<text x="95" y="114" text-anchor="middle" class="d" fill="#9A4A2F">不还给 pymalloc</text>
+<path d="M160,100 H198" fill="none" stroke="#C77A52" stroke-width="1.7" marker-end="url(#ahr)"/>
+<text x="180" y="90" text-anchor="middle" class="d" fill="#C77A52">挂回</text>
+
+<!-- new: pop -->
+<rect x="460" y="78" width="130" height="44" rx="9" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="525" y="98" text-anchor="middle" class="c" fill="#2F6B43">要个新 float</text>
+<text x="525" y="114" text-anchor="middle" class="d" fill="#3C5C46">直接摘一个</text>
+<path d="M422,100 H458" fill="none" stroke="#2F6B43" stroke-width="1.7" marker-end="url(#ahg)"/>
+<text x="440" y="90" text-anchor="middle" class="d" fill="#2F6B43">取下</text>
+
+<text x="310" y="178" text-anchor="middle" class="d" fill="#9A988F">绕过「算 size class、找 pool、取 block」的全部步骤</text>
+<text x="310" y="200" text-anchor="middle" class="c" fill="#46453F">id(1.5+1.5) == id(2.0+2.0) —— 复用了同一块内存</text>
+</svg>

@@ -1,0 +1,34 @@
+<svg width="100%" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>size class：按 8 字节归类</title>
+<desc>pymalloc 把 1 到 512 字节的请求按 8 字节对齐归入 64 个大小规格 size class。1 到 8 字节的请求都给 8 字节的 block，序号 0；9 到 16 字节的都给 16 字节，序号 1；17 到 24 给 24，序号 2；以此类推到 505 到 512 给 512，序号 63。申请 30 字节会被归到 32 字节这一规格序号 3，从专门切成 32 字节 block 的 pool 里取一块。同一规格的对象永远从同规格的 pool 分配。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:10.5px;font-weight:600;}
+    .d{font-size:9.5px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="600" height="250" fill="#FBFAF6"/>
+<text x="300" y="28" text-anchor="middle" class="ti" fill="#2E2972">1–512 字节 → 64 个规格（8 字节一档）</text>
+
+<!-- table -->
+<g class="c">
+  <rect x="80" y="50" width="440" height="26" rx="5" fill="url(#gP)" stroke="#CCC7F1"/>
+  <text x="160" y="68" text-anchor="middle" class="h" fill="#2E2972">请求字节数</text>
+  <text x="320" y="68" text-anchor="middle" class="h" fill="#2E2972">block 大小</text>
+  <text x="460" y="68" text-anchor="middle" class="h" fill="#2E2972">规格序号</text>
+
+  <rect x="80" y="78" width="440" height="22" fill="#FFF" stroke="#ECEAE2"/><text x="160" y="93" text-anchor="middle" fill="#33322E">1 – 8</text><text x="320" y="93" text-anchor="middle" fill="#33322E">8</text><text x="460" y="93" text-anchor="middle" fill="#9A988F">0</text>
+  <rect x="80" y="100" width="440" height="22" fill="#F9F8F3" stroke="#ECEAE2"/><text x="160" y="115" text-anchor="middle" fill="#33322E">9 – 16</text><text x="320" y="115" text-anchor="middle" fill="#33322E">16</text><text x="460" y="115" text-anchor="middle" fill="#9A988F">1</text>
+  <rect x="80" y="122" width="440" height="22" fill="#FFF" stroke="#ECEAE2"/><text x="160" y="137" text-anchor="middle" fill="#33322E">17 – 24</text><text x="320" y="137" text-anchor="middle" fill="#33322E">24</text><text x="460" y="137" text-anchor="middle" fill="#9A988F">2</text>
+  <rect x="80" y="144" width="440" height="22" fill="#F3F1FD" stroke="#CCC7F1"/><text x="160" y="159" text-anchor="middle" fill="#2E2972">25 – 32　← 申请 30</text><text x="320" y="159" text-anchor="middle" fill="#2E2972">32</text><text x="460" y="159" text-anchor="middle" fill="#2E2972">3</text>
+  <rect x="80" y="166" width="440" height="22" fill="#F9F8F3" stroke="#ECEAE2"/><text x="160" y="181" text-anchor="middle" fill="#9A988F">…</text><text x="320" y="181" text-anchor="middle" fill="#9A988F">…</text><text x="460" y="181" text-anchor="middle" fill="#9A988F">…</text>
+  <rect x="80" y="188" width="440" height="22" fill="#FFF" stroke="#ECEAE2"/><text x="160" y="203" text-anchor="middle" fill="#33322E">505 – 512</text><text x="320" y="203" text-anchor="middle" fill="#33322E">512</text><text x="460" y="203" text-anchor="middle" fill="#9A988F">63</text>
+</g>
+
+<text x="300" y="234" text-anchor="middle" class="d" fill="#9A988F">申请 30 字节 → 归 32 字节规格 → 从切成 32 字节 block 的 pool 取一块</text>
+</svg>

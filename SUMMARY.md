@@ -44,5 +44,5 @@
 
 ## 第 6 部分：内存管理
 
-- 内存分配与引用计数（pymalloc）
+- [内存分配与引用计数（pymalloc）](memory/allocation-refcount/index.md)
 - 循环垃圾回收（分代 GC）
