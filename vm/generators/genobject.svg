@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>生成器对象保管着一个帧</title>
+<desc>PyGenObject 是个揣着帧的壳，核心字段只有几个：gi_frame 保管的帧，也就是第一章讲的那个 PyFrameObject，有同样的局部变量区、求值栈、f_lasti 执行进度；gi_running 防重入标志；gi_code 背后的 code object；gi_exc_state 挂起期间保存的异常状态。普通调用结束就丢弃帧，生成器把帧攥在手里不放，于是这个帧能被反复进入和退出。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#8E8B80" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="600" height="250" fill="#FBFAF6"/>
+<text x="300" y="28" text-anchor="middle" class="ti" fill="#2E2972">生成器 = 一个揣着帧的壳</text>
+
+<!-- gen object -->
+<rect x="30" y="56" width="230" height="160" rx="12" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="145" y="80" text-anchor="middle" class="h" fill="#2F6B43">PyGenObject</text>
+<g class="c" fill="#2F6B43">
+  <text x="50" y="108">gi_frame</text><text x="240" y="108" text-anchor="end" class="d" fill="#6E8C74">→ 保管的帧</text>
+  <line x1="50" y1="118" x2="240" y2="118" stroke="#C9DDCD"/>
+  <text x="50" y="138">gi_running</text><text x="240" y="138" text-anchor="end" class="d" fill="#6E8C74">防重入</text>
+  <line x1="50" y1="148" x2="240" y2="148" stroke="#C9DDCD"/>
+  <text x="50" y="168">gi_code</text><text x="240" y="168" text-anchor="end" class="d" fill="#6E8C74">背后的字节码</text>
+  <line x1="50" y1="178" x2="240" y2="178" stroke="#C9DDCD"/>
+  <text x="50" y="198">gi_exc_state</text><text x="240" y="198" text-anchor="end" class="d" fill="#6E8C74">挂起期异常</text>
+</g>
+
+<!-- the frame -->
+<rect x="350" y="64" width="220" height="144" rx="12" fill="#FFFFFF" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="460" y="88" text-anchor="middle" class="h" fill="#33322E">PyFrameObject（第一章那个帧）</text>
+<g class="c" fill="#33322E">
+  <text x="368" y="116">f_localsplus（局部+求值栈）</text>
+  <text x="368" y="142">f_stacktop（栈顶）</text>
+  <text x="368" y="168">f_lasti（执行进度）</text>
+  <text x="368" y="194">f_back（调用者）</text>
+</g>
+
+<path d="M260,108 C300,108 320,120 348,124" fill="none" stroke="#8E8B80" stroke-width="1.6" marker-end="url(#ah)"/>
+<text x="305" y="98" text-anchor="middle" class="d" fill="#9A988F">gi_frame</text>
+</svg>

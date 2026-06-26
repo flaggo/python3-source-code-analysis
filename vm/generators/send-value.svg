@@ -1,0 +1,44 @@
+<svg width="100%" viewBox="0 0 620 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>send 把值压回帧的求值栈，成为 yield 表达式的值</title>
+<desc>got = yield 这个表达式的魔法在于：挂起前 yield 把值送出去，恢复时 gen_send_ex 把 send 的实参压回保存的帧的求值栈顶。而求值循环一恢复，正等着从栈上取一个值赋给 got。于是 send("hello") 传入的 hello 被压上栈，成为 got 的值。这就是为什么 got = yield 求值为 send 进来的值。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10.5px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6A63B0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2F6B43" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="620" height="250" fill="#FBFAF6"/>
+<text x="310" y="28" text-anchor="middle" class="ti" fill="#2E2972">got = yield：send 的值从栈上来</text>
+
+<!-- send call -->
+<rect x="40" y="86" width="160" height="60" rx="10" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="120" y="110" text-anchor="middle" class="c" fill="#2E2972">g.send("hello")</text>
+<text x="120" y="130" text-anchor="middle" class="d" fill="#46453F">实参 "hello"</text>
+
+<!-- frame value stack -->
+<text x="400" y="68" text-anchor="middle" class="h" fill="#2F6B43">帧的求值栈</text>
+<rect x="320" y="78" width="160" height="34" rx="6" fill="#FFF" stroke="#6A63B0"/>
+<text x="400" y="100" text-anchor="middle" class="c" fill="#2E2972">"hello"　← 压入栈顶</text>
+<rect x="320" y="116" width="160" height="30" rx="6" fill="url(#gG)" stroke="#BFD8C4"/>
+<text x="400" y="136" text-anchor="middle" class="d" fill="#6E8C74">挂起前留下的中间值…</text>
+
+<path d="M200,108 C250,108 270,98 318,95" fill="none" stroke="#6A63B0" stroke-width="1.7" marker-end="url(#ah)"/>
+<text x="258" y="84" text-anchor="middle" class="d" fill="#6A63B0">gen_send_ex 压回</text>
+
+<!-- resume consumes -->
+<rect x="320" y="170" width="240" height="48" rx="9" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="440" y="190" text-anchor="middle" class="c" fill="#2F6B43">got = （取栈顶）</text>
+<text x="440" y="207" text-anchor="middle" class="d" fill="#3C5C46">got == "hello"</text>
+<path d="M400,146 V168" fill="none" stroke="#2F6B43" stroke-width="1.6" marker-end="url(#ahg)"/>
+
+<text x="180" y="190" text-anchor="middle" class="d" fill="#9A988F">求值循环恢复后</text>
+<text x="180" y="208" text-anchor="middle" class="d" fill="#9A988F">正等着取一个值赋给 got</text>
+</svg>

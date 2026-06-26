@@ -1,0 +1,46 @@
+<svg width="100%" viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>yield 冻住帧 vs return 销毁帧</title>
+<desc>两种退出求值循环的方式对比。YIELD_VALUE 保存 f_stacktop 等于当前栈顶，把求值栈上的中间值原封不动留着，走 fast_yield 特殊出口，不清栈不销毁帧，加上 f_lasti 已指向 yield 的下一条指令，帧被完整定格，还能续跑。RETURN_VALUE 走正常退出路径，清空求值栈，把 f_stacktop 置为 NULL，帧的使命终结。f_stacktop 是否为 NULL 成了区分两者的标志位：非 NULL 是 yield 挂起，NULL 是 return 终结。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1EFE8"/><stop offset="1" stop-color="#E7E4DA"/></linearGradient>
+</defs>
+
+<rect x="0" y="0" width="640" height="270" fill="#FBFAF6"/>
+<text x="320" y="28" text-anchor="middle" class="ti" fill="#2E2972">两种退出：yield 冻住，return 终结</text>
+
+<!-- YIELD side -->
+<rect x="30" y="50" width="270" height="190" rx="12" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="165" y="74" text-anchor="middle" class="h" fill="#2F6B43">YIELD_VALUE（挂起）</text>
+<g class="c" fill="#2F6B43">
+  <text x="50" y="102">f_stacktop = stack_pointer</text>
+  <text x="50" y="124">why = WHY_YIELD</text>
+  <text x="50" y="146">goto fast_yield</text>
+</g>
+<text x="165" y="172" text-anchor="middle" class="d" fill="#3C5C46">不清栈 · 不销毁帧</text>
+<rect x="55" y="184" width="220" height="40" rx="8" fill="#FFF" stroke="#BFD8C4"/>
+<text x="165" y="201" text-anchor="middle" class="c" fill="#2F6B43">f_stacktop ≠ NULL</text>
+<text x="165" y="216" text-anchor="middle" class="d" fill="#3C5C46">帧定格，还能续跑</text>
+
+<!-- RETURN side -->
+<rect x="340" y="50" width="270" height="190" rx="12" fill="url(#gN)" stroke="#D8D3C6" filter="url(#sh)"/>
+<text x="475" y="74" text-anchor="middle" class="h" fill="#33322E">RETURN_VALUE（终结）</text>
+<g class="c" fill="#33322E">
+  <text x="360" y="102">retval = POP()</text>
+  <text x="360" y="124">why = WHY_RETURN</text>
+  <text x="360" y="146">清空求值栈</text>
+</g>
+<text x="475" y="172" text-anchor="middle" class="d" fill="#9A988F">正常退出路径</text>
+<rect x="365" y="184" width="220" height="40" rx="8" fill="#FFF" stroke="#D8D3C6"/>
+<text x="475" y="201" text-anchor="middle" class="c" fill="#9A4A2F">f_stacktop = NULL</text>
+<text x="475" y="216" text-anchor="middle" class="d" fill="#9A988F">帧的使命终结</text>
+
+<text x="320" y="258" text-anchor="middle" class="d" fill="#9A988F">f_stacktop 是否为 NULL —— 区分「yield 挂起」与「return 终结」的标志位</text>
+</svg>

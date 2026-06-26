@@ -1,0 +1,51 @@
+<svg width="100%" viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg" role="img" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif">
+<title>事件循环靠 send 驱动协程树</title>
+<desc>协程复用生成器的挂起恢复机制。async def 的 code object 带 CO_COROUTINE 标志，await 等于 GET_AWAITABLE 加 YIELD_FROM。事件循环手握一棵协程构成的调用树，靠 send 一次次驱动它们前进。某个协程 await 一个 IO 时挂起、交出控制权，事件循环转去推进别的协程；IO 就绪后再 send 回去唤醒它。成千上万个协程就这样在单线程里轮流推进，互不阻塞。生成器是数据的暂停，协程是控制权的暂停。</desc>
+<defs>
+  <style>
+    .ti{font-size:13px;font-weight:600;}
+    .h{font-size:11px;font-weight:600;}
+    .d{font-size:10px;}
+    .c{font-size:10px;font-family:'SF Mono','JetBrains Mono',ui-monospace,Consolas,monospace;}
+  </style>
+  <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="1.4" stdDeviation="2" flood-color="#2A2A28" flood-opacity="0.12"/></filter>
+  <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F3F1FD"/><stop offset="1" stop-color="#E9E6FB"/></linearGradient>
+  <linearGradient id="gG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EDF4EE"/><stop offset="1" stop-color="#DDEBE0"/></linearGradient>
+  <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFF3FA"/><stop offset="1" stop-color="#E0E9F6"/></linearGradient>
+  <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6A63B0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="ahg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#2F6B43" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+
+<rect x="0" y="0" width="640" height="290" fill="#FBFAF6"/>
+<text x="320" y="28" text-anchor="middle" class="ti" fill="#2E2972">事件循环用 send 驱动协程，await 时让出</text>
+
+<!-- event loop -->
+<rect x="40" y="100" width="180" height="100" rx="12" fill="url(#gP)" stroke="#CCC7F1" filter="url(#sh)"/>
+<text x="130" y="128" text-anchor="middle" class="h" fill="#2E2972">事件循环</text>
+<text x="130" y="150" text-anchor="middle" class="d" fill="#46453F">单线程</text>
+<text x="130" y="172" text-anchor="middle" class="c" fill="#2E2972">轮流 send 驱动</text>
+<text x="130" y="190" text-anchor="middle" class="d" fill="#9A988F">谁就绪推进谁</text>
+
+<!-- coroutines -->
+<rect x="400" y="56" width="200" height="50" rx="10" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="500" y="78" text-anchor="middle" class="c" fill="#2F6B43">协程 A</text>
+<text x="500" y="94" text-anchor="middle" class="d" fill="#6E8C74">运行中</text>
+
+<rect x="400" y="120" width="200" height="50" rx="10" fill="url(#gB)" stroke="#C3D2E8" filter="url(#sh)"/>
+<text x="500" y="142" text-anchor="middle" class="c" fill="#28415F">协程 B</text>
+<text x="500" y="158" text-anchor="middle" class="d" fill="#46453F">await IO → 挂起，让出</text>
+
+<rect x="400" y="184" width="200" height="50" rx="10" fill="url(#gG)" stroke="#BFD8C4" filter="url(#sh)"/>
+<text x="500" y="206" text-anchor="middle" class="c" fill="#2F6B43">协程 C</text>
+<text x="500" y="222" text-anchor="middle" class="d" fill="#6E8C74">IO 就绪 → 被唤醒</text>
+
+<!-- arrows -->
+<path d="M220,120 C300,100 340,85 398,80" fill="none" stroke="#6A63B0" stroke-width="1.6" marker-end="url(#ah)"/>
+<path d="M220,150 H396" fill="none" stroke="#6A63B0" stroke-width="1.6" marker-end="url(#ah)"/>
+<path d="M398,210 C340,205 300,190 222,178" fill="none" stroke="#2F6B43" stroke-width="1.5" marker-end="url(#ahg)"/>
+<text x="310" y="100" text-anchor="middle" class="d" fill="#6A63B0">send</text>
+<text x="300" y="200" text-anchor="middle" class="d" fill="#2F6B43">就绪后 send 回去</text>
+
+<text x="320" y="262" text-anchor="middle" class="d" fill="#9A988F">await = GET_AWAITABLE + YIELD_FROM，复用生成器同一套挂起/恢复</text>
+<text x="320" y="282" text-anchor="middle" class="d" fill="#9A988F">生成器是「数据的暂停」，协程是「控制权的暂停」</text>
+</svg>
