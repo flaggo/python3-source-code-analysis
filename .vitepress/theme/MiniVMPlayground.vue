@@ -339,11 +339,12 @@ async function scrollDown() {
 .pg-hl { z-index: 0; pointer-events: none; color: var(--vp-c-text-1); }
 .pg-hl code { font: inherit; padding: 0; background: none; }
 .pg-ta { z-index: 1; background: transparent; color: transparent; caret-color: var(--vp-c-brand-1); resize: none; outline: none; }
-.tok-kw { color: var(--vp-c-purple-1); }
-.tok-str { color: var(--vp-c-green-1); }
-.tok-com { color: var(--vp-c-text-3); font-style: italic; }
-.tok-num { color: var(--vp-c-yellow-2); }
-.tok-builtin { color: var(--vp-c-indigo-1); }
+/* 高亮 span 由 v-html 注入，scoped 样式不会自动作用于它，需用 :deep() 穿透 */
+.pg-hl :deep(.tok-kw) { color: var(--vp-c-purple-1); }
+.pg-hl :deep(.tok-str) { color: var(--vp-c-green-1); }
+.pg-hl :deep(.tok-com) { color: var(--vp-c-text-3); font-style: italic; }
+.pg-hl :deep(.tok-num) { color: var(--vp-c-yellow-2); }
+.pg-hl :deep(.tok-builtin) { color: var(--vp-c-indigo-1); }
 .pg-term {
   height: 420px; box-sizing: border-box; overflow: auto; cursor: text;
   padding: 10px 12px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
