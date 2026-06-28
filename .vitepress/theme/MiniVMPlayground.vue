@@ -1,10 +1,10 @@
 <script setup>
-import { ref, shallowRef, nextTick } from 'vue'
+import { ref, nextTick } from 'vue'
 import TOY_SRC from '../../practice/mini-vm/minivm.py?raw'
 import { getPyodide } from './pyodide'
 
 // 注入到 Pyodide 的「驱动」：把编辑后的 VM 源码 exec 进独立命名空间，
-// 并维护一个跨 REPL 输入持久的 glob。这部分是固定的，不随用户编辑而变。
+// 并维护一个跨 REPL 输入持久的 glob。这部分固定，不随用户编辑而变。
 const DRIVER = `
 import json
 
@@ -46,85 +46,125 @@ def repl_eval(src):
 `
 
 const vmSource = ref(TOY_SRC)
-const replInput = ref('1 + 2 * 3')
-const history = shallowRef([])        // [{kind:'in'|'out'|'err'|'muted', text}]
-const status = ref('idle')            // idle | loading | ready | error
-const statusMsg = ref('')
 const vmError = ref('')
-const py = shallowRef(null)
-const historyBox = ref(null)
+const status = ref('idle')            // idle | loading | ready | error
+const py = ref(null)
+
+// 终端式 REPL 状态
+const term = ref([])                  // 已提交的行 [{kind:'in'|'out'|'err'|'muted', text}]
+const pendingLines = ref([])          // 当前未执行完的块（多行 def/if/while）
+const current = ref('')               // 活动输入行
+const busy = ref(false)
+const termRef = ref(null)
+const inputRef = ref(null)
+let cmdHistory = []
+let histIdx = 0
 
 async function ensureDriver() {
   if (py.value) return py.value
   status.value = 'loading'
-  statusMsg.value = '正在加载 Python 运行环境（Pyodide，首次约数 MB）…'
   const p = await getPyodide()
   p.runPython(DRIVER)
   py.value = p
   status.value = 'ready'
-  statusMsg.value = ''
   return p
 }
 
-async function applyVM() {
+async function loadVM(quiet) {
   vmError.value = ''
-  try {
-    const p = await ensureDriver()
-    const res = JSON.parse(p.globals.get('load_vm')(vmSource.value))
-    if (!res.ok) { vmError.value = res.error; status.value = 'error'; return false }
-    status.value = 'ready'
-    history.value = [...history.value, { kind: 'muted', text: '— 已应用 VM 源码，会话已重置 —' }]
-    await scrollDown()
-    return true
-  } catch (e) {
-    vmError.value = String(e); status.value = 'error'; return false
+  const p = await ensureDriver()
+  const res = JSON.parse(p.globals.get('load_vm')(vmSource.value))
+  if (!res.ok) { vmError.value = res.error; status.value = 'error'; return false }
+  status.value = 'ready'
+  if (!quiet) {
+    term.value = [{ kind: 'muted', text: '— 已应用 VM 源码，会话已重置 —' }]
+    pendingLines.value = []
+    current.value = ''
   }
+  return true
 }
 
-async function runRepl() {
-  const src = replInput.value
-  if (!src.trim()) return
-  // 首次运行时若还没应用过 VM，自动应用一次
-  if (!py.value || py.value.globals.get('_vm_ns') == null) {
-    const ok = await applyVM()
-    if (!ok) return
-  }
-  const lines = src.split('\n')
-  const shown = lines.map((l, i) => (i === 0 ? '>>> ' : '... ') + l).join('\n')
-  const entries = [...history.value, { kind: 'in', text: shown }]
-  try {
-    const res = JSON.parse(py.value.globals.get('repl_eval')(src))
-    if (res.ok) {
-      if (res.output) entries.push({ kind: 'out', text: res.output })
-      else entries.push({ kind: 'muted', text: '（已执行，无输出）' })
-    } else {
-      entries.push({ kind: 'err', text: res.error })
-    }
-  } catch (e) {
-    entries.push({ kind: 'err', text: String(e) })
-  }
-  history.value = entries
-  replInput.value = ''
-  await scrollDown()
+async function applyVM() {
+  try { await loadVM(false) } catch (e) { vmError.value = String(e); status.value = 'error' }
+  await scrollDown(); focusInput()
 }
+
+function resetVM() { vmSource.value = TOY_SRC; vmError.value = '' }
 
 async function clearSession() {
   if (py.value) py.value.runPython('reset_session()')
-  history.value = []
+  term.value = []; pendingLines.value = []; current.value = ''
+  focusInput()
 }
 
-function resetVM() {
-  vmSource.value = TOY_SRC
-  vmError.value = ''
+async function runStatement(lines) {
+  // 把输入回显进终端
+  const echoed = lines.map((l, i) => ({ kind: 'in', text: (i === 0 ? '>>> ' : '... ') + l }))
+  term.value = [...term.value, ...echoed]
+  if (lines.length === 1 && lines[0].trim()) cmdHistory.push(lines[0])  // 仅单行进历史
+  histIdx = cmdHistory.length
+  busy.value = true
+  await scrollDown()
+  try {
+    if (!py.value || py.value.globals.get('_vm_ns') == null) {
+      term.value = [...term.value, { kind: 'muted', text: '（首次运行：正在加载 Python 运行环境，请稍候…）' }]
+      await scrollDown()
+      const ok = await loadVM(true)
+      if (!ok) { term.value = [...term.value, { kind: 'err', text: vmError.value }]; busy.value = false; return }
+    }
+    const res = JSON.parse(py.value.globals.get('repl_eval')(lines.join('\n')))
+    if (res.ok) {
+      if (res.output) term.value = [...term.value, { kind: 'out', text: res.output }]
+    } else {
+      term.value = [...term.value, { kind: 'err', text: res.error }]
+    }
+  } catch (e) {
+    term.value = [...term.value, { kind: 'err', text: String(e) }]
+  }
+  busy.value = false
+  await scrollDown(); focusInput()
 }
 
-function onKey(e) {
-  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); runRepl() }
+function onKeydown(e) {
+  if (e.isComposing) return                 // 输入法组合中，别误触发
+  if (e.key === 'Enter') {
+    e.preventDefault()
+    if (busy.value) return
+    const line = current.value
+    current.value = ''
+    const starting = pendingLines.value.length === 0
+    if (starting && line.trim() === '') return
+    if (starting && !line.trim().endsWith(':')) {
+      runStatement([line])
+    } else if (starting) {                  // 以冒号结尾 → 进入续行
+      pendingLines.value = [line]
+    } else if (line.trim() === '') {        // 块中空行 → 执行整块
+      const blk = pendingLines.value.slice()
+      pendingLines.value = []
+      runStatement(blk)
+    } else {
+      pendingLines.value = [...pendingLines.value, line]
+    }
+    scrollDown()
+  } else if (e.key === 'ArrowUp') {
+    if (pendingLines.value.length === 0 && cmdHistory.length) {
+      e.preventDefault()
+      histIdx = Math.max(0, histIdx - 1)
+      current.value = cmdHistory[histIdx] ?? ''
+    }
+  } else if (e.key === 'ArrowDown') {
+    if (pendingLines.value.length === 0 && cmdHistory.length) {
+      e.preventDefault()
+      histIdx = Math.min(cmdHistory.length, histIdx + 1)
+      current.value = cmdHistory[histIdx] ?? ''
+    }
+  }
 }
 
+function focusInput() { nextTick(() => inputRef.value && inputRef.value.focus()) }
 async function scrollDown() {
   await nextTick()
-  const el = historyBox.value
+  const el = termRef.value
   if (el) el.scrollTop = el.scrollHeight
 }
 </script>
@@ -146,31 +186,31 @@ async function scrollDown() {
         <div v-if="vmError" class="pg-error">⚠ {{ vmError }}</div>
       </div>
 
-      <!-- 右：REPL -->
+      <!-- 右：终端式 REPL（直接输入） -->
       <div class="pg-col">
         <div class="pg-head">
           <span class="pg-title">交互式 REPL（用你改过的 VM 执行）</span>
           <span class="pg-spacer" />
           <button class="pg-btn" @click="clearSession" title="清空历史并重置变量">清空会话</button>
         </div>
-        <div ref="historyBox" class="pg-history">
-          <div v-if="!history.length" class="pg-muted">
-            在下方输入一句代码，回车或点「运行」。支持赋值、算术/比较、if/while、def/return（含递归）、print。
-            <br />纯表达式会自动回显结果（如 <code>1 + 2 * 3</code> → <code>7</code>）。
+        <div ref="termRef" class="pg-term" @click="focusInput">
+          <div v-if="!term.length && !pendingLines.length" class="pg-muted">
+            直接在这里输入，回车执行——就像一个 Python REPL。<br />
+            支持赋值、算术 / 比较、if / while、def / return（含递归）、print；纯表达式回显结果。
           </div>
-          <div v-for="(h, i) in history" :key="i" class="pg-line" :class="'pg-' + h.kind">{{ h.text }}</div>
+          <div v-for="(h, i) in term" :key="i" class="pg-line" :class="'pg-' + h.kind">{{ h.text }}</div>
+          <div v-for="(l, i) in pendingLines" :key="'p' + i" class="pg-line pg-in">{{ (i === 0 ? '>>> ' : '... ') + l }}</div>
+          <div class="pg-active">
+            <span class="pg-prompt">{{ pendingLines.length ? '... ' : '>>> ' }}</span>
+            <input ref="inputRef" v-model="current" class="pg-cmd" spellcheck="false"
+                   autocomplete="off" autocapitalize="off" :disabled="busy" @keydown="onKeydown" />
+          </div>
         </div>
-        <div class="pg-replbar">
-          <textarea v-model="replInput" class="pg-input" spellcheck="false" rows="2"
-                    placeholder="输入代码，⌘/Ctrl + Enter 运行" @keydown="onKey"></textarea>
-          <button class="pg-btn pg-run" :disabled="status === 'loading'" @click="runRepl">运行 ▶</button>
-        </div>
-        <div v-if="status === 'loading'" class="pg-muted">{{ statusMsg }}</div>
       </div>
     </div>
     <div class="pg-tip">
-      💡 试试改造虚拟机：在左侧给 <code>BINARY_OP</code> 加一个新运算符、或新增一条指令，点「应用并重载 VM」，
-      再到右侧 REPL 验证效果。改坏了点「还原默认」即可。
+      💡 试试改造虚拟机：在左侧给 <code>_binop</code> 加一个新运算符、或新增一条指令，点「应用并重载 VM」，
+      再到右侧 REPL 里直接敲代码验证。改坏了点「还原默认」即可。
     </div>
   </div>
 </template>
@@ -180,7 +220,8 @@ async function scrollDown() {
   border: 1px solid var(--vp-c-divider);
   border-radius: 12px;
   padding: 14px;
-  margin: 18px 0;
+  margin: 18px auto;
+  max-width: 1100px;
   background: var(--vp-c-bg-soft);
   font-size: 13px;
 }
@@ -195,32 +236,33 @@ async function scrollDown() {
 }
 .pg-btn:hover:not(:disabled) { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
 .pg-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.pg-apply, .pg-run { background: var(--vp-c-brand-1); color: #fff; border-color: var(--vp-c-brand-1); font-weight: 600; }
-.pg-apply:hover:not(:disabled), .pg-run:hover:not(:disabled) { background: var(--vp-c-brand-2); color: #fff; }
+.pg-apply { background: var(--vp-c-brand-1); color: #fff; border-color: var(--vp-c-brand-1); font-weight: 600; }
+.pg-apply:hover:not(:disabled) { background: var(--vp-c-brand-2); color: #fff; }
 .pg-src {
-  width: 100%; box-sizing: border-box; height: 360px; resize: vertical;
+  width: 100%; box-sizing: border-box; height: 420px; resize: vertical;
   font-family: var(--vp-font-family-mono, monospace); font-size: 12px; line-height: 1.5;
   padding: 10px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
   background: var(--vp-c-bg); color: var(--vp-c-text-1); white-space: pre; overflow: auto;
 }
-.pg-history {
-  height: 300px; overflow: auto; padding: 10px; border-radius: 8px;
-  border: 1px solid var(--vp-c-divider); background: var(--vp-c-bg);
-  font-family: var(--vp-font-family-mono, monospace); font-size: 12.5px; line-height: 1.55;
+.pg-term {
+  height: 420px; box-sizing: border-box; overflow: auto; cursor: text;
+  padding: 10px 12px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg); color: var(--vp-c-text-1);
+  font-family: var(--vp-font-family-mono, monospace); font-size: 12.5px; line-height: 1.6;
 }
-.pg-line { white-space: pre-wrap; }
+.pg-line { white-space: pre-wrap; word-break: break-word; }
 .pg-in { color: var(--vp-c-text-1); }
 .pg-out { color: var(--vp-c-brand-1); }
-.pg-err { color: var(--vp-c-danger-1); }
+.pg-err { color: var(--vp-c-danger-1); white-space: pre-wrap; }
 .pg-muted { color: var(--vp-c-text-3); }
-.pg-replbar { display: flex; gap: 8px; margin-top: 8px; align-items: stretch; }
-.pg-input {
-  flex: 1; box-sizing: border-box; resize: vertical;
-  font-family: var(--vp-font-family-mono, monospace); font-size: 12.5px;
-  padding: 8px 10px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg); color: var(--vp-c-text-1);
+.pg-active { display: flex; align-items: baseline; }
+.pg-prompt { color: var(--vp-c-text-3); white-space: pre; flex: none; }
+.pg-cmd {
+  flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+  font-family: inherit; font-size: inherit; line-height: inherit;
+  color: var(--vp-c-text-1); caret-color: var(--vp-c-brand-1); padding: 0;
 }
-.pg-run { align-self: stretch; white-space: nowrap; }
+.pg-cmd:disabled { color: var(--vp-c-text-3); }
 .pg-error {
   margin-top: 8px; padding: 8px 12px; border-radius: 6px;
   background: var(--vp-c-danger-soft); color: var(--vp-c-danger-1); font-size: 12.5px; white-space: pre-wrap;
@@ -233,6 +275,6 @@ async function scrollDown() {
 .pg-tip code, .pg-muted code { font-family: var(--vp-font-family-mono, monospace); color: var(--vp-c-brand-1); }
 @media (max-width: 720px) {
   .pg-cols { grid-template-columns: 1fr; }
-  .pg-src { height: 240px; }
+  .pg-src, .pg-term { height: 280px; }
 }
 </style>

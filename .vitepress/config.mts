@@ -30,7 +30,8 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: '首页', link: '/' },
-      { text: '大纲', link: '/objects/object/' }
+      { text: '大纲', link: '/objects/object/' },
+      { text: 'Playground', link: '/playground/' }
     ],
 
     sidebar: [
