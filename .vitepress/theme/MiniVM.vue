@@ -1,8 +1,7 @@
 <script setup>
 import { ref, shallowRef, computed, onUnmounted } from 'vue'
 import TOY_SRC from '../../practice/mini-vm/minivm.py?raw'
-
-const PYODIDE_VERSION = 'v0.26.4'
+import { getPyodide } from './pyodide'
 
 const EXAMPLES = {
   '算术表达式': 'a = 5\nb = 3\nc = a + b * 2\nprint(c)',
@@ -45,18 +44,7 @@ async function ensurePyodide() {
   if (pyMod.value) return pyMod.value
   status.value = 'loading'
   statusMsg.value = '正在加载 Python 运行环境（Pyodide，首次约数 MB，请稍候）…'
-  if (!window.loadPyodide) {
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script')
-      s.src = `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/pyodide.js`
-      s.onload = resolve
-      s.onerror = () => reject(new Error('加载 Pyodide 脚本失败，请检查网络'))
-      document.head.appendChild(s)
-    })
-  }
-  const py = await window.loadPyodide({
-    indexURL: `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/`,
-  })
+  const py = await getPyodide()
   // 把「迷你虚拟机」写进文件系统，当模块 import（这样它的 __main__ REPL 不会被触发）
   py.FS.writeFile('minivm_demo.py', TOY_SRC)
   pyMod.value = py.pyimport('minivm_demo')
