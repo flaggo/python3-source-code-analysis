@@ -1,6 +1,6 @@
 <script setup>
 import { ref, shallowRef, computed, onUnmounted } from 'vue'
-import TOY_SRC from '../../practice/mini-vm/minivm.py?raw'
+import TOY_SRC from '../../docs/practice/mini-vm/minivm.py?raw'
 import { getPyodide } from './pyodide'
 
 const EXAMPLES = {

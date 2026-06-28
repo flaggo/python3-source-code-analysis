@@ -20,4 +20,4 @@ build:
 	$(NPM) run build
 
 clean:
-	rm -rf _book .vitepress/dist .vitepress/cache
+	rm -rf _book .vitepress/dist .vitepress/cache .playwright-mcp

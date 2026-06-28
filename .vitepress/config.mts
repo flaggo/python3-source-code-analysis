@@ -10,10 +10,8 @@ export default defineConfig({
   // 部署在 https://flaggo.github.io/python3-source-code-analysis/
   base: '/python3-source-code-analysis/',
 
-  // 用仓库根目录作为内容源；首页为 index.md（背景 + Roadmap）
-  srcDir: '.',
-  // 不作为页面渲染的文件：README 仅供 GitHub 仓库使用，不进站点
-  srcExclude: ['README.md', 'SUMMARY.md', '_book/**', '**/node_modules/**'],
+  // 正文全部收纳在 docs/ 下；首页为 docs/index.md（背景 + Roadmap）
+  srcDir: 'docs',
 
   lastUpdated: true,
   cleanUrls: true,
@@ -109,7 +107,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/flaggo/python3-source-code-analysis/edit/master/:path',
+      pattern: 'https://github.com/flaggo/python3-source-code-analysis/edit/master/docs/:path',
       text: '编辑此页面'
     },
 

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
-import TOY_SRC from '../../practice/mini-vm/minivm.py?raw'
+import TOY_SRC from '../../docs/practice/mini-vm/minivm.py?raw'
 import { getPyodide } from './pyodide'
 
 // 注入到 Pyodide 的「驱动」：把编辑后的 VM 源码 exec 进独立命名空间，
