@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import TOY_SRC from '../../practice/mini-vm/minivm.py?raw'
 import { getPyodide } from './pyodide'
 
@@ -59,6 +59,78 @@ const termRef = ref(null)
 const inputRef = ref(null)
 let cmdHistory = []
 let histIdx = 0
+
+// 左侧源码编辑器：语法高亮 + 行号（零依赖：透明 textarea 叠在高亮层之上）
+const srcRef = ref(null)
+const hlRef = ref(null)
+const gutterInnerRef = ref(null)
+const lineCount = computed(() => vmSource.value.split('\n').length)
+const highlighted = computed(() => highlightPy(vmSource.value))
+
+const PY_KW = new Set(['def', 'return', 'if', 'elif', 'else', 'while', 'for', 'in', 'and', 'or',
+  'not', 'is', 'class', 'import', 'from', 'as', 'pass', 'break', 'continue', 'True', 'False',
+  'None', 'global', 'nonlocal', 'lambda', 'with', 'try', 'except', 'finally', 'raise', 'yield',
+  'assert', 'del'])
+const PY_BUILTIN = new Set(['print', 'len', 'range', 'isinstance', 'dict', 'list', 'set', 'tuple',
+  'int', 'float', 'str', 'bool', 'zip', 'enumerate', 'abs', 'min', 'max', 'sum', 'type', 'repr',
+  'sorted', 'map', 'filter', 'open', 'id', 'hasattr', 'getattr', 'setattr'])
+
+function escHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+function highlightPy(src) {
+  let i = 0; const n = src.length; let out = ''
+  while (i < n) {
+    const c = src[i]
+    if (c === '#') {                                   // 注释
+      let j = i; while (j < n && src[j] !== '\n') j++
+      out += '<span class="tok-com">' + escHtml(src.slice(i, j)) + '</span>'; i = j; continue
+    }
+    if (src.startsWith('"""', i) || src.startsWith("'''", i)) {   // 三引号字符串
+      const q = src.substr(i, 3); let j = i + 3
+      while (j < n && !src.startsWith(q, j)) j++
+      j = Math.min(n, j + 3)
+      out += '<span class="tok-str">' + escHtml(src.slice(i, j)) + '</span>'; i = j; continue
+    }
+    if (c === '"' || c === "'") {                      // 普通字符串
+      let j = i + 1
+      while (j < n && src[j] !== c) { if (src[j] === '\\') j++; j++ }
+      j = Math.min(n, j + 1)
+      out += '<span class="tok-str">' + escHtml(src.slice(i, j)) + '</span>'; i = j; continue
+    }
+    if (c >= '0' && c <= '9') {                        // 数字
+      let j = i; while (j < n && /[0-9._a-fA-FxXoObB]/.test(src[j])) j++
+      out += '<span class="tok-num">' + escHtml(src.slice(i, j)) + '</span>'; i = j; continue
+    }
+    if (/[A-Za-z_]/.test(c)) {                         // 标识符 / 关键字 / 内建
+      let j = i; while (j < n && /[A-Za-z0-9_]/.test(src[j])) j++
+      const w = src.slice(i, j)
+      out += PY_KW.has(w) ? '<span class="tok-kw">' + w + '</span>'
+        : PY_BUILTIN.has(w) ? '<span class="tok-builtin">' + w + '</span>'
+          : escHtml(w)
+      i = j; continue
+    }
+    out += escHtml(c); i++
+  }
+  return out
+}
+
+function onSrcScroll() {
+  const ta = srcRef.value
+  if (!ta) return
+  if (hlRef.value) { hlRef.value.scrollTop = ta.scrollTop; hlRef.value.scrollLeft = ta.scrollLeft }
+  if (gutterInnerRef.value) gutterInnerRef.value.style.transform = 'translateY(' + (-ta.scrollTop) + 'px)'
+}
+
+function onSrcKey(e) {
+  if (e.key === 'Tab') {                               // Tab 缩进 4 空格
+    e.preventDefault()
+    const ta = srcRef.value
+    const s = ta.selectionStart, en = ta.selectionEnd
+    const v = vmSource.value
+    vmSource.value = v.slice(0, s) + '    ' + v.slice(en)
+    nextTick(() => { ta.selectionStart = ta.selectionEnd = s + 4 })
+  }
+}
 
 async function ensureDriver() {
   if (py.value) return py.value
@@ -182,7 +254,19 @@ async function scrollDown() {
             {{ status === 'loading' ? '加载中…' : '应用并重载 VM' }}
           </button>
         </div>
-        <textarea v-model="vmSource" class="pg-src" spellcheck="false"></textarea>
+        <div class="pg-editor">
+          <div class="pg-gutter">
+            <div ref="gutterInnerRef" class="pg-gutter-inner">
+              <div v-for="n in lineCount" :key="n">{{ n }}</div>
+            </div>
+          </div>
+          <div class="pg-codewrap">
+            <pre ref="hlRef" class="pg-hl" aria-hidden="true"><code v-html="highlighted"></code></pre>
+            <textarea ref="srcRef" v-model="vmSource" class="pg-ta" spellcheck="false"
+                      wrap="off" autocapitalize="off" autocomplete="off"
+                      @scroll="onSrcScroll" @keydown="onSrcKey"></textarea>
+          </div>
+        </div>
         <div v-if="vmError" class="pg-error">⚠ {{ vmError }}</div>
       </div>
 
@@ -238,12 +322,28 @@ async function scrollDown() {
 .pg-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .pg-apply { background: var(--vp-c-brand-1); color: #fff; border-color: var(--vp-c-brand-1); font-weight: 600; }
 .pg-apply:hover:not(:disabled) { background: var(--vp-c-brand-2); color: #fff; }
-.pg-src {
-  width: 100%; box-sizing: border-box; height: 420px; resize: vertical;
-  font-family: var(--vp-font-family-mono, monospace); font-size: 12px; line-height: 1.5;
-  padding: 10px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg); color: var(--vp-c-text-1); white-space: pre; overflow: auto;
+.pg-editor {
+  display: flex; height: 420px; box-sizing: border-box;
+  border: 1px solid var(--vp-c-divider); border-radius: 8px; overflow: hidden;
+  background: var(--vp-c-bg);
+  font-family: var(--vp-font-family-mono, monospace); font-size: 12px; line-height: 1.6;
 }
+.pg-gutter { flex: none; width: 46px; overflow: hidden; background: var(--vp-c-bg-soft); border-right: 1px solid var(--vp-c-divider); }
+.pg-gutter-inner { padding: 10px 8px 10px 0; text-align: right; color: var(--vp-c-text-3); user-select: none; }
+.pg-codewrap { position: relative; flex: 1; min-width: 0; }
+.pg-hl, .pg-ta {
+  position: absolute; inset: 0; margin: 0; box-sizing: border-box; border: 0;
+  padding: 10px 12px; font-family: inherit; font-size: inherit; line-height: inherit;
+  white-space: pre; tab-size: 4; overflow: auto;
+}
+.pg-hl { z-index: 0; pointer-events: none; color: var(--vp-c-text-1); }
+.pg-hl code { font: inherit; padding: 0; background: none; }
+.pg-ta { z-index: 1; background: transparent; color: transparent; caret-color: var(--vp-c-brand-1); resize: none; outline: none; }
+.tok-kw { color: var(--vp-c-purple-1); }
+.tok-str { color: var(--vp-c-green-1); }
+.tok-com { color: var(--vp-c-text-3); font-style: italic; }
+.tok-num { color: var(--vp-c-yellow-2); }
+.tok-builtin { color: var(--vp-c-indigo-1); }
 .pg-term {
   height: 420px; box-sizing: border-box; overflow: auto; cursor: text;
   padding: 10px 12px; border-radius: 8px; border: 1px solid var(--vp-c-divider);
@@ -275,6 +375,6 @@ async function scrollDown() {
 .pg-tip code, .pg-muted code { font-family: var(--vp-font-family-mono, monospace); color: var(--vp-c-brand-1); }
 @media (max-width: 720px) {
   .pg-cols { grid-template-columns: 1fr; }
-  .pg-src, .pg-term { height: 280px; }
+  .pg-editor, .pg-term { height: 280px; }
 }
 </style>
